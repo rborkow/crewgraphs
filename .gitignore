@@ -1,0 +1,13 @@
+node_modules/
+.next/
+.open-next/
+.wrangler/
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.*
+.DS_Store
+spike/cache/
+dist/
+coverage/
