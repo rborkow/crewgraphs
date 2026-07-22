@@ -499,8 +499,8 @@ def _assemble(
                 }
             )
 
-        people = _people_payload(
-            latest_filing,
+        people = _people_payloads(
+            filings_by_org.get(org_id, []),
             people_by_org.get(org_id, []),
             parser_version=parser_version,
         )
@@ -795,9 +795,7 @@ def _coverage_rows(
     for filing in filings:
         year = int(filing["tax_year"])
         old = filing_by_year.get(year)
-        if old is None or (
-            bool(filing["amended_return"]), _date(filing["tax_period_end"])
-        ) > (bool(old["amended_return"]), _date(old["tax_period_end"])):
+        if old is None or _display_precedence(filing) > _display_precedence(old):
             filing_by_year[year] = filing
     post_by_year = {int(row["tax_year"]): row for row in posts}
     rows: list[dict[str, Any]] = []
@@ -917,23 +915,59 @@ def _epostcard_ref(post: Mapping[str, Any], parser_version: str) -> dict[str, An
     )
 
 
-def _people_payload(
-    latest_filing: Mapping[str, Any] | None,
+def _people_payloads(
+    filings: list[dict[str, Any]],
     people: list[dict[str, Any]],
     *,
     parser_version: str,
 ) -> list[dict[str, Any]]:
-    if latest_filing is None:
-        return []
-    filing_id = str(latest_filing["filing_id"])
-    rows = [row for row in people if str(row["filing_id"]) == filing_id]
+    """One people entry per filed year that reported any officers, newest first.
+
+    Year display precedence mirrors ``_coverage_rows``: an amended return beats
+    the original, a later period end beats an earlier one.
+    """
+    filing_by_year: dict[int, dict[str, Any]] = {}
+    for filing in filings:
+        year = int(filing["tax_year"])
+        old = filing_by_year.get(year)
+        if old is None or _display_precedence(filing) > _display_precedence(old):
+            filing_by_year[year] = filing
+    rows_by_filing = _group(people, "filing_id")
+    payloads: list[dict[str, Any]] = []
+    for year in sorted(filing_by_year, reverse=True):
+        filing = filing_by_year[year]
+        entry = _people_year(
+            filing,
+            rows_by_filing.get(str(filing["filing_id"]), []),
+            parser_version=parser_version,
+        )
+        if entry is not None:
+            payloads.append(entry)
+    return payloads
+
+
+def _display_precedence(filing: Mapping[str, Any]) -> tuple[bool, date, str]:
+    return (
+        bool(filing["amended_return"]),
+        _date(filing["tax_period_end"]),
+        str(filing["filing_id"]),
+    )
+
+
+def _people_year(
+    filing: Mapping[str, Any],
+    rows: list[dict[str, Any]],
+    *,
+    parser_version: str,
+) -> dict[str, Any] | None:
     if not rows:
-        return []
+        return None
+    filing_id = str(filing["filing_id"])
     compensated: list[dict[str, Any]] = []
     volunteer_count = 0
     source_path = (
         "Form990PartVIISectionAGrp"
-        if str(latest_filing["form_type"]) == "990"
+        if str(filing["form_type"]) == "990"
         else "OfficerDirectorTrusteeEmplGrp"
     )
     for row in rows:
@@ -960,16 +994,16 @@ def _people_payload(
                 "ref": _source_ref(
                     value=value,
                     unit="USD",
-                    tax_year=int(latest_filing["tax_year"]),
-                    period_begin=latest_filing.get("tax_period_begin"),
-                    period_end=latest_filing["tax_period_end"],
+                    tax_year=int(filing["tax_year"]),
+                    period_begin=filing.get("tax_period_begin"),
+                    period_end=filing["tax_period_end"],
                     quality_state="verified",
                     source_key="irs_990_xml",
-                    form_type=str(latest_filing["form_type"]),
+                    form_type=str(filing["form_type"]),
                     filing_id=filing_id,
                     source_path=source_path,
-                    is_amended=bool(latest_filing["amended_return"]),
-                    retrieved_at=latest_filing["retrieved_at"],
+                    is_amended=bool(filing["amended_return"]),
+                    retrieved_at=filing["retrieved_at"],
                     parser_version=parser_version,
                     metric=None,
                 ),
@@ -978,27 +1012,25 @@ def _people_payload(
     group_ref = _source_ref(
         value=volunteer_count,
         unit="count",
-        tax_year=int(latest_filing["tax_year"]),
-        period_begin=latest_filing.get("tax_period_begin"),
-        period_end=latest_filing["tax_period_end"],
+        tax_year=int(filing["tax_year"]),
+        period_begin=filing.get("tax_period_begin"),
+        period_end=filing["tax_period_end"],
         quality_state="verified",
         source_key="irs_990_xml",
-        form_type=str(latest_filing["form_type"]),
+        form_type=str(filing["form_type"]),
         filing_id=filing_id,
         source_path=source_path,
-        is_amended=bool(latest_filing["amended_return"]),
-        retrieved_at=latest_filing["retrieved_at"],
+        is_amended=bool(filing["amended_return"]),
+        retrieved_at=filing["retrieved_at"],
         parser_version=parser_version,
         metric=None,
     )
-    return [
-        {
-            "tax_year": int(latest_filing["tax_year"]),
-            "compensated": compensated,
-            "volunteer_count": volunteer_count,
-            "ref": group_ref,
-        }
-    ]
+    return {
+        "tax_year": int(filing["tax_year"]),
+        "compensated": compensated,
+        "volunteer_count": volunteer_count,
+        "ref": group_ref,
+    }
 
 
 def _source_ref(

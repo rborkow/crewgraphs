@@ -56,6 +56,17 @@ export function snapshotFactFormat(ref: SourceRef): ValueFormat | undefined {
 }
 
 /**
+ * Percent-of-total display for a composition share: one decimal under 10%
+ * ("3.5%"), whole percents from 10% up ("42%"). Negative shares (a
+ * money-losing fundraiser) keep their sign.
+ */
+export function formatShare(share: number): string {
+  const pct = share * 100;
+  const rounded = Math.abs(pct) >= 9.95 ? Math.round(pct) : Math.round(pct * 10) / 10;
+  return `${rounded}%`;
+}
+
+/**
  * A plain-language summary of which forms and years underlie a profile, built
  * from the filing-coverage rows. E.g. "Form 990 and Form 990-EZ for tax years
  * 2020–2024".

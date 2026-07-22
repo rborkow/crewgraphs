@@ -4,7 +4,12 @@ import {
   type DirectoryBlob,
   type OrgProfilePayload
 } from "@crewgraphs/contracts";
-import { groupTrends, type FinancialSeriesRow, type Trends } from "@/lib/read-model";
+import {
+  groupComposition,
+  groupTrends,
+  type FinancialSeriesRow,
+  type ProfileFinancials
+} from "@/lib/read-model";
 
 import directoryJson from "../../../db/fixtures/directory.json";
 import seriesJson from "../../../db/fixtures/series.json";
@@ -67,7 +72,11 @@ export function fixtureSeriesRows(slug: string): FinancialSeriesRow[] {
   return SERIES[slug] ?? [];
 }
 
-/** Trends built from the fixture series + payload coverage, via the real mapper. */
-export function fixtureTrends(slug: string): Trends {
-  return groupTrends(fixtureSeriesRows(slug), fixturePayload(slug).coverage);
+/** Trends + composition built from the fixture series + payload coverage, via the real mappers. */
+export function fixtureTrends(slug: string): ProfileFinancials {
+  const rows = fixtureSeriesRows(slug);
+  return {
+    ...groupTrends(rows, fixturePayload(slug).coverage),
+    composition: groupComposition(rows)
+  };
 }
