@@ -270,6 +270,25 @@ END;
 $$;
 
 
+--
+-- Name: apply_phase2_pipeline_grants(); Type: FUNCTION; Schema: app; Owner: -
+--
+
+CREATE FUNCTION app.apply_phase2_pipeline_grants() RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'pipeline_rw') THEN
+    EXECUTE 'GRANT SELECT, INSERT ON TABLE core.review_task, core.audit_event TO pipeline_rw';
+    EXECUTE 'REVOKE UPDATE, DELETE, TRUNCATE ON TABLE core.review_task, core.audit_event FROM pipeline_rw';
+    -- resolve reads identity tables to find verified EINs; reading is safe.
+    EXECUTE 'GRANT SELECT ON TABLE core.organization, core.external_identifier, core.organization_alias, core.organization_relationship TO pipeline_rw';
+    EXECUTE 'GRANT SELECT ON TABLE core.concept_definition, core.metric_definition TO pipeline_rw';
+  END IF;
+END;
+$$;
+
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -2125,4 +2144,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('004'),
     ('005'),
     ('006'),
-    ('007');
+    ('007'),
+    ('008');
