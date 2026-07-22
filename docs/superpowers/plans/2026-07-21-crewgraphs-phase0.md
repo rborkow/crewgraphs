@@ -45,7 +45,7 @@
 
 ## Phase 1 — Data foundation
 
-### Task 1.1: Core migrations `[terra, sol review]`
+### Task 1.1: Core migrations `[terra, sol review]` — authored + verified (role separation pending Neon console fix, see SETUP.md)
 - [ ] `db/migrations/001_roles_schemas.sql` — schemas `core/staging/ops/read/app`, roles + grants (pipeline_rw cannot UPDATE identity tables; web_ro sees `read` only)
 - [ ] `002_core_identity.sql` — organization, external_identifier (namespace enum incl. reserved `regattacentral_org`), organization_alias, organization_relationship, review_task, audit_event
 - [ ] `003_core_sources_facts.sql` — source_record, ein_observation, epostcard_observation, filing, financial_fact, concept_definition (seeded with the 24 concepts), person_role, metric_definition/metric_value
