@@ -193,12 +193,17 @@ def efile_fetch_cmd(
 @app.command(name="efile-parse")
 def efile_parse_cmd(
     object_ids: str = typer.Option("", help="Optional comma-separated object ids; default = fetched, unparsed"),
+    reparse: bool = typer.Option(
+        False,
+        "--reparse",
+        help="Re-extract already-parsed filings and overwrite their staging rows",
+    ),
 ) -> None:
     """Extract the 24-concept map from fetched XMLs into staging.filing_extract."""
     from .jobs.efile_parse import efile_parse
 
     with _job_context() as (db, store, _http):
-        result = efile_parse(db, store, object_ids=_csv(object_ids) or None)
+        result = efile_parse(db, store, object_ids=_csv(object_ids) or None, reparse=reparse)
         emit_summary(str(result))
 
 

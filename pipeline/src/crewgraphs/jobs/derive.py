@@ -6,7 +6,7 @@ import json
 import math
 from collections import defaultdict
 from collections.abc import Mapping, Sequence
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from typing import Any
 
 from ..concept_map import ConceptMap, load_concept_map
@@ -282,17 +282,11 @@ def _insert_facts(
 
 
 def _insert_people(db: DatabaseGateway, run: IngestRun, filing_id: object, value: object) -> None:
-    # Schema inspection is intentional: current schema has no natural-key
-    # unique constraint, so select-first preserves INSERT-only idempotency.
-    constraints = db.execute(
-        """
-        SELECT tc.constraint_name
-        FROM information_schema.table_constraints AS tc
-        WHERE tc.table_schema = 'core' AND tc.table_name = 'person_role'
-          AND tc.constraint_type = 'UNIQUE'
-        """
-    )
-    has_unique = bool(constraints)
+    # person_role is INSERT-only (pipeline_rw has no UPDATE grant) and has no
+    # versioning column, so enrichment supersedes by insert: a staged capture
+    # identical to an existing row is skipped, while a richer re-parse of the
+    # same person inserts a new row. Publish reads the newest capture per
+    # (filing, person, title); old rows remain as unrevised evidence.
     for person in _as_list(value):
         if not isinstance(person, Mapping):
             continue
@@ -302,39 +296,46 @@ def _insert_people(db: DatabaseGateway, run: IngestRun, filing_id: object, value
         title = person.get("title")
         if title is not None and not isinstance(title, str):
             title = str(title)
-        if not has_unique:
-            duplicate = db.execute(
-                """
-                SELECT id FROM core.person_role
-                WHERE filing_id = %s AND person_name = %s
-                  AND title IS NOT DISTINCT FROM %s
-                LIMIT 1
-                """,
-                (filing_id, name, title),
-            )
-            if duplicate:
-                continue
+        captured = (
+            filing_id,
+            name,
+            title,
+            person.get("reportable_compensation", person.get("comp")),
+            person.get("other_compensation", person.get("other_comp")),
+            person.get("deferred_compensation"),
+            person.get("nontaxable_benefits"),
+            person.get("related_organization_compensation", person.get("related_org_comp")),
+            _hours(person.get("avg_hours_week", person.get("avg_hours"))),
+            [str(flag) for flag in _as_list(person.get("role_flags", []))],
+        )
+        duplicate = db.execute(
+            """
+            SELECT id FROM core.person_role
+            WHERE filing_id = %s AND person_name = %s
+              AND title IS NOT DISTINCT FROM %s
+              AND reportable_compensation IS NOT DISTINCT FROM %s
+              AND other_compensation IS NOT DISTINCT FROM %s
+              AND deferred_compensation IS NOT DISTINCT FROM %s
+              AND nontaxable_benefits IS NOT DISTINCT FROM %s
+              AND related_organization_compensation IS NOT DISTINCT FROM %s
+              AND avg_hours_week IS NOT DISTINCT FROM %s
+              AND role_flags = %s
+            LIMIT 1
+            """,
+            captured,
+        )
+        if duplicate:
+            continue
         rows = db.execute(
             """
             INSERT INTO core.person_role
                 (filing_id, person_name, title, reportable_compensation,
                  other_compensation, deferred_compensation, nontaxable_benefits,
-                 related_organization_compensation, role_flags)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-            ON CONFLICT DO NOTHING
+                 related_organization_compensation, avg_hours_week, role_flags)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id
             """,
-            (
-                filing_id,
-                name,
-                title,
-                person.get("reportable_compensation", person.get("comp")),
-                person.get("other_compensation"),
-                person.get("deferred_compensation"),
-                person.get("nontaxable_benefits"),
-                person.get("related_organization_compensation"),
-                list(person.get("role_flags", [])),
-            ),
+            captured,
         )
         if rows:
             run.add_stat("person_roles_inserted")
@@ -554,6 +555,20 @@ def _year(value: object) -> int:
 
 def _year_facts_tax_year(facts: Mapping[str, Mapping[str, Any]]) -> int:
     return int(next(iter(facts.values()))["tax_year"])
+
+
+def _hours(value: object) -> Decimal | None:
+    # The extractor stages AverageHoursPerWeekRt as raw text; mirror _as_int by
+    # treating garbage (and values the numeric(5,2) column cannot hold) as absent.
+    if value is None:
+        return None
+    try:
+        hours = Decimal(str(value))
+    except InvalidOperation:
+        return None
+    if not hours.is_finite() or hours < 0 or hours >= 1000:
+        return None
+    return hours
 
 
 def _numeric(value: object) -> bool:

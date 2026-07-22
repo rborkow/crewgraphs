@@ -126,11 +126,22 @@ export const profileHeaderSchema = z.object({
   filer_note: z.string().nullable()
 });
 
+/** Form 990 Part VII position checkboxes (990-EZ rows carry none). */
+export const personRoleFlagSchema = z.enum([
+  "individual_trustee_or_director",
+  "officer",
+  "key_employee",
+  "highest_compensated_employee",
+  "former_officer_director_trustee"
+]);
+
 /** One officer/key-employee row. Spike display rule: only comp > 0 rows are listed. */
 export const compensatedPersonSchema = z.object({
   name: z.string(),
   title: z.string().nullable(),
   avg_hours_week: z.number().nullable(),
+  /** Optional-with-default so payloads published before capture stay valid. */
+  role_flags: z.array(personRoleFlagSchema).default([]),
   total_comp: z.number(),
   ref: sourceRefSchema
 });

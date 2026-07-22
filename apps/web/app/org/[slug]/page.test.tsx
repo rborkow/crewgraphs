@@ -147,6 +147,7 @@ describe("profile components", () => {
             name: "Dana Rowe",
             title: "Executive Director",
             avg_hours_week: 40,
+            role_flags: ["officer"],
             total_comp: 82000,
             ref: { ...sampleRef, value: 82000 }
           }
@@ -160,6 +161,9 @@ describe("profile components", () => {
 
     expect(screen.getByText("Dana Rowe")).toBeInTheDocument();
     expect(screen.getByText("Executive Director")).toBeInTheDocument();
+    expect(screen.getByText("40")).toBeInTheDocument();
+    // Part VII position checkboxes render as labels under the title.
+    expect(screen.getByText("Officer")).toBeInTheDocument();
     // Compensation renders as a provenanced value (drawer trigger).
     expect(screen.getByRole("button", { name: /\$82,000/ })).toBeInTheDocument();
     // The many $0 volunteers collapse to one aggregate line.

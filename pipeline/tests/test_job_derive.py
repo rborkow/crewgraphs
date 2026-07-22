@@ -42,6 +42,13 @@ class FakeDeriveDb:
         self._counter += 1
         return f"{kind}-{self._counter}"
 
+    @staticmethod
+    def _person_capture(row: dict[str, Any]) -> tuple[Any, ...]:
+        # Python None == None mirrors the SQL IS NOT DISTINCT FROM comparison.
+        return (row["filing_id"], row["person_name"], row["title"], row["reportable_compensation"],
+                row["other_compensation"], row["deferred_compensation"], row["nontaxable_benefits"],
+                row["related_organization_compensation"], row["avg_hours_week"], row["role_flags"])
+
     def execute(self, query: str, params: object = None) -> list[dict[str, Any]]:
         values = tuple(params or ())
         if "INSERT INTO ops.ingest_run" in query:
@@ -85,14 +92,14 @@ class FakeDeriveDb:
             row = {"id": self._id("fact"), "filing_id": filing_id, "concept": concept, "normalization_version": version, "amount": Decimal(str(amount)), "source_path": path}
             self.facts.append(row)
             return [{"id": row["id"]}]
-        if "information_schema.table_constraints" in query:
-            return []
         if "FROM core.person_role" in query:
-            filing_id, name, title = values
-            return [{"id": row["id"]} for row in self.people if (row["filing_id"], row["person_name"], row["title"]) == (filing_id, name, title)]
+            return [{"id": row["id"]} for row in self.people if self._person_capture(row) == values]
         if query.strip().startswith("INSERT INTO core.person_role"):
-            filing_id, name, title = values[:3]
-            row = {"id": self._id("person"), "filing_id": filing_id, "person_name": name, "title": title}
+            filing_id, name, title, comp, other, deferred, nontaxable, related, hours, flags = values
+            row = {"id": self._id("person"), "filing_id": filing_id, "person_name": name, "title": title,
+                   "reportable_compensation": comp, "other_compensation": other, "deferred_compensation": deferred,
+                   "nontaxable_benefits": nontaxable, "related_organization_compensation": related,
+                   "avg_hours_week": hours, "role_flags": flags}
             self.people.append(row)
             return [{"id": row["id"]}]
         if "FROM core.metric_definition" in query:
@@ -208,6 +215,44 @@ def test_cagr_with_two_observations_is_suppressed() -> None:
 
     assert not any(row["metric_key"] == "revenue_cagr" for row in db.metrics)
     assert db.final_stats["suppressed_metrics"] >= 1
+
+
+def test_richer_people_capture_inserts_superseding_row_without_updating_old_one() -> None:
+    sparse = {"name": "Alice Cox", "title": "Coach", "comp": 100}
+    db = FakeDeriveDb([_extract(people=[sparse])])
+    derive(db)
+    assert len(db.people) == 1
+    assert db.people[0]["avg_hours_week"] is None
+    assert db.people[0]["role_flags"] == []
+
+    enriched = sparse | {"avg_hours": "12.50", "other_comp": 25, "related_org_comp": 0, "role_flags": ["officer"]}
+    db.extracts = [_extract(people=[enriched])]
+    derive(db)
+
+    assert [row["person_name"] for row in db.people] == ["Alice Cox", "Alice Cox"]
+    assert db.people[0]["avg_hours_week"] is None
+    newest = db.people[-1]
+    assert newest["reportable_compensation"] == 100
+    assert newest["other_compensation"] == 25
+    assert newest["related_organization_compensation"] == 0
+    assert newest["avg_hours_week"] == Decimal("12.50")
+    assert newest["role_flags"] == ["officer"]
+    assert db.final_stats["person_roles_inserted"] == 1
+
+    derive(db)
+    assert len(db.people) == 2
+    assert db.final_stats["person_roles_inserted"] == 0
+
+
+def test_garbage_staged_hours_land_as_null_not_a_failed_run() -> None:
+    db = FakeDeriveDb([_extract(people=[
+        {"name": "A", "title": "Coach", "comp": 1, "avg_hours": "n/a"},
+        {"name": "B", "title": "Coach", "comp": 1, "avg_hours": "40000"},
+    ])])
+
+    derive(db)
+
+    assert [row["avg_hours_week"] for row in db.people] == [None, None]
 
 
 def test_absent_dues_is_not_resolved_and_second_run_is_insert_idempotent() -> None:

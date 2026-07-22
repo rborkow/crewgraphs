@@ -367,6 +367,20 @@
                     }
                   ]
                 },
+                "role_flags": {
+                  "default": [],
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "individual_trustee_or_director",
+                      "officer",
+                      "key_employee",
+                      "highest_compensated_employee",
+                      "former_officer_director_trustee"
+                    ]
+                  }
+                },
                 "total_comp": {
                   "type": "number"
                 },
