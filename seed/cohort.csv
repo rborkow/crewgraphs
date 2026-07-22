@@ -1,1 +1,13 @@
 display_name,ein,website,city,state,org_type,program_mix,notes
+Vesper Boat Club,237397498,,Philadelphia,PA,community_club,open/elite|masters|juniors,c3; spike-verified EIN; XML 2020/2021/2024
+Undine Barge Club,232744491,,Philadelphia,PA,private_membership_club,masters|recreational,c3; legal name The Undine Barge Club Of Philadelphia; mailing addr Conshohocken (agent) boathouse Philadelphia
+Potomac Boat Club,530127820,,Washington,DC,private_membership_club,masters|open/elite,c7 social club; member income reports as program service revenue not contributions
+"Community Rowing, Inc.",042863756,,Brighton,MA,community_club,juniors|masters|adaptive|recreational,c3; disambiguate from ~44 'community rowing' name collisions by EIN + Brighton MA
+Row New York,113632924,,New York,NY,community_club,juniors|scholastic,c3; youth/outreach; June FYE (TaxYr alignment case)
+Olympic Athletes Rowing At Saugatuck,331055179,,Westport,CT,other,,c3 DORMANT since 2008 (PDF-only filings; no XML); racing brand 'Saugatuck Rowing' is a separate FOR-PROFIT; exclude from launch pending curation
+Marin Rowing Association,237448092,,Greenbrae,CA,community_club,juniors|masters|open/elite,c3; spike slot-6 substitute; clean multi-year XML
+Lincoln Park Boat Club,363508216,,Chicago,IL,community_club,masters|recreational,c4; 990-N since ~2016; financials live in sibling c3 arm (relationship: has_charitable_arm)
+Lincoln Park Boat Club Charitable Outreach,272334832,,Chicago,IL,other,,c3 charitable arm of Lincoln Park Boat Club; IRS index also lists as 'Lincoln Park Boating Community'; join on EIN only
+Austin Rowing Club,742219650,,Austin,TX,community_club,juniors|masters|recreational,c3; spike-verified
+Friends Of Concord Crew,030388282,,Concord,NH,booster_club,scholastic,c3 booster for Concord Crew (public high school program); long 990-EZ history; graduated to full 990 in FY2024; June FYE
+Husky Rowing Foundation,811495108,,Seattle,WA,university_support_foundation,collegiate,c3; racing identity 'Washington Rowing'/'Husky Crew' != filer; 990-N only — presence facts only never financials

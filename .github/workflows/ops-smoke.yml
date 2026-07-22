@@ -1,0 +1,52 @@
+name: Ops smoke test
+
+# Proves the cloud path end-to-end from Actions: secrets -> Neon (ingest_run
+# lifecycle via the run-report job) and R2 (write-once raw store). Manual
+# dispatch only; run after touching secrets, roles, or the harness.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: pipeline
+    env:
+      DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      GIT_SHA: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync
+      - name: Neon smoke — run-report opens and closes an ingest_run
+        run: uv run python -m crewgraphs run-report
+      - name: R2 smoke — write-once semantics against crewgraphs-raw
+        run: |
+          uv run python - <<'EOF'
+          from crewgraphs.config import Settings
+          from crewgraphs.raw_store import RawStore
+
+          settings = Settings.from_env()
+          store = RawStore(settings)
+          key = f"manifests/smoke/{settings.git_sha or 'local'}.txt"
+          payload = f"ops-smoke {settings.git_sha}".encode()
+
+          first = store.put_raw(key, payload, "text/plain")
+          second = store.put_raw(key, payload, "text/plain")  # same checksum: no-op
+          assert first.checksum_sha256 == second.checksum_sha256
+
+          try:
+              store.put_raw(key, payload + b" tampered", "text/plain")
+          except Exception as exc:
+              print(f"write-once enforced: {type(exc).__name__}")
+          else:
+              raise SystemExit("write-once NOT enforced: conflicting write succeeded")
+
+          assert store.get_raw(key) == payload
+          print(f"R2 smoke OK: {key} ({first.size} bytes, {first.checksum_sha256[:12]}…)")
+          EOF
