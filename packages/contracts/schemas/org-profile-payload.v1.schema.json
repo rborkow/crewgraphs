@@ -1,0 +1,736 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "payload_schema_version": {
+      "type": "number",
+      "const": 1
+    },
+    "org_id": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "header": {
+      "type": "object",
+      "properties": {
+        "display_name": {
+          "type": "string"
+        },
+        "legal_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "city": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "org_type": {
+          "type": "string",
+          "enum": [
+            "community_club",
+            "private_membership_club",
+            "scholastic_program",
+            "collegiate_varsity",
+            "collegiate_club",
+            "university_support_foundation",
+            "booster_club",
+            "adaptive_program",
+            "association",
+            "governing_body",
+            "other"
+          ]
+        },
+        "program_mix": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "website": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "coverage_state": {
+          "type": "string",
+          "enum": [
+            "990",
+            "990ez",
+            "990n_only",
+            "none"
+          ]
+        },
+        "blade_state": {
+          "type": "string",
+          "enum": [
+            "none",
+            "linked_only",
+            "permission_requested",
+            "licensed",
+            "club_supplied"
+          ]
+        },
+        "filer_note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "display_name",
+        "legal_name",
+        "city",
+        "state",
+        "org_type",
+        "program_mix",
+        "website",
+        "coverage_state",
+        "blade_state",
+        "filer_note"
+      ]
+    },
+    "snapshot": {
+      "minItems": 1,
+      "maxItems": 8,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "ref": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "unit": {
+                "type": "string",
+                "enum": [
+                  "USD",
+                  "count"
+                ]
+              },
+              "period": {
+                "type": "object",
+                "properties": {
+                  "tax_year": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
+                  },
+                  "fy_end": {
+                    "type": "string",
+                    "format": "date",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                  },
+                  "label": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "tax_year",
+                  "fy_end",
+                  "label"
+                ]
+              },
+              "quality_state": {
+                "type": "string",
+                "enum": [
+                  "verified",
+                  "derived",
+                  "partial",
+                  "unavailable",
+                  "under_review"
+                ]
+              },
+              "source": {
+                "type": "object",
+                "properties": {
+                  "source_key": {
+                    "type": "string"
+                  },
+                  "form_type": {
+                    "type": "string",
+                    "enum": [
+                      "990",
+                      "990EZ",
+                      "990N"
+                    ]
+                  },
+                  "filing_id": {
+                    "type": "string"
+                  },
+                  "source_path": {
+                    "type": "string"
+                  },
+                  "raw_url": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "is_amended": {
+                    "default": false,
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "source_key",
+                  "form_type",
+                  "filing_id",
+                  "source_path",
+                  "raw_url"
+                ]
+              },
+              "retrieved_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              },
+              "parser_version": {
+                "type": "string"
+              },
+              "metric": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "key": {
+                        "type": "string"
+                      },
+                      "version": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      }
+                    },
+                    "required": [
+                      "key",
+                      "version"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "value",
+              "unit",
+              "period",
+              "quality_state",
+              "source",
+              "retrieved_at",
+              "parser_version",
+              "metric"
+            ]
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "ref"
+        ]
+      }
+    },
+    "coverage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "tax_year": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "fy_end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "990",
+              "990ez",
+              "990n",
+              "amended",
+              "missing",
+              "not_yet_expected"
+            ]
+          }
+        },
+        "required": [
+          "tax_year",
+          "fy_end",
+          "status"
+        ]
+      }
+    },
+    "people": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "tax_year": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "compensated": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "title": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "avg_hours_week": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "total_comp": {
+                  "type": "number"
+                },
+                "ref": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "unit": {
+                      "type": "string",
+                      "enum": [
+                        "USD",
+                        "count"
+                      ]
+                    },
+                    "period": {
+                      "type": "object",
+                      "properties": {
+                        "tax_year": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "fy_end": {
+                          "type": "string",
+                          "format": "date",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                        },
+                        "label": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "tax_year",
+                        "fy_end",
+                        "label"
+                      ]
+                    },
+                    "quality_state": {
+                      "type": "string",
+                      "enum": [
+                        "verified",
+                        "derived",
+                        "partial",
+                        "unavailable",
+                        "under_review"
+                      ]
+                    },
+                    "source": {
+                      "type": "object",
+                      "properties": {
+                        "source_key": {
+                          "type": "string"
+                        },
+                        "form_type": {
+                          "type": "string",
+                          "enum": [
+                            "990",
+                            "990EZ",
+                            "990N"
+                          ]
+                        },
+                        "filing_id": {
+                          "type": "string"
+                        },
+                        "source_path": {
+                          "type": "string"
+                        },
+                        "raw_url": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "is_amended": {
+                          "default": false,
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "source_key",
+                        "form_type",
+                        "filing_id",
+                        "source_path",
+                        "raw_url"
+                      ]
+                    },
+                    "retrieved_at": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                    },
+                    "parser_version": {
+                      "type": "string"
+                    },
+                    "metric": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "key": {
+                              "type": "string"
+                            },
+                            "version": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            }
+                          },
+                          "required": [
+                            "key",
+                            "version"
+                          ]
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "value",
+                    "unit",
+                    "period",
+                    "quality_state",
+                    "source",
+                    "retrieved_at",
+                    "parser_version",
+                    "metric"
+                  ]
+                }
+              },
+              "required": [
+                "name",
+                "title",
+                "avg_hours_week",
+                "total_comp",
+                "ref"
+              ]
+            }
+          },
+          "volunteer_count": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "ref": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "unit": {
+                "type": "string",
+                "enum": [
+                  "USD",
+                  "count"
+                ]
+              },
+              "period": {
+                "type": "object",
+                "properties": {
+                  "tax_year": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
+                  },
+                  "fy_end": {
+                    "type": "string",
+                    "format": "date",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                  },
+                  "label": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "tax_year",
+                  "fy_end",
+                  "label"
+                ]
+              },
+              "quality_state": {
+                "type": "string",
+                "enum": [
+                  "verified",
+                  "derived",
+                  "partial",
+                  "unavailable",
+                  "under_review"
+                ]
+              },
+              "source": {
+                "type": "object",
+                "properties": {
+                  "source_key": {
+                    "type": "string"
+                  },
+                  "form_type": {
+                    "type": "string",
+                    "enum": [
+                      "990",
+                      "990EZ",
+                      "990N"
+                    ]
+                  },
+                  "filing_id": {
+                    "type": "string"
+                  },
+                  "source_path": {
+                    "type": "string"
+                  },
+                  "raw_url": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "is_amended": {
+                    "default": false,
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "source_key",
+                  "form_type",
+                  "filing_id",
+                  "source_path",
+                  "raw_url"
+                ]
+              },
+              "retrieved_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              },
+              "parser_version": {
+                "type": "string"
+              },
+              "metric": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "key": {
+                        "type": "string"
+                      },
+                      "version": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      }
+                    },
+                    "required": [
+                      "key",
+                      "version"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "value",
+              "unit",
+              "period",
+              "quality_state",
+              "source",
+              "retrieved_at",
+              "parser_version",
+              "metric"
+            ]
+          }
+        },
+        "required": [
+          "tax_year",
+          "compensated",
+          "volunteer_count",
+          "ref"
+        ]
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "relationship_type": {
+            "type": "string"
+          },
+          "other_org_slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "other_display_name": {
+            "type": "string"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "relationship_type",
+          "other_org_slug",
+          "other_display_name",
+          "note"
+        ]
+      }
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+    }
+  },
+  "required": [
+    "payload_schema_version",
+    "org_id",
+    "slug",
+    "header",
+    "snapshot",
+    "coverage",
+    "people",
+    "relationships",
+    "generated_at"
+  ]
+}
