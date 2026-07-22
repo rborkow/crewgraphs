@@ -14,7 +14,10 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["pytest"]
+dev = [
+    "jsonschema>=4.26.0",
+    "pytest",
+]
 
 [build-system]
 requires = ["hatchling"]
