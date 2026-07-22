@@ -1,0 +1,13 @@
+{
+  "payload_schema_version": 1,
+  "org_id": "00000000-0000-4000-8000-000000000112",
+  "slug": "cobalt-reach-club",
+  "header": {"display_name": "Cobalt Reach Club", "legal_name": "Cobalt Reach Club", "city": "Cobalt Reach", "state": "RI", "org_type": "community_club", "program_mix": ["masters", "open/elite"], "website": "https://cobalt-reach.example.test", "coverage_state": "990", "blade_state": "none", "filer_note": null},
+  "snapshot": [
+    {"key": "total_revenue", "label": "Total revenue", "ref": {"value": 340000, "unit": "USD", "period": {"tax_year": 2024, "fy_end": "2024-12-31", "label": "FY2024 (Jan 2024–Dec 2024)"}, "quality_state": "verified", "source": {"source_key": "irs_990_xml", "form_type": "990", "filing_id": "05-0000112-2024-990", "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt", "raw_url": "https://example.test/filings/05-0000112-2024-990.xml", "is_amended": false}, "retrieved_at": "2026-07-20T12:00:00Z", "parser_version": "cm-2026.07.1", "metric": null}},
+    {"key": "total_expenses", "label": "Total expenses", "ref": {"value": 322000, "unit": "USD", "period": {"tax_year": 2024, "fy_end": "2024-12-31", "label": "FY2024 (Jan 2024–Dec 2024)"}, "quality_state": "verified", "source": {"source_key": "irs_990_xml", "form_type": "990", "filing_id": "05-0000112-2024-990", "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt", "raw_url": "https://example.test/filings/05-0000112-2024-990.xml", "is_amended": false}, "retrieved_at": "2026-07-20T12:00:00Z", "parser_version": "cm-2026.07.1", "metric": null}},
+    {"key": "zero_revenue_year_2022", "label": "Total revenue in 2022", "ref": {"value": 0, "unit": "USD", "period": {"tax_year": 2022, "fy_end": "2022-12-31", "label": "FY2022 (Jan 2022–Dec 2022)"}, "quality_state": "verified", "source": {"source_key": "irs_990_xml", "form_type": "990", "filing_id": "05-0000112-2022-990", "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt", "raw_url": "https://example.test/filings/05-0000112-2022-990.xml", "is_amended": false}, "retrieved_at": "2026-07-20T12:00:00Z", "parser_version": "cm-2026.07.1", "metric": null}}
+  ],
+  "coverage": [{"tax_year": 2020, "fy_end": "2020-12-31", "status": "990"}, {"tax_year": 2021, "fy_end": "2021-12-31", "status": "990"}, {"tax_year": 2022, "fy_end": "2022-12-31", "status": "990"}, {"tax_year": 2023, "fy_end": "2023-12-31", "status": "990"}, {"tax_year": 2024, "fy_end": "2024-12-31", "status": "990"}],
+  "people": [], "relationships": [], "generated_at": "2026-07-21T12:00:00Z"
+}

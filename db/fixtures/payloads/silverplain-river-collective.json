@@ -1,0 +1,13 @@
+{
+  "payload_schema_version": 1,
+  "org_id": "00000000-0000-4000-8000-000000000109",
+  "slug": "silverplain-river-collective",
+  "header": {"display_name": "Silverplain River Collective", "legal_name": "Silverplain Athletic Association, Inc.", "city": "Silverplain", "state": "IL", "org_type": "association", "program_mix": ["masters", "open/elite"], "website": "https://silverplain-collective.example.test", "coverage_state": "990", "blade_state": "none", "filer_note": "The racing identity is shown under its incorporated athletic association filer."},
+  "snapshot": [
+    {"key": "total_revenue", "label": "Total revenue", "ref": {"value": 385000, "unit": "USD", "period": {"tax_year": 2024, "fy_end": "2024-10-31", "label": "FY2024 (Nov 2023–Oct 2024)"}, "quality_state": "verified", "source": {"source_key": "irs_990_xml", "form_type": "990", "filing_id": "02-0000109-2024-990", "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt", "raw_url": "https://example.test/filings/02-0000109-2024-990.xml", "is_amended": false}, "retrieved_at": "2026-07-20T12:00:00Z", "parser_version": "cm-2026.07.1", "metric": null}},
+    {"key": "total_expenses", "label": "Total expenses", "ref": {"value": 350000, "unit": "USD", "period": {"tax_year": 2024, "fy_end": "2024-10-31", "label": "FY2024 (Nov 2023–Oct 2024)"}, "quality_state": "verified", "source": {"source_key": "irs_990_xml", "form_type": "990", "filing_id": "02-0000109-2024-990", "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt", "raw_url": "https://example.test/filings/02-0000109-2024-990.xml", "is_amended": false}, "retrieved_at": "2026-07-20T12:00:00Z", "parser_version": "cm-2026.07.1", "metric": null}},
+    {"key": "net_assets", "label": "Net assets", "ref": {"value": 610000, "unit": "USD", "period": {"tax_year": 2024, "fy_end": "2024-10-31", "label": "FY2024 (Nov 2023–Oct 2024)"}, "quality_state": "verified", "source": {"source_key": "irs_990_xml", "form_type": "990", "filing_id": "02-0000109-2024-990", "source_path": "/Return/ReturnData/IRS990/NetAssetsOrFundBalancesEOYAmt", "raw_url": "https://example.test/filings/02-0000109-2024-990.xml", "is_amended": false}, "retrieved_at": "2026-07-20T12:00:00Z", "parser_version": "cm-2026.07.1", "metric": null}}
+  ],
+  "coverage": [{"tax_year": 2022, "fy_end": "2022-10-31", "status": "990"}, {"tax_year": 2023, "fy_end": "2023-10-31", "status": "990"}, {"tax_year": 2024, "fy_end": "2024-10-31", "status": "990"}],
+  "people": [], "relationships": [], "generated_at": "2026-07-21T12:00:00Z"
+}

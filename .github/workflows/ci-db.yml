@@ -33,5 +33,7 @@ jobs:
         run: dbmate --no-dump-schema up
       - name: Rollback all and re-apply
         run: |
-          for i in 1 2 3 4 5; do dbmate --no-dump-schema rollback; done
+          while dbmate --no-dump-schema rollback; do :; done
           dbmate --no-dump-schema up
+      - name: Load fixtures
+        run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f db/fixtures/fixtures.sql
