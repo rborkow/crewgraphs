@@ -1,18 +1,20 @@
 from __future__ import annotations
 
 import json
+from typing import Any
 
 import pytest
 
+from crewgraphs.db import DatabaseParams, DatabaseRows
 from crewgraphs.runlog import IngestRun
 
 
 class Recorder:
     def __init__(self) -> None:
-        self.calls: list[tuple[str, tuple[object, ...]]] = []
+        self.calls: list[tuple[str, tuple[Any, ...]]] = []
 
-    def execute(self, query: str, params: tuple[object, ...] = ()) -> list[dict[str, object]]:
-        self.calls.append((query, params))
+    def execute(self, query: str, params: DatabaseParams = None) -> DatabaseRows:
+        self.calls.append((query, tuple(params or ())))
         if "INSERT INTO ops.ingest_run" in query:
             return [{"id": "run-1"}]
         return []
