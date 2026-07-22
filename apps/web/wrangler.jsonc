@@ -8,6 +8,10 @@
   },
   "compatibility_date": "2026-07-21",
   "compatibility_flags": ["nodejs_compat"],
+  "routes": [
+    { "pattern": "crewgraphs.com", "custom_domain": true },
+    { "pattern": "www.crewgraphs.com", "custom_domain": true }
+  ],
   "hyperdrive": [
     {
       "binding": "HYPERDRIVE",
