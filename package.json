@@ -5,6 +5,6 @@
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "typecheck": "bun run --cwd apps/web typecheck && bun run --cwd packages/contracts typecheck && bun run --cwd packages/charts typecheck",
-    "test": "bun run --cwd apps/web test && bun run --cwd packages/contracts test"
+    "test": "bun run --cwd apps/web test && bun run --cwd packages/contracts test && bun run --cwd packages/charts test"
   }
 }
