@@ -1,0 +1,12 @@
+org,ein,legal_name,city,state,ntee,form_types_seen,xml_years,match_confidence,notes
+Vesper Boat Club,237397498,Vesper Boat Club Inc,Philadelphia,PA,,990,"2020,2021,2024",high,c3; unique search hit; EIN confirmed
+Undine Barge Club,232744491,The Undine Barge Club Of Philadelphia,Conshohocken,PA,N50Z,990,"2020,2021,2025",high,"c3; unique hit; mailing addr Conshohocken (agent), boathouse Philadelphia"
+Potomac Boat Club,530127820,Potomac Boat Club,Washington,DC,N50,990,"2020,2021,2024",high,"c7; unique hit; 501(c)(7) social club (contributions line small, member income = program svc)"
+"Community Rowing, Inc.",042863756,Community Rowing Inc,Brighton,MA,,990,"2020,2021,2024",high,c3; first of 44 'community rowing' name collisions; disambiguated by Brighton MA + EIN
+Row New York,113632924,Row New York Inc,New York,NY,N67,990,"2019,2020,2021",high,c3; unique hit
+Saugatuck Rowing Association,331055179,Olympic Athletes Rowing At Saugatuck Inc,Westport,CT,N67,"990,990EZ (PDF-only, no XML)",NONE,low,"c3; racing brand 'Saugatuck Rowing' entangled with a FOR-PROFIT club; nonprofit filer OARS dormant since 2008 (PDF-only 2003-08, no XML). SUBSTITUTED Marin Rowing (237448092) for extraction"
+Marin Rowing Association (slot-6 substitute),237448092,Marin Rowing Association,Greenbrae,CA,N67Z,990,"2019,2020,2021",high,c3; clean c3 extraction stand-in for the dormant OARS nonprofit
+Lincoln Park Boat Club,363508216,Lincoln Park Boat Club,Chicago,IL,,"990,990EZ",2015,medium,"c4; recognizable c4 club is 990-N since ~2016; financial filer is the c3 arm 'Lincoln Park Boat Club Charitable Outreach' (272334832), also indexed as 'Lincoln Park Boating Community'"
+Austin Rowing Club,742219650,Austin Rowing Club,Austin,TX,N67Z,990,"2020,2021,2024",high,c3; unique hit
+Concord Crew (booster),030388282,Friends Of Concord Crew,Concord,NH,N67,990EZ,"2021,2022,2025",high,c3; one of ~35 'Friends of * Crew' boosters; chosen for long 990-EZ history
+Washington Rowing / Husky Crew,811495108,Husky Rowing Foundation,Seattle,WA,N12,990-N only (no data filings),NONE,medium,c3; racing identity 'Washington Rowing'/'Husky Crew' != filer; no 'Washington Rowing Foundation' exists; real filer 'Husky Rowing Foundation' is 990-N only (no structured data / no XML)

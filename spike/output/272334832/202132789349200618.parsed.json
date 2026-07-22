@@ -1,0 +1,184 @@
+{
+  "ein": "272334832",
+  "object_id": "202132789349200618",
+  "form_type": "IRS990EZ",
+  "return_version": "2020v4.0",
+  "tax_period_end": "2020-12-31",
+  "tax_period_begin": "2020-01-01",
+  "filer_name": "Lincoln Park Boating Community",
+  "amended": false,
+  "return_type": "990EZ",
+  "fye_month": "12",
+  "concepts": {
+    "total_revenue": {
+      "status": "resolved",
+      "value": 163869,
+      "xpath": "TotalRevenueAmt"
+    },
+    "total_expenses": {
+      "status": "resolved",
+      "value": 249441,
+      "xpath": "TotalExpensesAmt"
+    },
+    "revenue_less_expenses": {
+      "status": "resolved",
+      "value": -85572,
+      "xpath": "ExcessOrDeficitForYearAmt"
+    },
+    "contributions_grants": {
+      "status": "resolved",
+      "value": 24370,
+      "xpath": "ContributionsGiftsGrantsEtcAmt"
+    },
+    "program_service_revenue": {
+      "status": "resolved",
+      "value": 122872,
+      "xpath": "ProgramServiceRevenueAmt"
+    },
+    "membership_dues": {
+      "status": "resolved",
+      "value": 14390,
+      "xpath": "MembershipDuesAmt"
+    },
+    "investment_income": {
+      "status": "resolved",
+      "value": 1581,
+      "xpath": "InvestmentIncomeAmt"
+    },
+    "fundraising_events_gross": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "FundraisingGrossIncomeAmt"
+    },
+    "fundraising_events_net": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "other_revenue": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "grants_paid": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "salaries_benefits_total": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "officer_compensation": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "sum(OfficerDirectorTrusteeEmplGrp/CompensationAmt) over 8 node(s)"
+    },
+    "professional_fundraising_fees": {
+      "status": "not_on_form",
+      "value": null,
+      "xpath": null
+    },
+    "occupancy": {
+      "status": "resolved",
+      "value": 1000,
+      "xpath": "OccupancyRentUtltsAndMaintAmt"
+    },
+    "program_service_expense": {
+      "status": "resolved",
+      "value": 236181,
+      "xpath": "TotalProgramServiceExpensesAmt"
+    },
+    "management_general_expense": {
+      "status": "not_on_form",
+      "value": null,
+      "xpath": null
+    },
+    "fundraising_expense": {
+      "status": "not_on_form",
+      "value": null,
+      "xpath": null
+    },
+    "total_assets_eoy": {
+      "status": "resolved",
+      "value": 187868,
+      "xpath": "Form990TotalAssetsGrp/EOYAmt"
+    },
+    "total_liabilities_eoy": {
+      "status": "resolved",
+      "value": 27333,
+      "xpath": "SumOfTotalLiabilitiesGrp/EOYAmt"
+    },
+    "net_assets_eoy": {
+      "status": "resolved",
+      "value": 160535,
+      "xpath": "NetAssetsOrFundBalancesEOYAmt"
+    },
+    "cash_savings_eoy": {
+      "status": "resolved",
+      "value": 121153,
+      "xpath": "CashSavingsAndInvestmentsGrp/EOYAmt"
+    },
+    "land_buildings_equipment_net": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "employee_count": {
+      "status": "not_on_form",
+      "value": null,
+      "xpath": null
+    }
+  },
+  "officer_rows": [
+    {
+      "name": "Irene Hayes",
+      "title": "President",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "Linda Hall",
+      "title": "Vice President",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "Mary Wessel",
+      "title": "Secretary",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "Thomas Stubna",
+      "title": "Director",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "Lisa Dieter",
+      "title": "Facilities Dir",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "Sarah Cornish",
+      "title": "Rowing Director",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "Meagan Meldrim",
+      "title": "Communications",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "Unfilled Position",
+      "title": "Paddling Dir",
+      "comp": 0,
+      "avg_hours": "10.00"
+    }
+  ]
+}

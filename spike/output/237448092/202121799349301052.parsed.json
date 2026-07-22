@@ -1,0 +1,196 @@
+{
+  "ein": "237448092",
+  "object_id": "202121799349301052",
+  "form_type": "IRS990",
+  "return_version": "2020v4.0",
+  "tax_period_end": "2020-12-31",
+  "tax_period_begin": "2020-01-01",
+  "filer_name": "Marin Rowing Association",
+  "amended": false,
+  "return_type": "990",
+  "fye_month": "12",
+  "concepts": {
+    "total_revenue": {
+      "status": "resolved",
+      "value": 1363429,
+      "xpath": "CYTotalRevenueAmt"
+    },
+    "total_expenses": {
+      "status": "resolved",
+      "value": 1270924,
+      "xpath": "CYTotalExpensesAmt"
+    },
+    "revenue_less_expenses": {
+      "status": "resolved",
+      "value": 92505,
+      "xpath": "CYRevenuesLessExpensesAmt"
+    },
+    "contributions_grants": {
+      "status": "resolved",
+      "value": 318508,
+      "xpath": "CYContributionsGrantsAmt"
+    },
+    "program_service_revenue": {
+      "status": "resolved",
+      "value": 937606,
+      "xpath": "CYProgramServiceRevenueAmt"
+    },
+    "membership_dues": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "investment_income": {
+      "status": "resolved",
+      "value": 57197,
+      "xpath": "CYInvestmentIncomeAmt"
+    },
+    "fundraising_events_gross": {
+      "status": "resolved",
+      "value": 51000,
+      "xpath": "FundraisingGrossIncomeAmt"
+    },
+    "fundraising_events_net": {
+      "status": "resolved",
+      "value": 42459,
+      "xpath": "FundraisingGrossIncomeAmt - FundraisingDirectExpensesAmt"
+    },
+    "other_revenue": {
+      "status": "resolved",
+      "value": 50118,
+      "xpath": "CYOtherRevenueAmt"
+    },
+    "grants_paid": {
+      "status": "resolved",
+      "value": 19841,
+      "xpath": "CYGrantsAndSimilarPaidAmt"
+    },
+    "salaries_benefits_total": {
+      "status": "resolved",
+      "value": 750576,
+      "xpath": "CYSalariesCompEmpBnftPaidAmt"
+    },
+    "officer_compensation": {
+      "status": "resolved",
+      "value": 163171,
+      "xpath": "CompCurrentOfcrDirectorsGrp/TotalAmt"
+    },
+    "professional_fundraising_fees": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "occupancy": {
+      "status": "resolved",
+      "value": 23142,
+      "xpath": "OccupancyGrp/TotalAmt"
+    },
+    "program_service_expense": {
+      "status": "resolved",
+      "value": 1141860,
+      "xpath": "TotalFunctionalExpensesGrp/ProgramServicesAmt"
+    },
+    "management_general_expense": {
+      "status": "resolved",
+      "value": 126654,
+      "xpath": "TotalFunctionalExpensesGrp/ManagementAndGeneralAmt"
+    },
+    "fundraising_expense": {
+      "status": "resolved",
+      "value": 2410,
+      "xpath": "TotalFunctionalExpensesGrp/FundraisingAmt"
+    },
+    "total_assets_eoy": {
+      "status": "resolved",
+      "value": 3607888,
+      "xpath": "TotalAssetsEOYAmt"
+    },
+    "total_liabilities_eoy": {
+      "status": "resolved",
+      "value": 149900,
+      "xpath": "TotalLiabilitiesEOYAmt"
+    },
+    "net_assets_eoy": {
+      "status": "resolved",
+      "value": 3457988,
+      "xpath": "TotalNetAssetsFundBalanceGrp/EOYAmt"
+    },
+    "cash_savings_eoy": {
+      "status": "resolved",
+      "value": 1148476,
+      "xpath": "sum(CashNonInterestBearingGrp/EOYAmt + SavingsAndTempCashInvstGrp/EOYAmt) over 2 node(s)"
+    },
+    "land_buildings_equipment_net": {
+      "status": "resolved",
+      "value": 1583093,
+      "xpath": "LandBldgEquipBasisNetGrp/EOYAmt"
+    },
+    "employee_count": {
+      "status": "resolved",
+      "value": 17,
+      "xpath": "TotalEmployeeCnt"
+    }
+  },
+  "officer_rows": [
+    {
+      "name": "SANDY ARMSTRONG",
+      "title": "Executive Dir.",
+      "comp": 141704,
+      "avg_hours": "40.00"
+    },
+    {
+      "name": "Raoul Wertz",
+      "title": "Director",
+      "comp": 0,
+      "avg_hours": "0.00"
+    },
+    {
+      "name": "Jennifer Bowman",
+      "title": "Director",
+      "comp": 0,
+      "avg_hours": "0.00"
+    },
+    {
+      "name": "John Younger",
+      "title": "Director",
+      "comp": 0,
+      "avg_hours": "0.00"
+    },
+    {
+      "name": "Erin Moody",
+      "title": "Director",
+      "comp": 0,
+      "avg_hours": "0.00"
+    },
+    {
+      "name": "Josh Rafner",
+      "title": "Director",
+      "comp": 0,
+      "avg_hours": "0.00"
+    },
+    {
+      "name": "RICK BORDEN",
+      "title": "Director",
+      "comp": 0,
+      "avg_hours": "0.00"
+    },
+    {
+      "name": "John Lawson",
+      "title": "Treasurer",
+      "comp": 0,
+      "avg_hours": "0.00"
+    },
+    {
+      "name": "Marta Osterloh",
+      "title": "Secretary",
+      "comp": 0,
+      "avg_hours": "0.00"
+    },
+    {
+      "name": "Kate Boyd",
+      "title": "President",
+      "comp": 0,
+      "avg_hours": "0.00"
+    }
+  ]
+}

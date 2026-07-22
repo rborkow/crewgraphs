@@ -1,0 +1,29 @@
+[
+  {
+    "object_id": "202501759349300610",
+    "tax_period": "202310",
+    "return_type": "990",
+    "source": "propublica_latest",
+    "file": "202501759349300610.xml",
+    "bytes": 64734,
+    "gt_lake": "present"
+  },
+  {
+    "object_id": "202202239349300010",
+    "tax_period": "202110",
+    "return_type": "990",
+    "source": "index_2022",
+    "file": "202202239349300010.xml",
+    "bytes": 61755,
+    "gt_lake": "present"
+  },
+  {
+    "object_id": "202102589349302065",
+    "tax_period": "202010",
+    "return_type": "990",
+    "source": "index_2021",
+    "file": "202102589349302065.xml",
+    "bytes": 59755,
+    "gt_lake": "present"
+  }
+]

@@ -1,0 +1,214 @@
+{
+  "ein": "742219650",
+  "object_id": "202542349349301029",
+  "form_type": "IRS990",
+  "return_version": "2024v5.2",
+  "tax_period_end": "2024-12-31",
+  "tax_period_begin": "2024-01-01",
+  "filer_name": "Austin Rowing Club",
+  "amended": false,
+  "return_type": "990",
+  "fye_month": "12",
+  "concepts": {
+    "total_revenue": {
+      "status": "resolved",
+      "value": 2239707,
+      "xpath": "CYTotalRevenueAmt"
+    },
+    "total_expenses": {
+      "status": "resolved",
+      "value": 2211429,
+      "xpath": "CYTotalExpensesAmt"
+    },
+    "revenue_less_expenses": {
+      "status": "resolved",
+      "value": 28278,
+      "xpath": "CYRevenuesLessExpensesAmt"
+    },
+    "contributions_grants": {
+      "status": "resolved",
+      "value": 138179,
+      "xpath": "CYContributionsGrantsAmt"
+    },
+    "program_service_revenue": {
+      "status": "resolved",
+      "value": 1607471,
+      "xpath": "CYProgramServiceRevenueAmt"
+    },
+    "membership_dues": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "investment_income": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "CYInvestmentIncomeAmt"
+    },
+    "fundraising_events_gross": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "fundraising_events_net": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "other_revenue": {
+      "status": "resolved",
+      "value": 494057,
+      "xpath": "CYOtherRevenueAmt"
+    },
+    "grants_paid": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "CYGrantsAndSimilarPaidAmt"
+    },
+    "salaries_benefits_total": {
+      "status": "resolved",
+      "value": 1088540,
+      "xpath": "CYSalariesCompEmpBnftPaidAmt"
+    },
+    "officer_compensation": {
+      "status": "resolved",
+      "value": 122834,
+      "xpath": "CompCurrentOfcrDirectorsGrp/TotalAmt"
+    },
+    "professional_fundraising_fees": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "occupancy": {
+      "status": "resolved",
+      "value": 121053,
+      "xpath": "OccupancyGrp/TotalAmt"
+    },
+    "program_service_expense": {
+      "status": "resolved",
+      "value": 1605279,
+      "xpath": "TotalFunctionalExpensesGrp/ProgramServicesAmt"
+    },
+    "management_general_expense": {
+      "status": "resolved",
+      "value": 593293,
+      "xpath": "TotalFunctionalExpensesGrp/ManagementAndGeneralAmt"
+    },
+    "fundraising_expense": {
+      "status": "resolved",
+      "value": 12857,
+      "xpath": "TotalFunctionalExpensesGrp/FundraisingAmt"
+    },
+    "total_assets_eoy": {
+      "status": "resolved",
+      "value": 781067,
+      "xpath": "TotalAssetsEOYAmt"
+    },
+    "total_liabilities_eoy": {
+      "status": "resolved",
+      "value": 126859,
+      "xpath": "TotalLiabilitiesEOYAmt"
+    },
+    "net_assets_eoy": {
+      "status": "resolved",
+      "value": 654208,
+      "xpath": "TotalNetAssetsFundBalanceGrp/EOYAmt"
+    },
+    "cash_savings_eoy": {
+      "status": "resolved",
+      "value": 114949,
+      "xpath": "sum(CashNonInterestBearingGrp/EOYAmt + SavingsAndTempCashInvstGrp/EOYAmt) over 2 node(s)"
+    },
+    "land_buildings_equipment_net": {
+      "status": "resolved",
+      "value": 666118,
+      "xpath": "LandBldgEquipBasisNetGrp/EOYAmt"
+    },
+    "employee_count": {
+      "status": "resolved",
+      "value": 76,
+      "xpath": "TotalEmployeeCnt"
+    }
+  },
+  "officer_rows": [
+    {
+      "name": "Elizabeth Barhydt",
+      "title": "Executive Dir.",
+      "comp": 105384,
+      "avg_hours": "40.00"
+    },
+    {
+      "name": "Ken Jackson",
+      "title": "Development Dir",
+      "comp": 9716,
+      "avg_hours": "40.00"
+    },
+    {
+      "name": "Liz Hundley",
+      "title": "President",
+      "comp": 0,
+      "avg_hours": "5.00"
+    },
+    {
+      "name": "Navin Rajashekar",
+      "title": "Vice President",
+      "comp": 0,
+      "avg_hours": "1.00"
+    },
+    {
+      "name": "Keith Sharp",
+      "title": "Secretary",
+      "comp": 0,
+      "avg_hours": "1.00"
+    },
+    {
+      "name": "Tammy Foy",
+      "title": "Secretary",
+      "comp": 0,
+      "avg_hours": "1.00"
+    },
+    {
+      "name": "Kevin Hight",
+      "title": "Treasurer",
+      "comp": 0,
+      "avg_hours": "3.00"
+    },
+    {
+      "name": "Jim Ruddy",
+      "title": "Outreach Dir",
+      "comp": 0,
+      "avg_hours": "8.00"
+    },
+    {
+      "name": "Paul Bloom",
+      "title": "Equipment Dir",
+      "comp": 0,
+      "avg_hours": "2.00"
+    },
+    {
+      "name": "Joel Yu",
+      "title": "Facility Dir",
+      "comp": 0,
+      "avg_hours": "2.00"
+    },
+    {
+      "name": "Karen Jones",
+      "title": "Programming Dir",
+      "comp": 0,
+      "avg_hours": "3.00"
+    },
+    {
+      "name": "Melanie Timbs",
+      "title": "Member-at-Large",
+      "comp": 0,
+      "avg_hours": "2.00"
+    },
+    {
+      "name": "Scot Brew",
+      "title": "Member-at-Large",
+      "comp": 0,
+      "avg_hours": "1.00"
+    }
+  ]
+}

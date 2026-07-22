@@ -1,0 +1,190 @@
+{
+  "ein": "030388282",
+  "object_id": "202223189349205467",
+  "form_type": "IRS990EZ",
+  "return_version": "2021v4.2",
+  "tax_period_end": "2022-06-30",
+  "tax_period_begin": "2021-07-01",
+  "filer_name": "FRIENDS OF CONCORD CREW",
+  "amended": false,
+  "return_type": "990EZ",
+  "fye_month": "06",
+  "concepts": {
+    "total_revenue": {
+      "status": "resolved",
+      "value": 118529,
+      "xpath": "TotalRevenueAmt"
+    },
+    "total_expenses": {
+      "status": "resolved",
+      "value": 125551,
+      "xpath": "TotalExpensesAmt"
+    },
+    "revenue_less_expenses": {
+      "status": "resolved",
+      "value": -7022,
+      "xpath": "ExcessOrDeficitForYearAmt"
+    },
+    "contributions_grants": {
+      "status": "resolved",
+      "value": 500,
+      "xpath": "ContributionsGiftsGrantsEtcAmt"
+    },
+    "program_service_revenue": {
+      "status": "resolved",
+      "value": 98185,
+      "xpath": "ProgramServiceRevenueAmt"
+    },
+    "membership_dues": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "investment_income": {
+      "status": "resolved",
+      "value": 15,
+      "xpath": "InvestmentIncomeAmt"
+    },
+    "fundraising_events_gross": {
+      "status": "resolved",
+      "value": 46059,
+      "xpath": "FundraisingGrossIncomeAmt"
+    },
+    "fundraising_events_net": {
+      "status": "resolved",
+      "value": 19829,
+      "xpath": "SpecialEventsNetIncomeLossAmt"
+    },
+    "other_revenue": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "grants_paid": {
+      "status": "resolved",
+      "value": 500,
+      "xpath": "GrantsAndSimilarAmountsPaidAmt"
+    },
+    "salaries_benefits_total": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "officer_compensation": {
+      "status": "resolved",
+      "value": 4000,
+      "xpath": "sum(OfficerDirectorTrusteeEmplGrp/CompensationAmt) over 9 node(s)"
+    },
+    "professional_fundraising_fees": {
+      "status": "not_on_form",
+      "value": null,
+      "xpath": null
+    },
+    "occupancy": {
+      "status": "resolved",
+      "value": 36785,
+      "xpath": "OccupancyRentUtltsAndMaintAmt"
+    },
+    "program_service_expense": {
+      "status": "resolved",
+      "value": 125551,
+      "xpath": "TotalProgramServiceExpensesAmt"
+    },
+    "management_general_expense": {
+      "status": "not_on_form",
+      "value": null,
+      "xpath": null
+    },
+    "fundraising_expense": {
+      "status": "not_on_form",
+      "value": null,
+      "xpath": null
+    },
+    "total_assets_eoy": {
+      "status": "resolved",
+      "value": 196345,
+      "xpath": "Form990TotalAssetsGrp/EOYAmt"
+    },
+    "total_liabilities_eoy": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "SumOfTotalLiabilitiesGrp/EOYAmt"
+    },
+    "net_assets_eoy": {
+      "status": "resolved",
+      "value": 196345,
+      "xpath": "NetAssetsOrFundBalancesEOYAmt"
+    },
+    "cash_savings_eoy": {
+      "status": "resolved",
+      "value": 66567,
+      "xpath": "CashSavingsAndInvestmentsGrp/EOYAmt"
+    },
+    "land_buildings_equipment_net": {
+      "status": "resolved",
+      "value": 75004,
+      "xpath": "LandAndBuildingsGrp/EOYAmt"
+    },
+    "employee_count": {
+      "status": "not_on_form",
+      "value": null,
+      "xpath": null
+    }
+  },
+  "officer_rows": [
+    {
+      "name": "MARCIA O'BRIEN",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "1.00"
+    },
+    {
+      "name": "STEVEN GARSIDE",
+      "title": "DIRECTOR",
+      "comp": 4000,
+      "avg_hours": "1.00"
+    },
+    {
+      "name": "SHELLY TETRAULT",
+      "title": "PRESIDENT",
+      "comp": 0,
+      "avg_hours": "1.00"
+    },
+    {
+      "name": "STEPHANIE KLEMENTS",
+      "title": "SECRETARY",
+      "comp": 0,
+      "avg_hours": "1.00"
+    },
+    {
+      "name": "JESSICA CLARKE",
+      "title": "TREASURER",
+      "comp": 0,
+      "avg_hours": "1.00"
+    },
+    {
+      "name": "BETSY RILEY",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "1.00"
+    },
+    {
+      "name": "CHRIS FOLLOMAN",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "1.00"
+    },
+    {
+      "name": "CHRISTINE GRAHAM",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "1.00"
+    },
+    {
+      "name": "SUSAN PAGANO",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "1.00"
+    }
+  ]
+}

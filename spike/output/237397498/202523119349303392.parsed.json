@@ -1,0 +1,214 @@
+{
+  "ein": "237397498",
+  "object_id": "202523119349303392",
+  "form_type": "IRS990",
+  "return_version": "2024v5.0",
+  "tax_period_end": "2024-12-31",
+  "tax_period_begin": "2024-01-01",
+  "filer_name": "VESPER BOAT CLUB",
+  "amended": false,
+  "return_type": "990",
+  "fye_month": "12",
+  "concepts": {
+    "total_revenue": {
+      "status": "resolved",
+      "value": 438872,
+      "xpath": "CYTotalRevenueAmt"
+    },
+    "total_expenses": {
+      "status": "resolved",
+      "value": 347127,
+      "xpath": "CYTotalExpensesAmt"
+    },
+    "revenue_less_expenses": {
+      "status": "resolved",
+      "value": 91745,
+      "xpath": "CYRevenuesLessExpensesAmt"
+    },
+    "contributions_grants": {
+      "status": "resolved",
+      "value": 114260,
+      "xpath": "CYContributionsGrantsAmt"
+    },
+    "program_service_revenue": {
+      "status": "resolved",
+      "value": 259988,
+      "xpath": "CYProgramServiceRevenueAmt"
+    },
+    "membership_dues": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "investment_income": {
+      "status": "resolved",
+      "value": 31105,
+      "xpath": "CYInvestmentIncomeAmt"
+    },
+    "fundraising_events_gross": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "fundraising_events_net": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "other_revenue": {
+      "status": "resolved",
+      "value": 33519,
+      "xpath": "CYOtherRevenueAmt"
+    },
+    "grants_paid": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "CYGrantsAndSimilarPaidAmt"
+    },
+    "salaries_benefits_total": {
+      "status": "resolved",
+      "value": 87813,
+      "xpath": "CYSalariesCompEmpBnftPaidAmt"
+    },
+    "officer_compensation": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "professional_fundraising_fees": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "occupancy": {
+      "status": "resolved",
+      "value": 35307,
+      "xpath": "OccupancyGrp/TotalAmt"
+    },
+    "program_service_expense": {
+      "status": "resolved",
+      "value": 279801,
+      "xpath": "TotalFunctionalExpensesGrp/ProgramServicesAmt"
+    },
+    "management_general_expense": {
+      "status": "resolved",
+      "value": 65918,
+      "xpath": "TotalFunctionalExpensesGrp/ManagementAndGeneralAmt"
+    },
+    "fundraising_expense": {
+      "status": "resolved",
+      "value": 1408,
+      "xpath": "TotalFunctionalExpensesGrp/FundraisingAmt"
+    },
+    "total_assets_eoy": {
+      "status": "resolved",
+      "value": 1644876,
+      "xpath": "TotalAssetsEOYAmt"
+    },
+    "total_liabilities_eoy": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "TotalLiabilitiesEOYAmt"
+    },
+    "net_assets_eoy": {
+      "status": "resolved",
+      "value": 1644876,
+      "xpath": "TotalNetAssetsFundBalanceGrp/EOYAmt"
+    },
+    "cash_savings_eoy": {
+      "status": "resolved",
+      "value": 256910,
+      "xpath": "sum(CashNonInterestBearingGrp/EOYAmt + SavingsAndTempCashInvstGrp/EOYAmt) over 2 node(s)"
+    },
+    "land_buildings_equipment_net": {
+      "status": "resolved",
+      "value": 1020680,
+      "xpath": "LandBldgEquipBasisNetGrp/EOYAmt"
+    },
+    "employee_count": {
+      "status": "resolved",
+      "value": 1,
+      "xpath": "TotalEmployeeCnt"
+    }
+  },
+  "officer_rows": [
+    {
+      "name": "MELISSA HILTON",
+      "title": "PRESIDENT",
+      "comp": 0,
+      "avg_hours": "15.00"
+    },
+    {
+      "name": "KATHLEEN BARRON",
+      "title": "TREASURER",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "ERIC ECKSTEIN",
+      "title": "COMMUNIC. S",
+      "comp": 0,
+      "avg_hours": "5.00"
+    },
+    {
+      "name": "APRIL ROACH",
+      "title": "RECORDING S",
+      "comp": 0,
+      "avg_hours": "5.00"
+    },
+    {
+      "name": "SALLY SCOTT",
+      "title": "CAPTAIN",
+      "comp": 0,
+      "avg_hours": "12.00"
+    },
+    {
+      "name": "RICA JERRIL",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "5.00"
+    },
+    {
+      "name": "JOHN B KELLY",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "5.00"
+    },
+    {
+      "name": "HILARY LANGER",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "20.00"
+    },
+    {
+      "name": "VERONICA JONES",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "5.00"
+    },
+    {
+      "name": "VIRGINIA KAUFMANN",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "5.00"
+    },
+    {
+      "name": "ELLIS MAIR",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "5.00"
+    },
+    {
+      "name": "MARY WILSON",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "5.00"
+    },
+    {
+      "name": "SARAH KIPPEL",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "3.00"
+    }
+  ]
+}

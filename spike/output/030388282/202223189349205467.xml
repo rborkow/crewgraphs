@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Return xmlns="http://www.irs.gov/efile" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.irs.gov/efile" returnVersion="2021v4.2">
+  <ReturnHeader binaryAttachmentCnt="0">
+    <ReturnTs>2022-11-14T13:35:59-06:00</ReturnTs>
+    <TaxPeriodEndDt>2022-06-30</TaxPeriodEndDt>
+    <PreparerFirmGrp>
+      <PreparerFirmEIN>030210880</PreparerFirmEIN>
+      <PreparerFirmName>
+        <BusinessNameLine1Txt>AM PEISCH &amp; COMPANY LLP</BusinessNameLine1Txt>
+      </PreparerFirmName>
+      <PreparerUSAddress>
+        <AddressLine1Txt>24 AIRPORT ROAD SUITE 402</AddressLine1Txt>
+        <CityNm>WEST LEBANON</CityNm>
+        <StateAbbreviationCd>NH</StateAbbreviationCd>
+        <ZIPCd>037841663</ZIPCd>
+      </PreparerUSAddress>
+    </PreparerFirmGrp>
+    <ReturnTypeCd>990EZ</ReturnTypeCd>
+    <TaxPeriodBeginDt>2021-07-01</TaxPeriodBeginDt>
+    <Filer>
+      <EIN>030388282</EIN>
+      <BusinessName>
+        <BusinessNameLine1Txt>FRIENDS OF CONCORD CREW</BusinessNameLine1Txt>
+      </BusinessName>
+      <BusinessNameControlTxt>FRIE</BusinessNameControlTxt>
+      <PhoneNum>6032249109</PhoneNum>
+      <USAddress>
+        <AddressLine1Txt>PO BOX 1781</AddressLine1Txt>
+        <CityNm>CONCORD</CityNm>
+        <StateAbbreviationCd>NH</StateAbbreviationCd>
+        <ZIPCd>03302</ZIPCd>
+      </USAddress>
+    </Filer>
+    <BusinessOfficerGrp>
+      <PersonNm>JESSICA CLARKE</PersonNm>
+      <PersonTitleTxt>TREASURER</PersonTitleTxt>
+      <PhoneNum>6032249109</PhoneNum>
+      <SignatureDt>2022-11-10</SignatureDt>
+      <DiscussWithPaidPreparerInd>1</DiscussWithPaidPreparerInd>
+    </BusinessOfficerGrp>
+    <SigningOfficerGrp>
+      <PersonFullName>
+        <PersonFirstNm>JESSICA</PersonFirstNm>
+        <PersonLastNm>CLARKE</PersonLastNm>
+      </PersonFullName>
+      <SSN>999009999</SSN>
+    </SigningOfficerGrp>
+    <PreparerPersonGrp>
+      <PreparerPersonNm>ANGELA M NELSON CPA</PreparerPersonNm>
+      <PTIN>P01076510</PTIN>
+      <PhoneNum>6033060100</PhoneNum>
+    </PreparerPersonGrp>
+    <AdditionalFilerInformation>
+      <TrustedCustomerGrp>
+        <TrustedCustomerCd>3</TrustedCustomerCd>
+        <AuthenticationAssuranceLevelCd>AAL1</AuthenticationAssuranceLevelCd>
+        <IdentityAssuranceLevelCd>IAL1</IdentityAssuranceLevelCd>
+      </TrustedCustomerGrp>
+    </AdditionalFilerInformation>
+    <TaxYr>2021</TaxYr>
+    <BuildTS>2022-09-23 18:48:47Z</BuildTS>
+  </ReturnHeader>
+  <ReturnData documentCnt="5">
+    <IRS990EZ documentId="RetDoc1234200001" referenceDocumentId="RetDoc1051800001 RetDoc2278000001">
+      <MethodOfAccountingAccrualInd>X</MethodOfAccountingAccrualInd>
+      <ScheduleBNotRequiredInd>X</ScheduleBNotRequiredInd>
+      <WebsiteAddressTxt>WWW.CONCORDCREW.COM</WebsiteAddressTxt>
+      <Organization501c3Ind referenceDocumentId="RetDoc1039100001">X</Organization501c3Ind>
+      <TypeOfOrganizationCorpInd>X</TypeOfOrganizationCorpInd>
+      <GrossReceiptsAmt>144759</GrossReceiptsAmt>
+      <InfoInScheduleOPartIInd>X</InfoInScheduleOPartIInd>
+      <ContributionsGiftsGrantsEtcAmt>500</ContributionsGiftsGrantsEtcAmt>
+      <ProgramServiceRevenueAmt>98185</ProgramServiceRevenueAmt>
+      <InvestmentIncomeAmt>15</InvestmentIncomeAmt>
+      <FundraisingGrossIncomeAmt referenceDocumentId="RetDoc1041200001" fndrsngEventContriPrevRptAmt="12979">46059</FundraisingGrossIncomeAmt>
+      <SpecialEventsDirectExpensesAmt>26230</SpecialEventsDirectExpensesAmt>
+      <SpecialEventsNetIncomeLossAmt>19829</SpecialEventsNetIncomeLossAmt>
+      <TotalRevenueAmt>118529</TotalRevenueAmt>
+      <GrantsAndSimilarAmountsPaidAmt>500</GrantsAndSimilarAmountsPaidAmt>
+      <FeesAndOtherPymtToIndCntrctAmt>31008</FeesAndOtherPymtToIndCntrctAmt>
+      <OccupancyRentUtltsAndMaintAmt>36785</OccupancyRentUtltsAndMaintAmt>
+      <PrintingPublicationsPostageAmt>182</PrintingPublicationsPostageAmt>
+      <OtherExpensesTotalAmt>57076</OtherExpensesTotalAmt>
+      <TotalExpensesAmt>125551</TotalExpensesAmt>
+      <ExcessOrDeficitForYearAmt>-7022</ExcessOrDeficitForYearAmt>
+      <NetAssetsOrFundBalancesBOYAmt>203367</NetAssetsOrFundBalancesBOYAmt>
+      <OtherChangesInNetAssetsAmt>0</OtherChangesInNetAssetsAmt>
+      <NetAssetsOrFundBalancesEOYAmt>196345</NetAssetsOrFundBalancesEOYAmt>
+      <InfoInScheduleOPartIIInd>X</InfoInScheduleOPartIIInd>
+      <CashSavingsAndInvestmentsGrp>
+        <BOYAmt>83014</BOYAmt>
+        <EOYAmt>66567</EOYAmt>
+      </CashSavingsAndInvestmentsGrp>
+      <LandAndBuildingsGrp>
+        <BOYAmt>79474</BOYAmt>
+        <EOYAmt>75004</EOYAmt>
+      </LandAndBuildingsGrp>
+      <OtherAssetsTotalDetail>
+        <BOYAmt>40879</BOYAmt>
+        <EOYAmt>54774</EOYAmt>
+      </OtherAssetsTotalDetail>
+      <Form990TotalAssetsGrp>
+        <BOYAmt>203367</BOYAmt>
+        <EOYAmt>196345</EOYAmt>
+      </Form990TotalAssetsGrp>
+      <SumOfTotalLiabilitiesGrp>
+        <BOYAmt>0</BOYAmt>
+        <EOYAmt>0</EOYAmt>
+      </SumOfTotalLiabilitiesGrp>
+      <NetAssetsOrFundBalancesGrp>
+        <BOYAmt>203367</BOYAmt>
+        <EOYAmt>196345</EOYAmt>
+      </NetAssetsOrFundBalancesGrp>
+      <InfoInScheduleOPartIIIInd>X</InfoInScheduleOPartIIIInd>
+      <PrimaryExemptPurposeTxt>FRIENDS OF CONCORD CREW WAS FOUNDED TO PROMOTE THE SPORT OF ROWING AMONG HIGH SCHOOL ATHLETES IN THE GREATER CONCORD AREA.</PrimaryExemptPurposeTxt>
+      <ProgramSrvcAccomplishmentGrp>
+        <DescriptionProgramSrvcAccomTxt>TO PROVIDE HIGH SCHOOL STUDENTS THE OPPORTUNITY TO EXPERIENCE THE SPORT OF ROWING INCLUDING COMPETITION, TEAM BUILDING, FITNESS, COMMUNITY SERVICE AND FUN. WE PARTICIPATE AND ATTEND VARIOUS REGATTA RACES EACH YEAR. ALL STUDENTS COMPETE ON AN EQUAL BASIS AND ALL PARTICIPATE. THERE ARE NO "BENCHED" STUDENTS. FRIENDS OF CONCORD CREW RAISE FUNDS IN ORDER TO PURCHASE EQUIPMENT AND TO PAY FOR OPERATING COSTS OF THE PROGRAM. OUR BOATHOUSE IS LOCATED ON THE SHORES OF THE MERRIMACK RIVER NEAR THE EVERETT ARENA ON LOUDON ROAD, CONCORD ON LEASED PROPERTY.</DescriptionProgramSrvcAccomTxt>
+        <GrantsAndAllocationsAmt>500</GrantsAndAllocationsAmt>
+        <ProgramServiceExpensesAmt>125551</ProgramServiceExpensesAmt>
+      </ProgramSrvcAccomplishmentGrp>
+      <TotalProgramServiceExpensesAmt>125551</TotalProgramServiceExpensesAmt>
+      <OfficerDirectorTrusteeEmplGrp>
+        <PersonNm>MARCIA O'BRIEN</PersonNm>
+        <TitleTxt>DIRECTOR</TitleTxt>
+        <AverageHrsPerWkDevotedToPosRt>1.00</AverageHrsPerWkDevotedToPosRt>
+        <CompensationAmt>0</CompensationAmt>
+        <EmployeeBenefitProgramAmt>0</EmployeeBenefitProgramAmt>
+        <ExpenseAccountOtherAllwncAmt>0</ExpenseAccountOtherAllwncAmt>
+      </OfficerDirectorTrusteeEmplGrp>
+      <OfficerDirectorTrusteeEmplGrp>
+        <PersonNm>STEVEN GARSIDE</PersonNm>
+        <TitleTxt>DIRECTOR</TitleTxt>
+        <AverageHrsPerWkDevotedToPosRt>1.00</AverageHrsPerWkDevotedToPosRt>
+        <CompensationAmt>4000</CompensationAmt>
+        <EmployeeBenefitProgramAmt>0</EmployeeBenefitProgramAmt>
+        <ExpenseAccountOtherAllwncAmt>0</ExpenseAccountOtherAllwncAmt>
+      </OfficerDirectorTrusteeEmplGrp>
+      <OfficerDirectorTrusteeEmplGrp>
+        <PersonNm>SHELLY TETRAULT</PersonNm>
+        <TitleTxt>PRESIDENT</TitleTxt>
+        <AverageHrsPerWkDevotedToPosRt>1.00</AverageHrsPerWkDevotedToPosRt>
+        <CompensationAmt>0</CompensationAmt>
+        <EmployeeBenefitProgramAmt>0</EmployeeBenefitProgramAmt>
+        <ExpenseAccountOtherAllwncAmt>0</ExpenseAccountOtherAllwncAmt>
+      </OfficerDirectorTrusteeEmplGrp>
+      <OfficerDirectorTrusteeEmplGrp>
+        <PersonNm>STEPHANIE KLEMENTS</PersonNm>
+        <TitleTxt>SECRETARY</TitleTxt>
+        <AverageHrsPerWkDevotedToPosRt>1.00</AverageHrsPerWkDevotedToPosRt>
+        <CompensationAmt>0</CompensationAmt>
+        <EmployeeBenefitProgramAmt>0</EmployeeBenefitProgramAmt>
+        <ExpenseAccountOtherAllwncAmt>0</ExpenseAccountOtherAllwncAmt>
+      </OfficerDirectorTrusteeEmplGrp>
+      <OfficerDirectorTrusteeEmplGrp>
+        <PersonNm>JESSICA CLARKE</PersonNm>
+        <TitleTxt>TREASURER</TitleTxt>
+        <AverageHrsPerWkDevotedToPosRt>1.00</AverageHrsPerWkDevotedToPosRt>
+        <CompensationAmt>0</CompensationAmt>
+        <EmployeeBenefitProgramAmt>0</EmployeeBenefitProgramAmt>
+        <ExpenseAccountOtherAllwncAmt>0</ExpenseAccountOtherAllwncAmt>
+      </OfficerDirectorTrusteeEmplGrp>
+      <OfficerDirectorTrusteeEmplGrp>
+        <PersonNm>BETSY RILEY</PersonNm>
+        <TitleTxt>DIRECTOR</TitleTxt>
+        <AverageHrsPerWkDevotedToPosRt>1.00</AverageHrsPerWkDevotedToPosRt>
+        <CompensationAmt>0</CompensationAmt>
+        <EmployeeBenefitProgramAmt>0</EmployeeBenefitProgramAmt>
+        <ExpenseAccountOtherAllwncAmt>0</ExpenseAccountOtherAllwncAmt>
+      </OfficerDirectorTrusteeEmplGrp>
+      <OfficerDirectorTrusteeEmplGrp>
+        <PersonNm>CHRIS FOLLOMAN</PersonNm>
+        <TitleTxt>DIRECTOR</TitleTxt>
+        <AverageHrsPerWkDevotedToPosRt>1.00</AverageHrsPerWkDevotedToPosRt>
+        <CompensationAmt>0</CompensationAmt>
+        <EmployeeBenefitProgramAmt>0</EmployeeBenefitProgramAmt>
+        <ExpenseAccountOtherAllwncAmt>0</ExpenseAccountOtherAllwncAmt>
+      </OfficerDirectorTrusteeEmplGrp>
+      <OfficerDirectorTrusteeEmplGrp>
+        <PersonNm>CHRISTINE GRAHAM</PersonNm>
+        <TitleTxt>DIRECTOR</TitleTxt>
+        <AverageHrsPerWkDevotedToPosRt>1.00</AverageHrsPerWkDevotedToPosRt>
+        <CompensationAmt>0</CompensationAmt>
+        <EmployeeBenefitProgramAmt>0</EmployeeBenefitProgramAmt>
+        <ExpenseAccountOtherAllwncAmt>0</ExpenseAccountOtherAllwncAmt>
+      </OfficerDirectorTrusteeEmplGrp>
+      <OfficerDirectorTrusteeEmplGrp>
+        <PersonNm>SUSAN PAGANO</PersonNm>
+        <TitleTxt>DIRECTOR</TitleTxt>
+        <AverageHrsPerWkDevotedToPosRt>1.00</AverageHrsPerWkDevotedToPosRt>
+        <CompensationAmt>0</CompensationAmt>
+        <EmployeeBenefitProgramAmt>0</EmployeeBenefitProgramAmt>
+        <ExpenseAccountOtherAllwncAmt>0</ExpenseAccountOtherAllwncAmt>
+      </OfficerDirectorTrusteeEmplGrp>
+      <InfoInScheduleOPartVInd>X</InfoInScheduleOPartVInd>
+      <ActivitiesNotPreviouslyRptInd>0</ActivitiesNotPreviouslyRptInd>
+      <ChgMadeToOrgnzngDocNotRptInd>0</ChgMadeToOrgnzngDocNotRptInd>
+      <OrganizationHadUBIInd>0</OrganizationHadUBIInd>
+      <SubjectToProxyTaxInd>0</SubjectToProxyTaxInd>
+      <OrganizationDissolvedEtcInd>0</OrganizationDissolvedEtcInd>
+      <DirectIndirectPltclExpendAmt>0</DirectIndirectPltclExpendAmt>
+      <MadeLoansToFromOfficersInd>0</MadeLoansToFromOfficersInd>
+      <TaxImposedUnderIRC4911Amt>0</TaxImposedUnderIRC4911Amt>
+      <TaxImposedUnderIRC4912Amt>0</TaxImposedUnderIRC4912Amt>
+      <TaxImposedUnderIRC4955Amt>0</TaxImposedUnderIRC4955Amt>
+      <EngagedInExcessBenefitTransInd>0</EngagedInExcessBenefitTransInd>
+      <TaxImposedOnOrganizationMgrAmt>0</TaxImposedOnOrganizationMgrAmt>
+      <TaxReimbursedByOrganizationAmt>0</TaxReimbursedByOrganizationAmt>
+      <ProhibitedTaxShelterTransInd>0</ProhibitedTaxShelterTransInd>
+      <StatesWhereCopyOfReturnIsFldCd>NH</StatesWhereCopyOfReturnIsFldCd>
+      <BooksInCareOfDetail>
+        <BusinessName>
+          <BusinessNameLine1Txt>JESSICA CLARKE</BusinessNameLine1Txt>
+        </BusinessName>
+        <USAddress>
+          <AddressLine1Txt>PO BOX 1781</AddressLine1Txt>
+          <CityNm>CONCORD</CityNm>
+          <StateAbbreviationCd>NH</StateAbbreviationCd>
+          <ZIPCd>03302</ZIPCd>
+        </USAddress>
+        <PhoneNum>6032249109</PhoneNum>
+      </BooksInCareOfDetail>
+      <ForeignFinancialAccountInd>0</ForeignFinancialAccountInd>
+      <ForeignOfficeInd>0</ForeignOfficeInd>
+      <DonorAdvisedFndsInd>0</DonorAdvisedFndsInd>
+      <OperateHospitalInd>0</OperateHospitalInd>
+      <TanningServicesProvidedInd>0</TanningServicesProvidedInd>
+      <RelatedOrganizationCtrlEntInd>0</RelatedOrganizationCtrlEntInd>
+      <PoliticalCampaignActyInd>0</PoliticalCampaignActyInd>
+      <LobbyingActivitiesInd>0</LobbyingActivitiesInd>
+      <SchoolOperatingInd>0</SchoolOperatingInd>
+      <TrnsfrExmptNonChrtblRltdOrgInd>0</TrnsfrExmptNonChrtblRltdOrgInd>
+      <PartVIOfCompOfHghstPdEmplTxt>NONE</PartVIOfCompOfHghstPdEmplTxt>
+      <PartVIHghstPdCntrctProfSrvcTxt>NONE</PartVIHghstPdCntrctProfSrvcTxt>
+      <FiledScheduleAInd>1</FiledScheduleAInd>
+    </IRS990EZ>
+    <IRS990ScheduleA documentId="RetDoc1039100001">
+      <PublicOrganization170Ind>X</PublicOrganization170Ind>
+      <GiftsGrantsContriRcvd170Grp>
+        <CurrentTaxYearMinus4YearsAmt>80959</CurrentTaxYearMinus4YearsAmt>
+        <CurrentTaxYearMinus3YearsAmt>121890</CurrentTaxYearMinus3YearsAmt>
+        <CurrentTaxYearMinus2YearsAmt>95304</CurrentTaxYearMinus2YearsAmt>
+        <CurrentTaxYearMinus1YearAmt>119256</CurrentTaxYearMinus1YearAmt>
+        <CurrentTaxYearAmt>144744</CurrentTaxYearAmt>
+        <TotalAmt>562153</TotalAmt>
+      </GiftsGrantsContriRcvd170Grp>
+      <TotalCalendarYear170Grp>
+        <CurrentTaxYearMinus4YearsAmt>80959</CurrentTaxYearMinus4YearsAmt>
+        <CurrentTaxYearMinus3YearsAmt>121890</CurrentTaxYearMinus3YearsAmt>
+        <CurrentTaxYearMinus2YearsAmt>95304</CurrentTaxYearMinus2YearsAmt>
+        <CurrentTaxYearMinus1YearAmt>119256</CurrentTaxYearMinus1YearAmt>
+        <CurrentTaxYearAmt>144744</CurrentTaxYearAmt>
+        <TotalAmt>562153</TotalAmt>
+      </TotalCalendarYear170Grp>
+      <PublicSupportTotal170Amt>562153</PublicSupportTotal170Amt>
+      <GrossInvestmentIncome170Grp>
+        <CurrentTaxYearMinus2YearsAmt>35</CurrentTaxYearMinus2YearsAmt>
+        <CurrentTaxYearMinus1YearAmt>14</CurrentTaxYearMinus1YearAmt>
+        <CurrentTaxYearAmt>15</CurrentTaxYearAmt>
+        <TotalAmt>64</TotalAmt>
+      </GrossInvestmentIncome170Grp>
+      <OtherIncome170Grp>
+        <CurrentTaxYearMinus1YearAmt>110</CurrentTaxYearMinus1YearAmt>
+        <TotalAmt>110</TotalAmt>
+      </OtherIncome170Grp>
+      <TotalSupportAmt>562327</TotalSupportAmt>
+      <PublicSupportCY170Pct>0.99970</PublicSupportCY170Pct>
+      <PublicSupportPY170Pct>0.99970</PublicSupportPY170Pct>
+      <ThirtyThrPctSuprtTestsCY170Ind>X</ThirtyThrPctSuprtTestsCY170Ind>
+      <Form990ScheduleAPartVIGrp>
+        <FormAndLineReferenceDesc>SCHEDULE A, PART II, LINE 10, EXPLANATION OF OTHER INCOME:</FormAndLineReferenceDesc>
+        <ExplanationTxt>MISCELLANEOUS - 2020 AMOUNT: $ 110.</ExplanationTxt>
+      </Form990ScheduleAPartVIGrp>
+    </IRS990ScheduleA>
+    <IRS990ScheduleG documentId="RetDoc1041200001">
+      <SpecialFundraisingEventsInd>X</SpecialFundraisingEventsInd>
+      <FundraisingEventInformationGrp>
+        <Event1Nm>PLANT &amp; WREATH</Event1Nm>
+        <GrossReceiptsEvent1Amt>33690</GrossReceiptsEvent1Amt>
+        <GrossRevenueEvent1Amt>33690</GrossRevenueEvent1Amt>
+        <OtherDirectExpensesEvent1Amt>13251</OtherDirectExpensesEvent1Amt>
+        <OtherEventsTotalCnt>5</OtherEventsTotalCnt>
+        <GrossReceiptsOtherEventsAmt>12370</GrossReceiptsOtherEventsAmt>
+        <CharitableContriOtherEventsAmt>12979</CharitableContriOtherEventsAmt>
+        <GrossRevenueOtherEventsAmt>-609</GrossRevenueOtherEventsAmt>
+        <GrossReceiptsTotalAmt>46060</GrossReceiptsTotalAmt>
+        <CharitableContributionsTotAmt>12979</CharitableContributionsTotAmt>
+        <GrossRevenueTotalEventsAmt>33081</GrossRevenueTotalEventsAmt>
+        <OthDirectExpnssTotalEventsAmt>13251</OthDirectExpnssTotalEventsAmt>
+        <DirectExpenseSummaryEventsAmt>13251</DirectExpenseSummaryEventsAmt>
+        <NetIncomeSummaryAmt>19830</NetIncomeSummaryAmt>
+      </FundraisingEventInformationGrp>
+    </IRS990ScheduleG>
+    <IRS990ScheduleO documentId="RetDoc1051800001">
+      <SupplementalInformationDetail>
+        <FormAndLineReferenceDesc>FORM 990-EZ, PART I, LINE 4 - OTHER INVESTMENT INCOME</FormAndLineReferenceDesc>
+        <ExplanationTxt>DESCRIPTION: INTEREST INCOME. AMOUNT: 15.</ExplanationTxt>
+      </SupplementalInformationDetail>
+      <SupplementalInformationDetail>
+        <FormAndLineReferenceDesc>FORM 990-EZ, PART I, LINE 10 - GRANTS AND SIMILAR AMOUNTS PAID</FormAndLineReferenceDesc>
+        <ExplanationTxt>ACTIVITY CLASSIFICATION: . GRANTEE NAME: MATHEA GRAHAM. DATE OF GIFT: 06/28/22. AMOUNT GIVEN: 500.</ExplanationTxt>
+      </SupplementalInformationDetail>
+      <SupplementalInformationDetail>
+        <FormAndLineReferenceDesc>FORM 990-EZ, PART I, LINE 14</FormAndLineReferenceDesc>
+        <ExplanationTxt>DESCRIPTION: DEPRECIATION. AMOUNT: 26,664. DESCRIPTION: OTHER EXPENSES. AMOUNT: 10,121. TOTAL TO FORM 990-EZ, LINE 14: 36,785.</ExplanationTxt>
+      </SupplementalInformationDetail>
+      <SupplementalInformationDetail>
+        <FormAndLineReferenceDesc>FORM 990-EZ, PART I, LINE 16 - OTHER EXPENSES</FormAndLineReferenceDesc>
+        <ExplanationTxt>DESCRIPTION: TRAVEL. AMOUNT: 5,897. DESCRIPTION: INSURANCE. AMOUNT: 9,407. DESCRIPTION: RACE ENTRY FEES. AMOUNT: 10,288. DESCRIPTION: REPAIRS. AMOUNT: 15,801. DESCRIPTION: DUES &amp; SUBSCRIPTIONS. AMOUNT: 4,265. DESCRIPTION: TRAILER &amp; BOAT REGISTRATIONS. AMOUNT: 437. DESCRIPTION: LAUNCH FUEL. AMOUNT: 367. DESCRIPTION: COMPUTER EXPENSES. AMOUNT: 513. DESCRIPTION: BANK FEE. AMOUNT: 107. DESCRIPTION: FILING FEES. AMOUNT: 75. DESCRIPTION: HOSPITALITY. AMOUNT: 8,152. DESCRIPTION: ADVERTISING. AMOUNT: 590. DESCRIPTION: DONATIONS. AMOUNT: 45. DESCRIPTION: YEARBOOK EXPENSE. AMOUNT: 933. DESCRIPTION: EDUCATION AND TRAINING. AMOUNT: 199. TOTAL TO FORM 990-EZ, LINE 16: 57,076.</ExplanationTxt>
+      </SupplementalInformationDetail>
+      <SupplementalInformationDetail>
+        <FormAndLineReferenceDesc>FORM 990-EZ, PART II, LINE 24 - OTHER ASSETS</FormAndLineReferenceDesc>
+        <ExplanationTxt>DESCRIPTION: OTHER DEPRECIABLE ASSETS. BEG. OF YEAR AMOUNT: 40,879. END OF YEAR AMOUNT: 54,774.</ExplanationTxt>
+      </SupplementalInformationDetail>
+    </IRS990ScheduleO>
+    <TransferPrsnlBnftContractsDecl documentId="RetDoc2278000001">
+      <DeclarationDesc>THE ORGANIZATION DID NOT, DURING THE YEAR, RECEIVE ANY FUNDS, DIRECTLY,OR INDIRECTLY, TO PAY PREMIUMS ON A PERSONAL BENEFIT CONTRACT.THE ORGANIZATION, DID NOT, DURING THE YEAR, PAY ANY PREMIUMS, DIRECTLY,OR INDIRECTLY, ON A PERSONAL BENEFIT CONTRACT.</DeclarationDesc>
+    </TransferPrsnlBnftContractsDecl>
+  </ReturnData>
+</Return>

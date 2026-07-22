@@ -1,0 +1,29 @@
+[
+  {
+    "object_id": "202211339349303076",
+    "tax_period": "202106",
+    "return_type": "990",
+    "source": "index_2022",
+    "file": "202211339349303076.xml",
+    "bytes": 54773,
+    "gt_lake": "present"
+  },
+  {
+    "object_id": "202121129349301317",
+    "tax_period": "202006",
+    "return_type": "990",
+    "source": "index_2021",
+    "file": "202121129349301317.xml",
+    "bytes": 60201,
+    "gt_lake": "present"
+  },
+  {
+    "object_id": "202031359349301988",
+    "tax_period": "201906",
+    "return_type": "990",
+    "source": "index_2020",
+    "file": "202031359349301988.xml",
+    "bytes": 65239,
+    "gt_lake": "present"
+  }
+]

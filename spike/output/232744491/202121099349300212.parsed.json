@@ -1,0 +1,166 @@
+{
+  "ein": "232744491",
+  "object_id": "202121099349300212",
+  "form_type": "IRS990",
+  "return_version": "2020v4.0",
+  "tax_period_end": "2020-12-31",
+  "tax_period_begin": "2020-01-01",
+  "filer_name": "THE UNDINE BARGE CLUB OF PHILADELPHIA",
+  "amended": false,
+  "return_type": "990",
+  "fye_month": "12",
+  "concepts": {
+    "total_revenue": {
+      "status": "resolved",
+      "value": 276592,
+      "xpath": "CYTotalRevenueAmt"
+    },
+    "total_expenses": {
+      "status": "resolved",
+      "value": 109207,
+      "xpath": "CYTotalExpensesAmt"
+    },
+    "revenue_less_expenses": {
+      "status": "resolved",
+      "value": 167385,
+      "xpath": "CYRevenuesLessExpensesAmt"
+    },
+    "contributions_grants": {
+      "status": "resolved",
+      "value": 127601,
+      "xpath": "CYContributionsGrantsAmt"
+    },
+    "program_service_revenue": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "CYProgramServiceRevenueAmt"
+    },
+    "membership_dues": {
+      "status": "resolved",
+      "value": 123062,
+      "xpath": "MembershipDuesAmt"
+    },
+    "investment_income": {
+      "status": "resolved",
+      "value": 148991,
+      "xpath": "CYInvestmentIncomeAmt"
+    },
+    "fundraising_events_gross": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "FundraisingGrossIncomeAmt"
+    },
+    "fundraising_events_net": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "FundraisingGrossIncomeAmt - FundraisingDirectExpensesAmt"
+    },
+    "other_revenue": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "CYOtherRevenueAmt"
+    },
+    "grants_paid": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "CYGrantsAndSimilarPaidAmt"
+    },
+    "salaries_benefits_total": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "CYSalariesCompEmpBnftPaidAmt"
+    },
+    "officer_compensation": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "CompCurrentOfcrDirectorsGrp/TotalAmt"
+    },
+    "professional_fundraising_fees": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "occupancy": {
+      "status": "resolved",
+      "value": 37607,
+      "xpath": "OccupancyGrp/TotalAmt"
+    },
+    "program_service_expense": {
+      "status": "resolved",
+      "value": 109207,
+      "xpath": "TotalFunctionalExpensesGrp/ProgramServicesAmt"
+    },
+    "management_general_expense": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "TotalFunctionalExpensesGrp/ManagementAndGeneralAmt"
+    },
+    "fundraising_expense": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "TotalFunctionalExpensesGrp/FundraisingAmt"
+    },
+    "total_assets_eoy": {
+      "status": "resolved",
+      "value": 1941680,
+      "xpath": "TotalAssetsEOYAmt"
+    },
+    "total_liabilities_eoy": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "TotalLiabilitiesEOYAmt"
+    },
+    "net_assets_eoy": {
+      "status": "resolved",
+      "value": 1941680,
+      "xpath": "TotalNetAssetsFundBalanceGrp/EOYAmt"
+    },
+    "cash_savings_eoy": {
+      "status": "resolved",
+      "value": 276895,
+      "xpath": "sum(CashNonInterestBearingGrp/EOYAmt + SavingsAndTempCashInvstGrp/EOYAmt) over 2 node(s)"
+    },
+    "land_buildings_equipment_net": {
+      "status": "resolved",
+      "value": 656840,
+      "xpath": "LandBldgEquipBasisNetGrp/EOYAmt"
+    },
+    "employee_count": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "TotalEmployeeCnt"
+    }
+  },
+  "officer_rows": [
+    {
+      "name": "John Leonard",
+      "title": "President",
+      "comp": 0,
+      "avg_hours": "10"
+    },
+    {
+      "name": "Michael Naughton",
+      "title": "Vice President",
+      "comp": 0,
+      "avg_hours": "5"
+    },
+    {
+      "name": "Elvin Ross",
+      "title": "Secretary",
+      "comp": 0,
+      "avg_hours": "2"
+    },
+    {
+      "name": "David Rhodes",
+      "title": "Treasurer",
+      "comp": 0,
+      "avg_hours": "3"
+    },
+    {
+      "name": "Timothy O'Grady",
+      "title": "Captain",
+      "comp": 0,
+      "avg_hours": "6"
+    }
+  ]
+}

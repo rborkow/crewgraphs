@@ -1,0 +1,11 @@
+[
+  {
+    "object_id": "201631699349200623",
+    "tax_period": "201512",
+    "return_type": "990EZ",
+    "source": "propublica_latest",
+    "file": "201631699349200623.xml",
+    "bytes": 8945,
+    "gt_lake": "present"
+  }
+]

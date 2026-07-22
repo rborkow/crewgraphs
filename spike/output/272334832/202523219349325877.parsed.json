@@ -1,0 +1,202 @@
+{
+  "ein": "272334832",
+  "object_id": "202523219349325877",
+  "form_type": "IRS990",
+  "return_version": "2024v5.2",
+  "tax_period_end": "2024-12-31",
+  "tax_period_begin": "2024-01-01",
+  "filer_name": "LINCOLN PARK BOAT CLUB",
+  "amended": false,
+  "return_type": "990",
+  "fye_month": "12",
+  "concepts": {
+    "total_revenue": {
+      "status": "resolved",
+      "value": 516466,
+      "xpath": "CYTotalRevenueAmt"
+    },
+    "total_expenses": {
+      "status": "resolved",
+      "value": 529401,
+      "xpath": "CYTotalExpensesAmt"
+    },
+    "revenue_less_expenses": {
+      "status": "resolved",
+      "value": -12935,
+      "xpath": "CYRevenuesLessExpensesAmt"
+    },
+    "contributions_grants": {
+      "status": "resolved",
+      "value": 69061,
+      "xpath": "CYContributionsGrantsAmt"
+    },
+    "program_service_revenue": {
+      "status": "resolved",
+      "value": 414036,
+      "xpath": "CYProgramServiceRevenueAmt"
+    },
+    "membership_dues": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "investment_income": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "CYInvestmentIncomeAmt"
+    },
+    "fundraising_events_gross": {
+      "status": "resolved",
+      "value": 6173,
+      "xpath": "FundraisingGrossIncomeAmt"
+    },
+    "fundraising_events_net": {
+      "status": "resolved",
+      "value": 103,
+      "xpath": "FundraisingGrossIncomeAmt - FundraisingDirectExpensesAmt"
+    },
+    "other_revenue": {
+      "status": "resolved",
+      "value": 33369,
+      "xpath": "CYOtherRevenueAmt"
+    },
+    "grants_paid": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "CYGrantsAndSimilarPaidAmt"
+    },
+    "salaries_benefits_total": {
+      "status": "resolved",
+      "value": 106873,
+      "xpath": "CYSalariesCompEmpBnftPaidAmt"
+    },
+    "officer_compensation": {
+      "status": "resolved",
+      "value": 106873,
+      "xpath": "CompCurrentOfcrDirectorsGrp/TotalAmt"
+    },
+    "professional_fundraising_fees": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "occupancy": {
+      "status": "resolved",
+      "value": 39155,
+      "xpath": "OccupancyGrp/TotalAmt"
+    },
+    "program_service_expense": {
+      "status": "resolved",
+      "value": 493798,
+      "xpath": "TotalFunctionalExpensesGrp/ProgramServicesAmt"
+    },
+    "management_general_expense": {
+      "status": "resolved",
+      "value": 35603,
+      "xpath": "TotalFunctionalExpensesGrp/ManagementAndGeneralAmt"
+    },
+    "fundraising_expense": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "TotalFunctionalExpensesGrp/FundraisingAmt"
+    },
+    "total_assets_eoy": {
+      "status": "resolved",
+      "value": 215837,
+      "xpath": "TotalAssetsEOYAmt"
+    },
+    "total_liabilities_eoy": {
+      "status": "resolved",
+      "value": 88461,
+      "xpath": "TotalLiabilitiesEOYAmt"
+    },
+    "net_assets_eoy": {
+      "status": "resolved",
+      "value": 127376,
+      "xpath": "TotalNetAssetsFundBalanceGrp/EOYAmt"
+    },
+    "cash_savings_eoy": {
+      "status": "resolved",
+      "value": 27825,
+      "xpath": "sum(CashNonInterestBearingGrp/EOYAmt + SavingsAndTempCashInvstGrp/EOYAmt) over 2 node(s)"
+    },
+    "land_buildings_equipment_net": {
+      "status": "resolved",
+      "value": 165993,
+      "xpath": "LandBldgEquipBasisNetGrp/EOYAmt"
+    },
+    "employee_count": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "TotalEmployeeCnt"
+    }
+  },
+  "officer_rows": [
+    {
+      "name": "TRISHA BRUBAKER",
+      "title": "Executive Dir.",
+      "comp": 106873,
+      "avg_hours": "40.00"
+    },
+    {
+      "name": "LISA DIETER",
+      "title": "Prior President",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "LYDIA HAWTHORNE",
+      "title": "President",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "KATIE TINKHAM",
+      "title": "Secretary",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "LINDA HALL",
+      "title": "Vice President",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "LAURA WOLDT",
+      "title": "Director",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "NATE DAUBERT",
+      "title": "Director",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "CHRISTIE COLLINS",
+      "title": "Director",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "ABBEY CASSEL",
+      "title": "Treasurer",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "NANCY FUNK",
+      "title": "Director",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "CELIA WOLDT",
+      "title": "Director",
+      "comp": 0,
+      "avg_hours": "10.00"
+    }
+  ]
+}

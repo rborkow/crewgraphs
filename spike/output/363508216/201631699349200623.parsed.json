@@ -1,0 +1,184 @@
+{
+  "ein": "363508216",
+  "object_id": "201631699349200623",
+  "form_type": "IRS990EZ",
+  "return_version": "2015v2.0",
+  "tax_period_end": "2015-12-31",
+  "tax_period_begin": "2015-01-01",
+  "filer_name": "LINCOLN PARK BOAT CLUB",
+  "amended": false,
+  "return_type": "990EZ",
+  "fye_month": "12",
+  "concepts": {
+    "total_revenue": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "TotalRevenueAmt"
+    },
+    "total_expenses": {
+      "status": "resolved",
+      "value": 21477,
+      "xpath": "TotalExpensesAmt"
+    },
+    "revenue_less_expenses": {
+      "status": "resolved",
+      "value": -21477,
+      "xpath": "ExcessOrDeficitForYearAmt"
+    },
+    "contributions_grants": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "program_service_revenue": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "membership_dues": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "investment_income": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "fundraising_events_gross": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "FundraisingGrossIncomeAmt"
+    },
+    "fundraising_events_net": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "other_revenue": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "grants_paid": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "salaries_benefits_total": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "officer_compensation": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "sum(OfficerDirectorTrusteeEmplGrp/CompensationAmt) over 8 node(s)"
+    },
+    "professional_fundraising_fees": {
+      "status": "not_on_form",
+      "value": null,
+      "xpath": null
+    },
+    "occupancy": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "program_service_expense": {
+      "status": "resolved",
+      "value": 21477,
+      "xpath": "TotalProgramServiceExpensesAmt"
+    },
+    "management_general_expense": {
+      "status": "not_on_form",
+      "value": null,
+      "xpath": null
+    },
+    "fundraising_expense": {
+      "status": "not_on_form",
+      "value": null,
+      "xpath": null
+    },
+    "total_assets_eoy": {
+      "status": "resolved",
+      "value": 38573,
+      "xpath": "Form990TotalAssetsGrp/EOYAmt"
+    },
+    "total_liabilities_eoy": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "net_assets_eoy": {
+      "status": "resolved",
+      "value": 38573,
+      "xpath": "NetAssetsOrFundBalancesEOYAmt"
+    },
+    "cash_savings_eoy": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "land_buildings_equipment_net": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "employee_count": {
+      "status": "not_on_form",
+      "value": null,
+      "xpath": null
+    }
+  },
+  "officer_rows": [
+    {
+      "name": "Linda Cushman",
+      "title": "Commodore",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "Linda Hall",
+      "title": "Vice commodore",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "Mike Blum",
+      "title": "Secretary",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "Amanda Rogers",
+      "title": "Membership Dir",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "Rick Klein",
+      "title": "Rowing Dir",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "Will Randall",
+      "title": "Treasurer",
+      "comp": 0,
+      "avg_hours": "0"
+    },
+    {
+      "name": "Christie Collins",
+      "title": "Communications",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "Ari Reinfeld",
+      "title": "House Director",
+      "comp": 0,
+      "avg_hours": "10.00"
+    }
+  ]
+}

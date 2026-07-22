@@ -1,0 +1,214 @@
+{
+  "ein": "742219650",
+  "object_id": "202111939349300966",
+  "form_type": "IRS990",
+  "return_version": "2020v4.1",
+  "tax_period_end": "2020-12-31",
+  "tax_period_begin": "2020-01-01",
+  "filer_name": "AUSTIN ROWING CLUB",
+  "amended": false,
+  "return_type": "990",
+  "fye_month": "12",
+  "concepts": {
+    "total_revenue": {
+      "status": "resolved",
+      "value": 665698,
+      "xpath": "CYTotalRevenueAmt"
+    },
+    "total_expenses": {
+      "status": "resolved",
+      "value": 643280,
+      "xpath": "CYTotalExpensesAmt"
+    },
+    "revenue_less_expenses": {
+      "status": "resolved",
+      "value": 22418,
+      "xpath": "CYRevenuesLessExpensesAmt"
+    },
+    "contributions_grants": {
+      "status": "resolved",
+      "value": 112699,
+      "xpath": "CYContributionsGrantsAmt"
+    },
+    "program_service_revenue": {
+      "status": "resolved",
+      "value": 543761,
+      "xpath": "CYProgramServiceRevenueAmt"
+    },
+    "membership_dues": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "investment_income": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "CYInvestmentIncomeAmt"
+    },
+    "fundraising_events_gross": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "fundraising_events_net": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "other_revenue": {
+      "status": "resolved",
+      "value": 9238,
+      "xpath": "CYOtherRevenueAmt"
+    },
+    "grants_paid": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "CYGrantsAndSimilarPaidAmt"
+    },
+    "salaries_benefits_total": {
+      "status": "resolved",
+      "value": 345165,
+      "xpath": "CYSalariesCompEmpBnftPaidAmt"
+    },
+    "officer_compensation": {
+      "status": "resolved",
+      "value": 83943,
+      "xpath": "CompCurrentOfcrDirectorsGrp/TotalAmt"
+    },
+    "professional_fundraising_fees": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "occupancy": {
+      "status": "resolved",
+      "value": 58095,
+      "xpath": "OccupancyGrp/TotalAmt"
+    },
+    "program_service_expense": {
+      "status": "resolved",
+      "value": 476961,
+      "xpath": "TotalFunctionalExpensesGrp/ProgramServicesAmt"
+    },
+    "management_general_expense": {
+      "status": "resolved",
+      "value": 146032,
+      "xpath": "TotalFunctionalExpensesGrp/ManagementAndGeneralAmt"
+    },
+    "fundraising_expense": {
+      "status": "resolved",
+      "value": 20287,
+      "xpath": "TotalFunctionalExpensesGrp/FundraisingAmt"
+    },
+    "total_assets_eoy": {
+      "status": "resolved",
+      "value": 597340,
+      "xpath": "TotalAssetsEOYAmt"
+    },
+    "total_liabilities_eoy": {
+      "status": "resolved",
+      "value": 169646,
+      "xpath": "TotalLiabilitiesEOYAmt"
+    },
+    "net_assets_eoy": {
+      "status": "resolved",
+      "value": 427694,
+      "xpath": "TotalNetAssetsFundBalanceGrp/EOYAmt"
+    },
+    "cash_savings_eoy": {
+      "status": "resolved",
+      "value": 245259,
+      "xpath": "sum(CashNonInterestBearingGrp/EOYAmt + SavingsAndTempCashInvstGrp/EOYAmt) over 2 node(s)"
+    },
+    "land_buildings_equipment_net": {
+      "status": "resolved",
+      "value": 343905,
+      "xpath": "LandBldgEquipBasisNetGrp/EOYAmt"
+    },
+    "employee_count": {
+      "status": "resolved",
+      "value": 41,
+      "xpath": "TotalEmployeeCnt"
+    }
+  },
+  "officer_rows": [
+    {
+      "name": "LIZ HUNDLEY",
+      "title": "PRESIDENT",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "TATJANA LICHTENSTEIN",
+      "title": "VICE PRESIDENT",
+      "comp": 0,
+      "avg_hours": "5.00"
+    },
+    {
+      "name": "JEN LORD",
+      "title": "TREASURER",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "SABELYN ARDEN",
+      "title": "SECRETARY",
+      "comp": 0,
+      "avg_hours": "4.00"
+    },
+    {
+      "name": "JOHN DERRICK",
+      "title": "EQUIPMENT",
+      "comp": 0,
+      "avg_hours": "10.00"
+    },
+    {
+      "name": "MARK EATON",
+      "title": "FACILITIES",
+      "comp": 0,
+      "avg_hours": "4.00"
+    },
+    {
+      "name": "JIM RUDDY",
+      "title": "OUTREACH",
+      "comp": 0,
+      "avg_hours": "2.50"
+    },
+    {
+      "name": "DIANNE WILLEMS",
+      "title": "MARKETING",
+      "comp": 0,
+      "avg_hours": "2.50"
+    },
+    {
+      "name": "KAREN JONES",
+      "title": "PROGRAMMING",
+      "comp": 0,
+      "avg_hours": "2.50"
+    },
+    {
+      "name": "COLETTE NOVAK",
+      "title": "DEVELOPMENT",
+      "comp": 0,
+      "avg_hours": "2.50"
+    },
+    {
+      "name": "KEVIN HIGHT",
+      "title": "MEMBER AT LARGE",
+      "comp": 0,
+      "avg_hours": "2.50"
+    },
+    {
+      "name": "CAROL BAXTER",
+      "title": "MEMBER AT LARGE",
+      "comp": 0,
+      "avg_hours": "2.50"
+    },
+    {
+      "name": "KEVIN REINIS",
+      "title": "EXECUTIVE DIRECTOR",
+      "comp": 78615,
+      "avg_hours": "40.00"
+    }
+  ]
+}

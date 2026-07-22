@@ -1,0 +1,86 @@
+{
+  "organization": {
+    "id": 331055179,
+    "ein": 331055179,
+    "name": "Olympic Athletes Rowing At Saugatuck Inc",
+    "careofname": "% JOHN TRAYNOR",
+    "address": "PO BOX 2131",
+    "city": "Westport",
+    "state": "CT",
+    "zipcode": "06880-0131",
+    "exemption_number": 0,
+    "subsection_code": 3,
+    "affiliation_code": 3,
+    "classification_codes": "1000",
+    "ruling_date": "2003-05-01",
+    "deductibility_code": 1,
+    "foundation_code": 15,
+    "activity_codes": "000000000",
+    "organization_code": 1,
+    "exempt_organization_status_code": 1,
+    "tax_period": "2025-12-01",
+    "asset_code": 0,
+    "income_code": 0,
+    "filing_requirement_code": 2,
+    "pf_filing_requirement_code": 0,
+    "accounting_period": 12,
+    "asset_amount": 0,
+    "income_amount": 0,
+    "revenue_amount": 0,
+    "ntee_code": "N67",
+    "sort_name": null,
+    "created_at": "2023-05-09T20:24:40.668Z",
+    "updated_at": "2026-06-18T01:42:59.328Z",
+    "data_source": "current_2026_06_17",
+    "have_extracts": null,
+    "have_pdfs": null,
+    "latest_object_id": null
+  },
+  "filings_with_data": [],
+  "filings_without_data": [
+    {
+      "tax_prd": 200812,
+      "tax_prd_yr": 2008,
+      "formtype": 1,
+      "formtype_str": "990EZ",
+      "pdf_url": "https://projects.propublica.org/nonprofits/download-filing?path=2009_12_EO%2F33-1055179_990EZ_200812.pdf"
+    },
+    {
+      "tax_prd": 200712,
+      "tax_prd_yr": 2007,
+      "formtype": 0,
+      "formtype_str": "990",
+      "pdf_url": "https://projects.propublica.org/nonprofits/download-filing?path=2008_02_EO%2F33-1055179_990_200712.pdf"
+    },
+    {
+      "tax_prd": 200612,
+      "tax_prd_yr": 2006,
+      "formtype": 0,
+      "formtype_str": "990",
+      "pdf_url": "https://projects.propublica.org/nonprofits/download-filing?path=2007_07_EO%2F33-1055179_990_200612.pdf"
+    },
+    {
+      "tax_prd": 200512,
+      "tax_prd_yr": 2005,
+      "formtype": 0,
+      "formtype_str": "990",
+      "pdf_url": "https://projects.propublica.org/nonprofits/download-filing?path=2006_07_EO%2F33-1055179_990_200512.pdf"
+    },
+    {
+      "tax_prd": 200412,
+      "tax_prd_yr": 2004,
+      "formtype": 0,
+      "formtype_str": "990",
+      "pdf_url": "https://projects.propublica.org/nonprofits/download-filing?path=2005_06_EO%2F33-1055179_990_200412.pdf"
+    },
+    {
+      "tax_prd": 200312,
+      "tax_prd_yr": 2003,
+      "formtype": 0,
+      "formtype_str": "990",
+      "pdf_url": "https://projects.propublica.org/nonprofits/download-filing?path=2004_06_EO%2F33-1055179_990_200312.pdf"
+    }
+  ],
+  "data_source": "ProPublica Nonprofit Explorer API: https://projects.propublica.org/nonprofits/api/\nIRS Exempt Organizations Business Master File Extract (EO BMF): https://www.irs.gov/charities-non-profits/exempt-organizations-business-master-file-extract-eo-bmf\nIRS Annual Extract of Tax-Exempt Organization Financial Data: https://www.irs.gov/uac/soi-tax-stats-annual-extract-of-tax-exempt-organization-financial-data",
+  "api_version": 2
+}

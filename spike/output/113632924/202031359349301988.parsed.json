@@ -1,0 +1,268 @@
+{
+  "ein": "113632924",
+  "object_id": "202031359349301988",
+  "form_type": "IRS990",
+  "return_version": "2018v3.1",
+  "tax_period_end": "2019-06-30",
+  "tax_period_begin": "2018-07-01",
+  "filer_name": "ROW NEW YORK INC",
+  "amended": false,
+  "return_type": "990",
+  "fye_month": "06",
+  "concepts": {
+    "total_revenue": {
+      "status": "resolved",
+      "value": 10594433,
+      "xpath": "CYTotalRevenueAmt"
+    },
+    "total_expenses": {
+      "status": "resolved",
+      "value": 4621256,
+      "xpath": "CYTotalExpensesAmt"
+    },
+    "revenue_less_expenses": {
+      "status": "resolved",
+      "value": 5973177,
+      "xpath": "CYRevenuesLessExpensesAmt"
+    },
+    "contributions_grants": {
+      "status": "resolved",
+      "value": 10154346,
+      "xpath": "CYContributionsGrantsAmt"
+    },
+    "program_service_revenue": {
+      "status": "resolved",
+      "value": 409382,
+      "xpath": "CYProgramServiceRevenueAmt"
+    },
+    "membership_dues": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "investment_income": {
+      "status": "resolved",
+      "value": 16990,
+      "xpath": "CYInvestmentIncomeAmt"
+    },
+    "fundraising_events_gross": {
+      "status": "resolved",
+      "value": 73285,
+      "xpath": "FundraisingGrossIncomeAmt"
+    },
+    "fundraising_events_net": {
+      "status": "resolved",
+      "value": -44191,
+      "xpath": "FundraisingGrossIncomeAmt - FundraisingDirectExpensesAmt"
+    },
+    "other_revenue": {
+      "status": "resolved",
+      "value": 13715,
+      "xpath": "CYOtherRevenueAmt"
+    },
+    "grants_paid": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "CYGrantsAndSimilarPaidAmt"
+    },
+    "salaries_benefits_total": {
+      "status": "resolved",
+      "value": 3306515,
+      "xpath": "CYSalariesCompEmpBnftPaidAmt"
+    },
+    "officer_compensation": {
+      "status": "resolved",
+      "value": 303982,
+      "xpath": "CompCurrentOfcrDirectorsGrp/TotalAmt"
+    },
+    "professional_fundraising_fees": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "occupancy": {
+      "status": "resolved",
+      "value": 177807,
+      "xpath": "OccupancyGrp/TotalAmt"
+    },
+    "program_service_expense": {
+      "status": "resolved",
+      "value": 3498431,
+      "xpath": "TotalFunctionalExpensesGrp/ProgramServicesAmt"
+    },
+    "management_general_expense": {
+      "status": "resolved",
+      "value": 642451,
+      "xpath": "TotalFunctionalExpensesGrp/ManagementAndGeneralAmt"
+    },
+    "fundraising_expense": {
+      "status": "resolved",
+      "value": 480374,
+      "xpath": "TotalFunctionalExpensesGrp/FundraisingAmt"
+    },
+    "total_assets_eoy": {
+      "status": "resolved",
+      "value": 9367592,
+      "xpath": "TotalAssetsEOYAmt"
+    },
+    "total_liabilities_eoy": {
+      "status": "resolved",
+      "value": 297122,
+      "xpath": "TotalLiabilitiesEOYAmt"
+    },
+    "net_assets_eoy": {
+      "status": "resolved",
+      "value": 9070470,
+      "xpath": "TotalNetAssetsFundBalanceGrp/EOYAmt"
+    },
+    "cash_savings_eoy": {
+      "status": "resolved",
+      "value": 5058123,
+      "xpath": "sum(CashNonInterestBearingGrp/EOYAmt + SavingsAndTempCashInvstGrp/EOYAmt) over 2 node(s)"
+    },
+    "land_buildings_equipment_net": {
+      "status": "resolved",
+      "value": 1825096,
+      "xpath": "LandBldgEquipBasisNetGrp/EOYAmt"
+    },
+    "employee_count": {
+      "status": "resolved",
+      "value": 105,
+      "xpath": "TotalEmployeeCnt"
+    }
+  },
+  "officer_rows": [
+    {
+      "name": "RAYMOND HILL",
+      "title": "CHAIRMAN",
+      "comp": 0,
+      "avg_hours": "4.00"
+    },
+    {
+      "name": "ELISE RUNSDORF NAPACK",
+      "title": "SECRETARY",
+      "comp": 0,
+      "avg_hours": "1.00"
+    },
+    {
+      "name": "KERRY COFFEE",
+      "title": "TREASURER",
+      "comp": 0,
+      "avg_hours": "4.00"
+    },
+    {
+      "name": "AMAL ALY",
+      "title": "DIRECTOR THRU 09/13/18",
+      "comp": 0,
+      "avg_hours": "0.25"
+    },
+    {
+      "name": "MARIA BOURNIAS",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "0.25"
+    },
+    {
+      "name": "FRANCINE CHEW",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "0.25"
+    },
+    {
+      "name": "JACK CARLSON",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "0.25"
+    },
+    {
+      "name": "MORGAN CROOKS",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "0.25"
+    },
+    {
+      "name": "JONATHAN DENHAM",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "6.00"
+    },
+    {
+      "name": "JONATHAN DURHAM",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "0.50"
+    },
+    {
+      "name": "MARCELA FARRELL",
+      "title": "DIRECTOR THRU 12/18/18",
+      "comp": 0,
+      "avg_hours": "0.25"
+    },
+    {
+      "name": "DAN FISHER",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "0.25"
+    },
+    {
+      "name": "GINA GREER",
+      "title": "DIRECTOR THRU 11/01/18",
+      "comp": 0,
+      "avg_hours": "0.25"
+    },
+    {
+      "name": "IAN JOHN",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "1.00"
+    },
+    {
+      "name": "LISA KERBER",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "0.50"
+    },
+    {
+      "name": "CHRISTY LOPER",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "0.25"
+    },
+    {
+      "name": "SHYAMLI MILAM",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "0.25"
+    },
+    {
+      "name": "CAMPBELL MYERS",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "0.25"
+    },
+    {
+      "name": "AMANDA KRAUS",
+      "title": "FOUNDER & CEO",
+      "comp": 158250,
+      "avg_hours": "40.00"
+    },
+    {
+      "name": "RACHEL CYTRON",
+      "title": "EXECUTIVE DIRECTOR AS OF MAY 2019",
+      "comp": 0,
+      "avg_hours": "40.00"
+    },
+    {
+      "name": "KRISTIN TAYLOR",
+      "title": "COO",
+      "comp": 82474,
+      "avg_hours": "32.00"
+    },
+    {
+      "name": "ARSHAY COOPER",
+      "title": "FORMER DIRECTOR/CURRENT CPO",
+      "comp": 82390,
+      "avg_hours": "40.00"
+    }
+  ]
+}
