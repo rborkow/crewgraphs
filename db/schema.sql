@@ -132,11 +132,16 @@ CREATE TYPE core.organization_status AS ENUM (
 --
 
 CREATE TYPE core.organization_type AS ENUM (
-    'nonprofit',
-    'for_profit',
-    'government',
-    'educational_institution',
-    'unincorporated',
+    'community_club',
+    'private_membership_club',
+    'scholastic_program',
+    'collegiate_varsity',
+    'collegiate_club',
+    'university_support_foundation',
+    'booster_club',
+    'adaptive_program',
+    'association',
+    'governing_body',
     'other'
 );
 
@@ -2109,4 +2114,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('002'),
     ('003'),
     ('004'),
-    ('005');
+    ('005'),
+    ('006');
