@@ -24,7 +24,7 @@ SNAPSHOT_FACTS = {
 SOURCE_REGISTRY = {
     "irs_990_xml": {
         "description": "Authoritative IRS Form 990 and 990-EZ electronic filing facts.",
-        "attribution": "IRS e-file data; concept mapping acknowledges the Nonprofit Open Data Collective concordance as reference material.",
+        "attribution": "IRS e-file data; concept mapping acknowledges the Nonprofit Open Data Collective (NODC) concordance as reference material.",
     },
     "irs_bmf": {
         "description": "IRS Exempt Organizations Business Master File identity observations.",
@@ -51,14 +51,14 @@ class PublishInvariantError(RuntimeError):
 
 def publish(db: DatabaseGateway, *, generated_at: str) -> str:
     """Build a validated snapshot, atomically activate it, retain the newest three."""
-    generated = _iso_datetime(generated_at)
-    concept_map = load_concept_map()
     with IngestRun(
         db,
         job_name="publish",
         source="ops",
-        params={"generated_at": generated},
+        params={"generated_at": generated_at},
     ) as run:
+        generated = _iso_datetime(generated_at)
+        concept_map = load_concept_map()
         for stat in (
             "orgs_published",
             "series_rows",
@@ -118,27 +118,34 @@ def publish(db: DatabaseGateway, *, generated_at: str) -> str:
 
         flipped = db.execute(
             """
-            WITH superseded AS (
+            WITH target AS MATERIALIZED (
+                SELECT id
+                FROM ops.publish_snapshot
+                WHERE id = %s AND status = 'building'
+            ), superseded AS (
                 UPDATE ops.publish_snapshot
                 SET status = 'superseded'
-                WHERE status = 'active' AND id <> %s
+                WHERE status = 'active'
+                  AND EXISTS (SELECT 1 FROM target)
                 RETURNING id
             ), pointer AS (
                 INSERT INTO read.published_snapshot
                     (singleton, snapshot_id, created_at, updated_at)
-                VALUES (true, %s, %s::timestamptz, %s::timestamptz)
+                SELECT true, target.id, %s::timestamptz, %s::timestamptz
+                FROM target
                 ON CONFLICT (singleton) DO UPDATE
                 SET snapshot_id = EXCLUDED.snapshot_id,
                     updated_at = EXCLUDED.updated_at
                 RETURNING snapshot_id
             )
-            UPDATE ops.publish_snapshot
+            UPDATE ops.publish_snapshot AS snapshot
             SET status = 'active', activated_at = %s::timestamptz
-            WHERE id = %s AND status = 'building'
+            FROM target
+            WHERE snapshot.id = target.id
               AND EXISTS (SELECT 1 FROM pointer)
-            RETURNING id
+            RETURNING snapshot.id
             """,
-            (snapshot_id, snapshot_id, generated, generated, generated, snapshot_id),
+            (snapshot_id, generated, generated, generated),
         )
         if not flipped:
             raise RuntimeError("publish snapshot was not atomically activated")
@@ -321,7 +328,10 @@ def _invariant_failures(
     )
     for filing_id, filing_facts in sorted(by_filing.items()):
         for result, left, right, label in identities:
-            if all(name in filing_facts for name in (result, left, right)):
+            names = (result, left, right)
+            if all(name in filing_facts for name in names) and all(
+                filing_facts[name].get("amount") is not None for name in names
+            ):
                 actual = _decimal(filing_facts[result]["amount"])
                 expected = _decimal(filing_facts[left]["amount"]) - _decimal(
                     filing_facts[right]["amount"]
@@ -575,7 +585,20 @@ def _validate_build(build: Mapping[str, list[dict[str, Any]]]) -> list[str]:
         source_schema, format_checker=FormatChecker()
     )
     failures = [str(row["message"]) for row in build.get("assembly_errors", [])]
+    series_keys: set[tuple[str, str, int, int]] = set()
     for row in build["series"]:
+        key = (
+            str(row["organization_id"]),
+            str(row["series_key"]),
+            int(row["series_version"]),
+            int(row["tax_year"]),
+        )
+        if key in series_keys:
+            failures.append(
+                "duplicate financial series key "
+                f"{key[0]} {key[1]} v{key[2]} FY{key[3]}"
+            )
+        series_keys.add(key)
         errors = sorted(source_validator.iter_errors(row["source_ref"]), key=_error_key)
         failures.extend(
             f"SourceRef {row['organization_id']} {row['series_key']} "
@@ -825,7 +848,10 @@ def _metric_series(metric: Mapping[str, Any], parser_version: str) -> dict[str, 
     value = _number(metric.get("value"))
     ref = _source_ref(
         value=value,
-        unit=str(metric["unit"]),
+        # SourceRef v1 has no percent unit. The canonical public fixtures encode
+        # fraction-valued percentage metrics as USD; metric_catalog retains the
+        # definition's semantically correct ``percent`` display unit.
+        unit=str(metric["unit"]) if str(metric["unit"]) in {"USD", "count"} else "USD",
         tax_year=int(metric["tax_year"]),
         period_begin=metric.get("tax_period_begin"),
         period_end=metric["fiscal_year_end"],

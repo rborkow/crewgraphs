@@ -86,6 +86,7 @@ source = { editable = "." }
 dependencies = [
     { name = "boto3" },
     { name = "httpx" },
+    { name = "jsonschema" },
     { name = "lxml" },
     { name = "psycopg", extra = ["binary"] },
     { name = "pyyaml" },
@@ -95,7 +96,6 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "jsonschema" },
     { name = "pytest" },
 ]
 
@@ -103,6 +103,7 @@ dev = [
 requires-dist = [
     { name = "boto3" },
     { name = "httpx" },
+    { name = "jsonschema", specifier = ">=4.26.0" },
     { name = "lxml" },
     { name = "psycopg", extras = ["binary"] },
     { name = "pyyaml" },
@@ -111,10 +112,7 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
-dev = [
-    { name = "jsonschema", specifier = ">=4.26.0" },
-    { name = "pytest" },
-]
+dev = [{ name = "pytest" }]
 
 [[package]]
 name = "h11"

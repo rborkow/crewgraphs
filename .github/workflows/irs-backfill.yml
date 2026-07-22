@@ -51,5 +51,11 @@ jobs:
         run: uv run python -m crewgraphs propublica-bootstrap --eins "$EINS"
       - name: Cross-check
         run: uv run python -m crewgraphs cross-check
+      - name: Resolve
+        run: uv run python -m crewgraphs resolve
+      - name: Derive
+        run: uv run python -m crewgraphs derive
+      - name: Publish
+        run: uv run python -m crewgraphs publish
       - name: Run report
         run: uv run python -m crewgraphs run-report

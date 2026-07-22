@@ -62,7 +62,7 @@ class PublishFake:
             snapshot_id = "new-4"
             self.snapshot_ids.append(snapshot_id)
             return [{"id": snapshot_id}]
-        if compact.startswith("WITH superseded AS"):
+        if compact.startswith("WITH target AS MATERIALIZED"):
             self.writes.append(("atomic_flip", tuple(params or ())))
             return [{"id": "new-4"}]
         if compact.startswith("WITH stale AS MATERIALIZED"):
@@ -136,7 +136,7 @@ def source_rows() -> dict[str, list[dict[str, Any]]]:
                 "fiscal_year_end": "2025-06-30",
                 "value": 0.2857,
                 "quality_state": "derived",
-                "unit": "count",
+                "unit": "percent",
                 "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
                 "normalization_version": 1,
                 "filing_id": "filing-june-2024",
@@ -166,7 +166,7 @@ def source_rows() -> dict[str, list[dict[str, Any]]]:
                 "version": 1,
                 "label": "Operating margin",
                 "description": "Revenue less expenses divided by revenue.",
-                "unit": "count",
+                "unit": "percent",
                 "eligibility_rule": {"requires_positive": ["total_revenue"]},
                 "limitation": None,
             }
@@ -342,6 +342,7 @@ def test_published_payload_and_source_refs_validate_against_real_contracts() -> 
     assert all(not list(source_validator.iter_errors(ref)) for ref in refs)
     metric_ref = next(ref for ref in refs if ref["metric"] is not None)
     assert metric_ref["metric"] == {"key": "operating_margin", "version": 1}
+    assert metric_ref["unit"] == "USD"
 
 
 def test_coverage_includes_missing_gap_amendment_and_990n_span() -> None:
@@ -378,10 +379,13 @@ def test_coverage_state_precedence(forms: list[dict[str, Any]], postcards: list[
 def test_publish_flip_is_one_atomic_cte_statement_and_stats_are_collected() -> None:
     db = PublishFake()
     publish(db, generated_at=GENERATED)
-    flips = [query for query, _ in db.calls if query.startswith("WITH superseded AS")]
+    flips = [
+        query for query, _ in db.calls if query.startswith("WITH target AS MATERIALIZED")
+    ]
 
     assert len(flips) == 1
     assert "UPDATE ops.publish_snapshot" in flips[0]
+    assert "status = 'building'" in flips[0]
     assert "INSERT INTO read.published_snapshot" in flips[0]
     assert "ON CONFLICT (singleton) DO UPDATE" in flips[0]
     final = db.table_writes("ingest_run_update")[-1]

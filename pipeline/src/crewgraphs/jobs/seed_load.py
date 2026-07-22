@@ -49,7 +49,7 @@ def seed_load(curator_db: DatabaseGateway, *, csv_path: str | Path, actor: str =
         if current_identifier:
             org_rows = curator_db.execute(
                 """
-                SELECT id, slug, display_name, legal_name, org_type, status, city, state, notes
+                SELECT id, slug, display_name, legal_name, org_type, status, city, state, notes, program_mix
                 FROM core.organization WHERE id = %s
                 """,
                 (current_identifier["organization_id"],),
@@ -183,8 +183,10 @@ def _ensure_identifier(db: DatabaseGateway, actor: str, organization_id: str, cu
         )
         _audit(db, actor, "seed_create_identifier", "external_identifier", str(inserted[0]["id"]), None, desired)
         return 1
-    before = {key: current.get(key) for key in desired}
-    if before == desired:
+    # DB drivers return uuid/date objects; normalize to strings so equality
+    # against the desired dict is type-stable and reruns are true no-ops.
+    before = {key: (str(v) if v is not None else None) for key in desired for v in [current.get(key)]}
+    if before == {key: (str(v) if v is not None else None) for key, v in desired.items()}:
         return 0
     db.execute(
         """
@@ -204,7 +206,7 @@ def _audit(db: DatabaseGateway, actor: str, action: str, entity_type: str, entit
         INSERT INTO core.audit_event (actor, action, entity_type, entity_id, before, after)
         VALUES (%s, %s, %s, %s, %s::jsonb, %s::jsonb)
         """,
-        (actor, action, entity_type, entity_id, json.dumps(before), json.dumps(after)),
+        (actor, action, entity_type, entity_id, json.dumps(before, default=str), json.dumps(after, default=str)),
     )
 
 

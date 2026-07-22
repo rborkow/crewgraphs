@@ -46,14 +46,84 @@ def not_implemented() -> None:
 
 
 for command_name in (
-    "resolve",
-    "derive",
-    "publish",
-    "rollback",
     "backfill",
     "curation",
 ):
     app.command(name=command_name)(not_implemented)
+
+
+@app.command(name="seed-load")
+def seed_load_cmd(
+    csv_path: str = typer.Option("seed/cohort.csv", help="Path to the curated cohort CSV"),
+    actor: str = typer.Option("owner", help="Audit-event actor"),
+) -> None:
+    """Load the curated cohort as the curator role (audited identity writes)."""
+    import os
+
+    from .jobs.seed_load import seed_load
+
+    curator_url = os.environ.get("CURATOR_DATABASE_URL")
+    if not curator_url:
+        typer.echo("CURATOR_DATABASE_URL is required (identity writes are curator-only)")
+        raise typer.Exit(code=1)
+    gateway = PostgresGateway(curator_url)
+    try:
+        typer.echo(seed_load(gateway, csv_path=csv_path, actor=actor))
+    finally:
+        gateway.close()
+
+
+def _db_only_command(job) -> None:
+    settings = Settings.from_env()
+    gateway = PostgresGateway(settings.database_url)
+    try:
+        emit_summary(job(gateway))
+    finally:
+        gateway.close()
+
+
+@app.command(name="resolve")
+def resolve_cmd() -> None:
+    """Sanity-check staged EINs against the identity graph; open review tasks."""
+    from .jobs.resolve import resolve
+
+    _db_only_command(resolve)
+
+
+@app.command(name="derive")
+def derive_cmd() -> None:
+    """Derive canonical filings, facts, people, and metrics from staging."""
+    from .jobs.derive import derive
+
+    _db_only_command(derive)
+
+
+@app.command(name="publish")
+def publish_cmd(
+    generated_at: str = typer.Option(
+        default_factory=lambda: __import__("datetime").datetime.now(
+            __import__("datetime").timezone.utc
+        ).isoformat(),
+        help="ISO timestamp stamped into published payloads",
+    ),
+) -> None:
+    """Build a read-model snapshot, validate contracts, atomically flip the pointer."""
+    from .jobs.publish import publish
+
+    settings = Settings.from_env()
+    gateway = PostgresGateway(settings.database_url)
+    try:
+        emit_summary(publish(gateway, generated_at=generated_at))
+    finally:
+        gateway.close()
+
+
+@app.command(name="rollback")
+def rollback_cmd() -> None:
+    """Repoint the published snapshot to the previous eligible snapshot."""
+    from .jobs.rollback import rollback_publish
+
+    _db_only_command(rollback_publish)
 
 
 @app.command(name="bmf-sync")
