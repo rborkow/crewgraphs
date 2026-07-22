@@ -1,0 +1,184 @@
+{
+  "ein": "030388282",
+  "object_id": "202513219349307836",
+  "form_type": "IRS990",
+  "return_version": "2024v5.2",
+  "tax_period_end": "2025-06-30",
+  "tax_period_begin": "2024-07-01",
+  "filer_name": "FRIENDS OF CONCORD CREW",
+  "amended": false,
+  "return_type": "990",
+  "fye_month": "06",
+  "concepts": {
+    "total_revenue": {
+      "status": "resolved",
+      "value": 225007,
+      "xpath": "CYTotalRevenueAmt"
+    },
+    "total_expenses": {
+      "status": "resolved",
+      "value": 205551,
+      "xpath": "CYTotalExpensesAmt"
+    },
+    "revenue_less_expenses": {
+      "status": "resolved",
+      "value": 19456,
+      "xpath": "CYRevenuesLessExpensesAmt"
+    },
+    "contributions_grants": {
+      "status": "resolved",
+      "value": 76216,
+      "xpath": "CYContributionsGrantsAmt"
+    },
+    "program_service_revenue": {
+      "status": "resolved",
+      "value": 128826,
+      "xpath": "CYProgramServiceRevenueAmt"
+    },
+    "membership_dues": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "investment_income": {
+      "status": "resolved",
+      "value": 3719,
+      "xpath": "CYInvestmentIncomeAmt"
+    },
+    "fundraising_events_gross": {
+      "status": "resolved",
+      "value": 23048,
+      "xpath": "FundraisingGrossIncomeAmt"
+    },
+    "fundraising_events_net": {
+      "status": "resolved",
+      "value": 16246,
+      "xpath": "FundraisingGrossIncomeAmt - FundraisingDirectExpensesAmt"
+    },
+    "other_revenue": {
+      "status": "resolved",
+      "value": 16246,
+      "xpath": "CYOtherRevenueAmt"
+    },
+    "grants_paid": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "CYGrantsAndSimilarPaidAmt"
+    },
+    "salaries_benefits_total": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "CYSalariesCompEmpBnftPaidAmt"
+    },
+    "officer_compensation": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "professional_fundraising_fees": {
+      "status": "absent",
+      "value": null,
+      "xpath": null
+    },
+    "occupancy": {
+      "status": "resolved",
+      "value": 2475,
+      "xpath": "OccupancyGrp/TotalAmt"
+    },
+    "program_service_expense": {
+      "status": "resolved",
+      "value": 163811,
+      "xpath": "TotalFunctionalExpensesGrp/ProgramServicesAmt"
+    },
+    "management_general_expense": {
+      "status": "resolved",
+      "value": 41740,
+      "xpath": "TotalFunctionalExpensesGrp/ManagementAndGeneralAmt"
+    },
+    "fundraising_expense": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "TotalFunctionalExpensesGrp/FundraisingAmt"
+    },
+    "total_assets_eoy": {
+      "status": "resolved",
+      "value": 255769,
+      "xpath": "TotalAssetsEOYAmt"
+    },
+    "total_liabilities_eoy": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "TotalLiabilitiesEOYAmt"
+    },
+    "net_assets_eoy": {
+      "status": "resolved",
+      "value": 255769,
+      "xpath": "TotalNetAssetsFundBalanceGrp/EOYAmt"
+    },
+    "cash_savings_eoy": {
+      "status": "resolved",
+      "value": 124237,
+      "xpath": "sum(CashNonInterestBearingGrp/EOYAmt + SavingsAndTempCashInvstGrp/EOYAmt) over 2 node(s)"
+    },
+    "land_buildings_equipment_net": {
+      "status": "resolved",
+      "value": 131532,
+      "xpath": "LandBldgEquipBasisNetGrp/EOYAmt"
+    },
+    "employee_count": {
+      "status": "resolved",
+      "value": 0,
+      "xpath": "TotalEmployeeCnt"
+    }
+  },
+  "officer_rows": [
+    {
+      "name": "CHRIS GRAHAM",
+      "title": "PRESIDENT",
+      "comp": 0,
+      "avg_hours": "5.00"
+    },
+    {
+      "name": "CHRIS FOLLOMON",
+      "title": "VICE PRESIDENT",
+      "comp": 0,
+      "avg_hours": "7.00"
+    },
+    {
+      "name": "JIM JENSEN",
+      "title": "TREASURER",
+      "comp": 0,
+      "avg_hours": "5.00"
+    },
+    {
+      "name": "EMILY PARKER",
+      "title": "SECRETARY",
+      "comp": 0,
+      "avg_hours": "2.00"
+    },
+    {
+      "name": "SUSAN PAGANO",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "4.00"
+    },
+    {
+      "name": "JEN LEONARD",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "1.00"
+    },
+    {
+      "name": "KIM HOUSTON",
+      "title": "DIRECTOR",
+      "comp": 0,
+      "avg_hours": "2.00"
+    },
+    {
+      "name": "STEVEN GARSIDE",
+      "title": "DIRECTOR",
+      "comp": 28900,
+      "avg_hours": "15.00"
+    }
+  ]
+}
