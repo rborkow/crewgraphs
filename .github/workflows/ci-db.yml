@@ -21,10 +21,17 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/crewgraphs?sslmode=disable
     steps:
       - uses: actions/checkout@v4
-      - uses: amacneil/dbmate-action@v2
-        with:
-          command: up
-        env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/crewgraphs?sslmode=disable
+      - name: Install dbmate
+        run: |
+          sudo curl -fsSL -o /usr/local/bin/dbmate https://github.com/amacneil/dbmate/releases/latest/download/dbmate-linux-amd64
+          sudo chmod +x /usr/local/bin/dbmate
+      - name: Migrate up
+        run: dbmate --no-dump-schema up
+      - name: Rollback all and re-apply
+        run: |
+          for i in 1 2 3 4 5; do dbmate --no-dump-schema rollback; done
+          dbmate --no-dump-schema up
