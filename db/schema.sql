@@ -1705,6 +1705,13 @@ CREATE INDEX efile_index_row_object_id_idx ON staging.efile_index_row USING btre
 
 
 --
+-- Name: efile_index_row_object_uq; Type: INDEX; Schema: staging; Owner: -
+--
+
+CREATE UNIQUE INDEX efile_index_row_object_uq ON staging.efile_index_row USING btree (irs_object_id);
+
+
+--
 -- Name: efile_index_row_source_record_id_idx; Type: INDEX; Schema: staging; Owner: -
 --
 
@@ -1747,6 +1754,13 @@ CREATE INDEX filing_extract_ingest_run_id_idx ON staging.filing_extract USING bt
 
 
 --
+-- Name: filing_extract_object_uq; Type: INDEX; Schema: staging; Owner: -
+--
+
+CREATE UNIQUE INDEX filing_extract_object_uq ON staging.filing_extract USING btree (irs_object_id);
+
+
+--
 -- Name: filing_extract_source_record_id_idx; Type: INDEX; Schema: staging; Owner: -
 --
 
@@ -1758,6 +1772,13 @@ CREATE INDEX filing_extract_source_record_id_idx ON staging.filing_extract USING
 --
 
 CREATE INDEX propublica_org_ein_idx ON staging.propublica_org USING btree (ein);
+
+
+--
+-- Name: propublica_org_ein_uq; Type: INDEX; Schema: staging; Owner: -
+--
+
+CREATE UNIQUE INDEX propublica_org_ein_uq ON staging.propublica_org USING btree (ein);
 
 
 --
@@ -2145,4 +2166,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('005'),
     ('006'),
     ('007'),
-    ('008');
+    ('008'),
+    ('009');

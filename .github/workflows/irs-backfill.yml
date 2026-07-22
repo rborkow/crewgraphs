@@ -1,0 +1,55 @@
+name: IRS backfill
+
+# Runs the acquisition chain for the cohort: BMF -> 990-N -> index -> fetch
+# -> parse -> ProPublica -> cross-check -> report. Manual dispatch; the
+# scheduled monthly workflow lands once resolve/derive/publish complete
+# the chain.
+
+on:
+  workflow_dispatch:
+    inputs:
+      states:
+        description: Comma-separated BMF state codes
+        default: pa,dc,ma,ny,ct,ca,il,tx,nh,wa
+      years:
+        description: Comma-separated e-file index years
+        default: "2020,2021,2023,2024,2025"
+      eins:
+        description: Comma-separated EIN watchlist (seed cohort until seed_load lands)
+        default: "237397498,232744491,530127820,042863756,113632924,331055179,237448092,363508216,272334832,742219650,030388282,811495108"
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: pipeline
+    env:
+      DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      GIT_SHA: ${{ github.sha }}
+      STATES: ${{ inputs.states }}
+      YEARS: ${{ inputs.years }}
+      EINS: ${{ inputs.eins }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync
+      - name: BMF sync
+        run: uv run python -m crewgraphs bmf-sync --states "$STATES" --eins "$EINS"
+      - name: 990-N sync
+        run: uv run python -m crewgraphs epostcard-sync --eins "$EINS"
+      - name: E-file index sync
+        run: uv run python -m crewgraphs efile-index-sync --years "$YEARS" --eins "$EINS"
+      - name: E-file fetch (GT lake)
+        run: uv run python -m crewgraphs efile-fetch
+      - name: E-file parse
+        run: uv run python -m crewgraphs efile-parse
+      - name: ProPublica bootstrap
+        run: uv run python -m crewgraphs propublica-bootstrap --eins "$EINS"
+      - name: Cross-check
+        run: uv run python -m crewgraphs cross-check
+      - name: Run report
+        run: uv run python -m crewgraphs run-report
