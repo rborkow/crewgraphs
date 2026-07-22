@@ -1,11 +1,166 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------------
+   CrewGraphs design tokens — "regatta program, modern instrument".
+   Cold morning-light paper, deep-water ink, regatta-buoy orange for action,
+   varnish gold used sparingly. No other hues except the quality-state glyphs,
+   which are shape+label first and never color-only.
+--------------------------------------------------------------------------- */
+
+@theme {
+  --color-river: #0e1b2c; /* ink / text — deep water navy */
+  --color-paper: #f7f9fb; /* background — cold morning light, slight blue cast */
+  --color-mist: #d9e2ea; /* hairlines, table rules, muted chips */
+  --color-buoy: #e85d26; /* actions, links, provenance affordances, focus rings */
+  --color-gold: #c9a227; /* varnish / medal — sparing: peer-cohort chips, small highlights */
+
+  /* Derived, on-brand only (mixes of the five tokens). */
+  --color-muted: color-mix(in srgb, var(--color-river) 65%, var(--color-paper)); /* secondary text */
+  --color-faint: color-mix(in srgb, var(--color-river) 42%, var(--color-paper)); /* tertiary text */
+  --color-surface: color-mix(in srgb, var(--color-mist) 34%, var(--color-paper)); /* subtle row tint */
+  --color-buoy-ink: color-mix(in srgb, var(--color-buoy) 82%, var(--color-river)); /* link text w/ AA on paper */
+
+  --font-display: var(--font-archivo), "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-public-sans), "Public Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-spline-mono), "Spline Sans Mono", ui-monospace, monospace;
+}
+
+/* --------------------------------------------------------------------------- */
+
 :root {
-  --background: #ffffff;
-  --foreground: #18181b;
+  color-scheme: light;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--color-paper);
+  color: var(--color-river);
+  font-family: var(--font-body);
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Data numerals are always tabular. */
+.font-mono,
+[class~="font-mono"] {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Accessible focus: 2px buoy outline with offset, everywhere. */
+:focus-visible {
+  outline: 2px solid var(--color-buoy);
+  outline-offset: 2px;
+  border-radius: 1px;
+}
+
+/* Links default to buoy; underline is the affordance. */
+a {
+  color: var(--color-buoy-ink);
+  text-underline-offset: 0.18em;
+}
+
+/* --------------------------------------------------------------------------- */
+/* Small reusable primitives — heat-sheet typography and hairline rules.       */
+
+@layer components {
+  /* Expanded-caps section label. */
+  .eyebrow {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-stretch: expanded;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.72rem;
+    line-height: 1.2;
+    color: var(--color-muted);
+  }
+
+  /* The CrewGraphs wordmark — Archivo, expanded, tight caps tracking. */
+  .wordmark {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-stretch: expanded;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* Display headings. */
+  .display {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-stretch: semi-expanded;
+    letter-spacing: -0.005em;
+    line-height: 1.05;
+  }
+
+  /* Hairline rule token. */
+  .hairline {
+    border-color: var(--color-mist);
+  }
+}
+
+/* --------------------------------------------------------------------------- */
+/* Sheet (source drawer) transitions — keyframes so Radix presence waits for    */
+/* them; the reduced-motion block below zeroes their duration.                  */
+
+@keyframes cg-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes cg-overlay-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes cg-sheet-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes cg-sheet-out-right {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.cg-sheet-overlay[data-state="open"] {
+  animation: cg-overlay-in 180ms ease-out;
+}
+.cg-sheet-overlay[data-state="closed"] {
+  animation: cg-overlay-out 150ms ease-in;
+}
+.cg-sheet-content[data-state="open"] {
+  animation: cg-sheet-in-right 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cg-sheet-content[data-state="closed"] {
+  animation: cg-sheet-out-right 200ms ease-in;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

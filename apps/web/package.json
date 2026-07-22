@@ -11,7 +11,9 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@crewgraphs/contracts": "workspace:*",
     "@opennextjs/cloudflare": "latest",
+    "@radix-ui/react-dialog": "latest",
     "@tanstack/react-query": "latest",
     "class-variance-authority": "latest",
     "clsx": "latest",
