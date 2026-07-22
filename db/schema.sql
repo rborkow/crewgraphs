@@ -2173,4 +2173,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('007'),
     ('008'),
     ('009'),
-    ('010');
+    ('010'),
+    ('011');
