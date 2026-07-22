@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "value": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "unit": {
+      "type": "string",
+      "enum": [
+        "USD",
+        "count"
+      ]
+    },
+    "period": {
+      "type": "object",
+      "properties": {
+        "fy_end": {
+          "type": "string",
+          "format": "date",
+          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+        },
+        "label": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "fy_end",
+        "label"
+      ],
+      "additionalProperties": false
+    },
+    "quality_state": {
+      "type": "string",
+      "enum": [
+        "verified",
+        "derived",
+        "partial",
+        "unavailable",
+        "under_review"
+      ]
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "source_key": {
+          "type": "string"
+        },
+        "form_type": {
+          "type": "string",
+          "enum": [
+            "990",
+            "990EZ",
+            "990N"
+          ]
+        },
+        "filing_id": {
+          "type": "string"
+        },
+        "source_path": {
+          "type": "string"
+        },
+        "raw_url": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "source_key",
+        "form_type",
+        "filing_id",
+        "source_path",
+        "raw_url"
+      ],
+      "additionalProperties": false
+    },
+    "retrieved_at": {
+      "type": "string"
+    },
+    "parser_version": {
+      "type": "string"
+    },
+    "metric": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "key": {
+              "type": "string"
+            },
+            "version": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "key",
+            "version"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "value",
+    "unit",
+    "period",
+    "quality_state",
+    "source",
+    "retrieved_at",
+    "parser_version",
+    "metric"
+  ],
+  "additionalProperties": false
+}

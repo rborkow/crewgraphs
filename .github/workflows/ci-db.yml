@@ -1,0 +1,30 @@
+name: Database CI
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: crewgraphs
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d crewgraphs"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: amacneil/dbmate-action@v2
+        with:
+          command: up
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/crewgraphs?sslmode=disable
