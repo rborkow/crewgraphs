@@ -123,6 +123,18 @@ Caching: edge HTML `s-maxage=3600, stale-while-revalidate=86400`; KV directory b
 4. Contract churn on jsonb payloads — JSON Schema validated in both CIs + payload_schema_version + fixture cohort as executable spec.
 5. Audit-boundary discipline with agent-written code — DB role separation is the backstop (pipeline role physically cannot write identity tables).
 
+## Spike outcomes (2026-07-21) — validated revisions
+
+The phase-zero spike (10 real clubs, 28 XMLs, 14 return_versions 2015–2025; see `spike/report.md`) returned **GO** on the concept-map approach: zero xpath failures, and 118/118 anchor values matched ProPublica to the dollar wherever both sides carry a value. Revisions folded into the build:
+
+1. **XML source of record = GT lake keyed by object_id, with an explicit staleness policy.** The lake lags the IRS by months (2026-processed object IDs 404); the classic `s3://irs-form-990` bucket is dead. Add a backfill poller for lagging objects; IRS batch zips remain the only fallback for the freshest filings.
+2. **Build a persistent `EIN → object_id[]` lookup once** (GT all-years index or one-time SQLite ingest of the yearly CSVs) — IRS index CSVs are 50–90MB each, ignore HTTP Range, and scatter one org across processing years. Filter out 990-T at ingest. Join on **EIN only** — the same EIN carries different names across ProPublica vs the IRS index.
+3. **Racing identity ≠ legal filer is the norm** (4 of 10 in the spike: for-profit entanglement, c4/c3 sibling arms, boosters, a 990-N-only university foundation). The relationship layer is core plumbing; expect **~20% of known clubs to be 990-N or dormant** — a designed state, not an error.
+4. **Comparison alignment is on IRS TaxYr with `fye_month` surfaced** — TaxYr ≠ FYE calendar year for June/October filers (3 of 10 in the spike). "Latest common year" = newest TaxYr all compared orgs have filed.
+5. **Officer compensation needs a display rule, not cleaning:** 90% of Part VII rows are $0 volunteer directors. Publish only compensated individuals plus an aggregate volunteer count — less noise, less PII.
+6. **The modern 990 schema is stable** (element names constant since 2013) — the concept map needs a 990 vs 990-EZ fork but no per-version xpath forks. Concordance CSV is Windows-1252, not UTF-8.
+7. **Amendment precedence is wired but unvalidated** — no amended XML appeared in the spike set; ProPublica "R"-suffix form types identify orgs with amendment chains for the next test batch.
+
 ## Launch gates (inherited from PRD §5, unchanged)
 
 ≥95% of cohort has reviewed canonical identity; ≥90% has ≥3 filing observations or an explicit 990-N state; 100% of displayed facts carry source/period/version metadata; no ranking inclusion below a metric's published eligibility rule.

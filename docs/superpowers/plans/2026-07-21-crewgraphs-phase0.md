@@ -12,23 +12,24 @@
 
 ## Phase 0 — Docs, scaffold, spike (parallel tracks)
 
-### Task 0a: Design docs `[lead]`
+### Task 0a: Design docs `[lead]` — DONE
 - [x] Write MVP design spec (`docs/superpowers/specs/2026-07-21-crewgraphs-mvp-design.md`)
 - [x] Write this plan
-- [ ] Commit docs
+- [x] Commit docs
 
-### Task 0b: Repo scaffold `[terra]`
-- [ ] Bun-workspaces monorepo: `apps/web` (Next.js App Router + `@opennextjs/cloudflare`, Tailwind 4, shadcn/ui, TanStack Query, Vitest), `packages/contracts` (SourceRef zod schema + JSON Schema export + tests), `packages/charts` (stub), `pipeline/` (uv + Typer CLI skeleton with all 14 job subcommands stubbed, pytest smoke test), `db/` (dbmate layout), `seed/cohort.csv` header, CI workflows (ci-web, ci-ingest, ci-db), `SETUP.md` (owner checklist)
-- [ ] Acceptance: `bun install` + `bun run typecheck` + vitest (web, contracts) + `uv run pytest` + `python -m crewgraphs --help` (14 subcommands) + OpenNext build all pass locally
-- [ ] Lead review of diff + acceptance output; commit
+### Task 0b: Repo scaffold `[terra]` — DONE
+- [x] Bun-workspaces monorepo: `apps/web` (Next.js App Router + `@opennextjs/cloudflare`, Tailwind 4, shadcn/ui, TanStack Query, Vitest), `packages/contracts` (SourceRef zod schema + JSON Schema export + tests), `packages/charts` (stub), `pipeline/` (uv + Typer CLI skeleton with all 14 job subcommands stubbed, pytest smoke test), `db/` (dbmate layout), `seed/cohort.csv` header, CI workflows (ci-web, ci-ingest, ci-db), `SETUP.md` (owner checklist)
+- [x] Acceptance: `bun install` + `bun run typecheck` + vitest (web, contracts) + `uv run pytest` + `python -m crewgraphs --help` (14 subcommands) + OpenNext build all pass locally
+- [x] Lead review of diff + acceptance output; commit
+  - Lead fixes required: OpenNext build recursion (build script self-invoked → fork bomb; split into `build`/`build:worker`), TypeScript pinned to ^5 (Next 16 rejects the TS7 native preview), bun `--filter` replaced with `bun run --cwd`, `@vitejs/plugin-react` + `@/` alias added to vitest config, `@types/node` + explicit `types` for contracts.
 
-### Task 0c: IRS data spike `[opus worker + lead triage]`
-- [ ] Confirm legal entity + EIN for 10 cohort orgs via ProPublica (ambiguity is a finding — esp. Saugatuck, booster, university foundation)
-- [ ] Locate + fetch 2–3 XML filings per org (GivingTuesday lake primary, IRS index CSVs cross-check), ≥3 distinct schema versions across cohort
-- [ ] First-cut 24-concept extractor (`spike/extract.py`); record xpath resolution rate per return_version; "not on form" tracked separately from "xpath failed"
-- [ ] Cross-check 6 anchor concepts vs ProPublica `filings_with_data`; explain every mismatch
-- [ ] `spike/report.md` answering the 10 spike questions + go/no-go on the concept-map approach
-- [ ] Lead review: fold findings into spec (coverage expectations, concept map v1, any plan revisions); commit spike artifacts (raw XML + outputs; cache/ stays gitignored)
+### Task 0c: IRS data spike `[opus worker + lead triage]` — DONE, verdict GO
+- [x] Confirm legal entity + EIN for 10 cohort orgs via ProPublica (findings: Saugatuck nonprofit dormant/for-profit entangled → Marin substituted; Lincoln Park c4/c3 sibling arms; Husky Rowing Foundation 990-N-only)
+- [x] Locate + fetch 28 XMLs across 10 EINs, 14 distinct return_versions (2015v2.0–2025v4.0)
+- [x] 24-concept extractor: zero xpath failures; resolved/absent($0)/not_on_form distinguished
+- [x] Cross-check: 118/118 comparable anchor values match ProPublica to the dollar; all divergences are ProPublica EZ-NULLs or its 1–2yr lag
+- [x] `spike/report.md` with the 10 answers + GO
+- [x] Lead review: findings folded into spec ("Spike outcomes" section); spike committed
 
 ### Task 0d: Owner setup `[owner]` (unblocks Phase 1 CI + Phase 2 cloud runs; nothing in Phase 0 waits on it)
 - [ ] Neon project; roles `pipeline_rw`, `curator`, `web_ro`; note DATABASE_URL
