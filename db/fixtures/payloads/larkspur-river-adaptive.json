@@ -1,0 +1,9 @@
+{
+  "payload_schema_version": 1,
+  "org_id": "00000000-0000-4000-8000-000000000103",
+  "slug": "larkspur-river-adaptive",
+  "header": {"display_name": "Larkspur River Adaptive", "legal_name": "Larkspur River Adaptive", "city": "Larkspur", "state": "CO", "org_type": "adaptive_program", "program_mix": ["adaptive", "youth"], "website": "https://larkspur-adaptive.example.test", "coverage_state": "990n_only", "blade_state": "none", "filer_note": null},
+  "snapshot": [{"key": "filing_presence", "label": "990-N filing present", "ref": {"value": 1, "unit": "count", "period": {"tax_year": 2024, "fy_end": "2024-12-31", "label": "FY2024 (Jan 2024–Dec 2024)"}, "quality_state": "verified", "source": {"source_key": "irs_990n", "form_type": "990N", "filing_id": "03-0000103-2024-990N", "source_path": "epostcard_presence", "raw_url": "https://example.test/filings/03-0000103-2024-990N.json", "is_amended": false}, "retrieved_at": "2026-07-20T12:00:00Z", "parser_version": "cm-2026.07.1", "metric": null}}],
+  "coverage": [{"tax_year": 2022, "fy_end": "2022-12-31", "status": "990n"}, {"tax_year": 2023, "fy_end": "2023-12-31", "status": "990n"}, {"tax_year": 2024, "fy_end": "2024-12-31", "status": "990n"}],
+  "people": [], "relationships": [], "generated_at": "2026-07-21T12:00:00Z"
+}

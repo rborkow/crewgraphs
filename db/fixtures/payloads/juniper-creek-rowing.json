@@ -1,0 +1,14 @@
+{
+  "payload_schema_version": 1,
+  "org_id": "00000000-0000-4000-8000-000000000108",
+  "slug": "juniper-creek-rowing",
+  "header": {"display_name": "Juniper Creek Rowing", "legal_name": "Juniper Creek Rowing", "city": "Juniper Creek", "state": "NC", "org_type": "booster_club", "program_mix": ["youth", "scholastic"], "website": "https://juniper-creek.example.test", "coverage_state": "990", "blade_state": "club_supplied", "filer_note": "This booster files separately to support Bayward Community Rowing."},
+  "snapshot": [
+    {"key": "total_revenue", "label": "Total revenue", "ref": {"value": 46000, "unit": "USD", "period": {"tax_year": 2024, "fy_end": "2024-12-31", "label": "FY2024 (Jan 2024–Dec 2024)"}, "quality_state": "verified", "source": {"source_key": "irs_990_xml", "form_type": "990", "filing_id": "01-0000108-2024-990", "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt", "raw_url": "https://example.test/filings/01-0000108-2024-990.xml", "is_amended": false}, "retrieved_at": "2026-07-20T12:00:00Z", "parser_version": "cm-2026.07.1", "metric": null}},
+    {"key": "total_expenses", "label": "Total expenses", "ref": {"value": 43000, "unit": "USD", "period": {"tax_year": 2024, "fy_end": "2024-12-31", "label": "FY2024 (Jan 2024–Dec 2024)"}, "quality_state": "verified", "source": {"source_key": "irs_990_xml", "form_type": "990", "filing_id": "01-0000108-2024-990", "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt", "raw_url": "https://example.test/filings/01-0000108-2024-990.xml", "is_amended": false}, "retrieved_at": "2026-07-20T12:00:00Z", "parser_version": "cm-2026.07.1", "metric": null}}
+  ],
+  "coverage": [{"tax_year": 2024, "fy_end": "2024-12-31", "status": "990"}],
+  "people": [],
+  "relationships": [{"relationship_type": "boosters_for", "other_org_slug": "bayward-community-rowing", "other_display_name": "Bayward Community Rowing", "note": "Provides equipment and regatta travel support."}],
+  "generated_at": "2026-07-21T12:00:00Z"
+}

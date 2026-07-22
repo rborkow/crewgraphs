@@ -1,0 +1,13 @@
+{
+  "payload_schema_version": 1,
+  "org_id": "00000000-0000-4000-8000-000000000104",
+  "slug": "harborview-scholastic-oars",
+  "header": {"display_name": "Harborview Scholastic Oars", "legal_name": "Harborview Scholastic Oars", "city": "Harborview", "state": "WA", "org_type": "scholastic_program", "program_mix": ["youth", "scholastic"], "website": "https://harborview-oars.example.test", "coverage_state": "990", "blade_state": "permission_requested", "filer_note": null},
+  "snapshot": [
+    {"key": "total_revenue", "label": "Total revenue", "ref": {"value": 310000, "unit": "USD", "period": {"tax_year": 2024, "fy_end": "2025-06-30", "label": "FY2024 (Jul 2024–Jun 2025)"}, "quality_state": "verified", "source": {"source_key": "irs_990_xml", "form_type": "990", "filing_id": "04-0000104-2024-990", "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt", "raw_url": "https://example.test/filings/04-0000104-2024-990.xml", "is_amended": false}, "retrieved_at": "2026-07-20T12:00:00Z", "parser_version": "cm-2026.07.1", "metric": null}},
+    {"key": "total_expenses", "label": "Total expenses", "ref": {"value": 295000, "unit": "USD", "period": {"tax_year": 2024, "fy_end": "2025-06-30", "label": "FY2024 (Jul 2024–Jun 2025)"}, "quality_state": "verified", "source": {"source_key": "irs_990_xml", "form_type": "990", "filing_id": "04-0000104-2024-990", "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt", "raw_url": "https://example.test/filings/04-0000104-2024-990.xml", "is_amended": false}, "retrieved_at": "2026-07-20T12:00:00Z", "parser_version": "cm-2026.07.1", "metric": null}},
+    {"key": "program_service_revenue", "label": "Program service revenue", "ref": {"value": 260000, "unit": "USD", "period": {"tax_year": 2024, "fy_end": "2025-06-30", "label": "FY2024 (Jul 2024–Jun 2025)"}, "quality_state": "verified", "source": {"source_key": "irs_990_xml", "form_type": "990", "filing_id": "04-0000104-2024-990", "source_path": "/Return/ReturnData/IRS990/ProgramServiceRevenueAmt", "raw_url": "https://example.test/filings/04-0000104-2024-990.xml", "is_amended": false}, "retrieved_at": "2026-07-20T12:00:00Z", "parser_version": "cm-2026.07.1", "metric": null}}
+  ],
+  "coverage": [{"tax_year": 2020, "fy_end": "2021-06-30", "status": "990"}, {"tax_year": 2021, "fy_end": null, "status": "missing"}, {"tax_year": 2022, "fy_end": "2023-06-30", "status": "990"}, {"tax_year": 2023, "fy_end": "2024-06-30", "status": "990"}, {"tax_year": 2024, "fy_end": "2025-06-30", "status": "990"}],
+  "people": [], "relationships": [], "generated_at": "2026-07-21T12:00:00Z"
+}

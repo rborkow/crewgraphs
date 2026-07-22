@@ -4,8 +4,10 @@ version = "0.0.0"
 description = "CrewGraphs ingestion pipeline"
 requires-python = ">=3.12"
 dependencies = [
+  "boto3",
   "httpx",
   "lxml",
+  "psycopg[binary]",
   "pyyaml",
   "rapidfuzz",
   "typer"

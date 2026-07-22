@@ -647,6 +647,8 @@ CREATE TABLE ops.ingest_run (
     started_at timestamp with time zone DEFAULT now() NOT NULL,
     finished_at timestamp with time zone,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
+    source text,
+    error text,
     CONSTRAINT ingest_run_finished_at_check CHECK (((finished_at IS NULL) OR (finished_at >= started_at)))
 );
 
@@ -1502,6 +1504,13 @@ CREATE INDEX ingest_run_job_name_created_at_idx ON ops.ingest_run USING btree (j
 
 
 --
+-- Name: ingest_run_source_idx; Type: INDEX; Schema: ops; Owner: -
+--
+
+CREATE INDEX ingest_run_source_idx ON ops.ingest_run USING btree (source, started_at DESC);
+
+
+--
 -- Name: ingest_run_status_idx; Type: INDEX; Schema: ops; Owner: -
 --
 
@@ -2115,4 +2124,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('003'),
     ('004'),
     ('005'),
-    ('006');
+    ('006'),
+    ('007');
