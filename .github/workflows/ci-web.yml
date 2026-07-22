@@ -15,3 +15,8 @@ jobs:
       - run: bun run --cwd apps/web test
       - run: bun run --cwd packages/contracts test
       - run: bun run --cwd apps/web build:worker
+        env:
+          # Lets wrangler initialize the HYPERDRIVE binding at build time; no
+          # queries run during the build (routes are dynamic, error-page
+          # prerenders degrade without a database).
+          CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE: postgres://placeholder:placeholder@localhost:5432/placeholder

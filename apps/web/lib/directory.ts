@@ -44,7 +44,15 @@ async function fetchSnapshot(): Promise<PublishedSnapshotRow | null> {
  * which need the data-through label and the publish date but not the roster.
  */
 export async function getPublishMeta(): Promise<PublishMeta | null> {
-  const snapshot = await fetchSnapshot();
+  // Rendered from the root layout, including build-time prerenders of error
+  // pages: an unreachable database must degrade to "no freshness line",
+  // never prevent a page (or the 404 page) from rendering.
+  let snapshot: Awaited<ReturnType<typeof fetchSnapshot>>;
+  try {
+    snapshot = await fetchSnapshot();
+  } catch {
+    return null;
+  }
   if (!snapshot) return null;
   const publishedAt =
     snapshot.updated_at instanceof Date ? snapshot.updated_at.toISOString() : snapshot.updated_at;
