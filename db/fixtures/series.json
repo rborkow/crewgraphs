@@ -1,0 +1,1978 @@
+{
+  "bayward-community-rowing": [
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2024,
+      "fy_end": "2025-06-30",
+      "value": 290000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 290000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2025-06-30",
+          "label": "FY2024 (Jul 2024–Jun 2025)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "04-0000111-2024-990",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/04-0000111-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2024,
+      "fy_end": "2025-06-30",
+      "value": 275000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 275000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2025-06-30",
+          "label": "FY2024 (Jul 2024–Jun 2025)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "04-0000111-2024-990",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/04-0000111-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    }
+  ],
+  "blue-heron-community-oars": [
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2024,
+      "fy_end": "2025-06-30",
+      "value": 225000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 225000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2025-06-30",
+          "label": "FY2024 (Jul 2024–Jun 2025)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "07-0000107-2024-990",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/07-0000107-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2024,
+      "fy_end": "2025-06-30",
+      "value": 214000,
+      "quality_state": "partial",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 214000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2025-06-30",
+          "label": "FY2024 (Jul 2024–Jun 2025)"
+        },
+        "quality_state": "partial",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "07-0000107-2024-990",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/07-0000107-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "operating_margin",
+      "tax_year": 2024,
+      "fy_end": "2025-06-30",
+      "value": 0.05,
+      "quality_state": "partial",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 0.05,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2025-06-30",
+          "label": "FY2024 (Jul 2024–Jun 2025)"
+        },
+        "quality_state": "partial",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "07-0000107-2024-990",
+          "source_path": "operating_margin",
+          "raw_url": "https://example.test/filings/07-0000107-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": {
+          "key": "operating_margin",
+          "version": 1
+        }
+      }
+    }
+  ],
+  "cedar-point-barge-club": [
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2024,
+      "fy_end": "2024-10-31",
+      "value": 87000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 87000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2024-10-31",
+          "label": "FY2024 (Nov 2023–Oct 2024)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990EZ",
+          "filing_id": "02-0000102-2024-990EZ",
+          "source_path": "/Return/ReturnData/IRS990EZ/TotalRevenueAmt",
+          "raw_url": "https://example.test/filings/02-0000102-2024-990EZ.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2024,
+      "fy_end": "2024-10-31",
+      "value": 81000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 81000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2024-10-31",
+          "label": "FY2024 (Nov 2023–Oct 2024)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990EZ",
+          "filing_id": "02-0000102-2024-990EZ",
+          "source_path": "/Return/ReturnData/IRS990EZ/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/02-0000102-2024-990EZ.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_assets",
+      "tax_year": 2024,
+      "fy_end": "2024-10-31",
+      "value": 210000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 210000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2024-10-31",
+          "label": "FY2024 (Nov 2023–Oct 2024)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990EZ",
+          "filing_id": "02-0000102-2024-990EZ",
+          "source_path": "/Return/ReturnData/IRS990EZ/TotalAssetsEOYAmt",
+          "raw_url": "https://example.test/filings/02-0000102-2024-990EZ.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    }
+  ],
+  "cobalt-reach-club": [
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2020,
+      "fy_end": "2020-12-31",
+      "value": 260000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 260000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2020,
+          "fy_end": "2020-12-31",
+          "label": "FY2020 (Jan 2020–Dec 2020)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "05-fixture-cobalt-reach-club-2020",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/05-0000112-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2020,
+      "fy_end": "2020-12-31",
+      "value": 248000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 248000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2020,
+          "fy_end": "2020-12-31",
+          "label": "FY2020 (Jan 2020–Dec 2020)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "05-fixture-cobalt-reach-club-2020",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/05-0000112-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2021,
+      "fy_end": "2021-12-31",
+      "value": 285000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 285000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2021,
+          "fy_end": "2021-12-31",
+          "label": "FY2021 (Jan 2021–Dec 2021)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "05-fixture-cobalt-reach-club-2021",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/05-0000112-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2021,
+      "fy_end": "2021-12-31",
+      "value": 270000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 270000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2021,
+          "fy_end": "2021-12-31",
+          "label": "FY2021 (Jan 2021–Dec 2021)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "05-fixture-cobalt-reach-club-2021",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/05-0000112-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2022,
+      "fy_end": "2022-12-31",
+      "value": 0,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 0,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2022,
+          "fy_end": "2022-12-31",
+          "label": "FY2022 (Jan 2022–Dec 2022)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "05-fixture-cobalt-reach-club-2022",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/05-0000112-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2022,
+      "fy_end": "2022-12-31",
+      "value": 0,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 0,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2022,
+          "fy_end": "2022-12-31",
+          "label": "FY2022 (Jan 2022–Dec 2022)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "05-fixture-cobalt-reach-club-2022",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/05-0000112-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2023,
+      "fy_end": "2023-12-31",
+      "value": 315000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 315000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2023,
+          "fy_end": "2023-12-31",
+          "label": "FY2023 (Jan 2023–Dec 2023)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "05-fixture-cobalt-reach-club-2023",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/05-0000112-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2023,
+      "fy_end": "2023-12-31",
+      "value": 300000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 300000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2023,
+          "fy_end": "2023-12-31",
+          "label": "FY2023 (Jan 2023–Dec 2023)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "05-fixture-cobalt-reach-club-2023",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/05-0000112-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2024,
+      "fy_end": "2024-12-31",
+      "value": 340000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 340000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2024-12-31",
+          "label": "FY2024 (Jan 2024–Dec 2024)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "05-fixture-cobalt-reach-club-2024",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/05-0000112-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2024,
+      "fy_end": "2024-12-31",
+      "value": 322000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 322000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2024-12-31",
+          "label": "FY2024 (Jan 2024–Dec 2024)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "05-fixture-cobalt-reach-club-2024",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/05-0000112-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "zero_revenue_year_2022",
+      "tax_year": 2022,
+      "fy_end": "2022-12-31",
+      "value": 0,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 0,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2022,
+          "fy_end": "2022-12-31",
+          "label": "FY2022 (Jan 2022–Dec 2022)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "05-0000112-2022-990",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/05-0000112-2022-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    }
+  ],
+  "harborview-scholastic-oars": [
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2020,
+      "fy_end": "2021-06-30",
+      "value": 180000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 180000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2020,
+          "fy_end": "2021-06-30",
+          "label": "FY2020 (Jul 2020–Jun 2021)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "04-fixture-harborview-scholastic-oars-2020",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/04-0000104-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2020,
+      "fy_end": "2021-06-30",
+      "value": 175000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 175000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2020,
+          "fy_end": "2021-06-30",
+          "label": "FY2020 (Jul 2020–Jun 2021)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "04-fixture-harborview-scholastic-oars-2020",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/04-0000104-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2021,
+      "fy_end": "2022-06-30",
+      "value": null,
+      "quality_state": "unavailable",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": null,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2021,
+          "fy_end": "2022-06-30",
+          "label": "FY2021 (Jul 2021–Jun 2022)"
+        },
+        "quality_state": "unavailable",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "04-fixture-harborview-scholastic-oars-2021",
+          "source_path": "coverage_missing",
+          "raw_url": null,
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2021,
+      "fy_end": "2022-06-30",
+      "value": null,
+      "quality_state": "unavailable",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": null,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2021,
+          "fy_end": "2022-06-30",
+          "label": "FY2021 (Jul 2021–Jun 2022)"
+        },
+        "quality_state": "unavailable",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "04-fixture-harborview-scholastic-oars-2021",
+          "source_path": "coverage_missing",
+          "raw_url": null,
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2022,
+      "fy_end": "2023-06-30",
+      "value": 240000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 240000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2022,
+          "fy_end": "2023-06-30",
+          "label": "FY2022 (Jul 2022–Jun 2023)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "04-fixture-harborview-scholastic-oars-2022",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/04-0000104-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2022,
+      "fy_end": "2023-06-30",
+      "value": 230000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 230000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2022,
+          "fy_end": "2023-06-30",
+          "label": "FY2022 (Jul 2022–Jun 2023)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "04-fixture-harborview-scholastic-oars-2022",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/04-0000104-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2023,
+      "fy_end": "2024-06-30",
+      "value": 280000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 280000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2023,
+          "fy_end": "2024-06-30",
+          "label": "FY2023 (Jul 2023–Jun 2024)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "04-fixture-harborview-scholastic-oars-2023",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/04-0000104-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2023,
+      "fy_end": "2024-06-30",
+      "value": 260000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 260000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2023,
+          "fy_end": "2024-06-30",
+          "label": "FY2023 (Jul 2023–Jun 2024)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "04-fixture-harborview-scholastic-oars-2023",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/04-0000104-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2024,
+      "fy_end": "2025-06-30",
+      "value": 310000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 310000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2025-06-30",
+          "label": "FY2024 (Jul 2024–Jun 2025)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "04-fixture-harborview-scholastic-oars-2024",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/04-0000104-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2024,
+      "fy_end": "2025-06-30",
+      "value": 295000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 295000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2025-06-30",
+          "label": "FY2024 (Jul 2024–Jun 2025)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "04-fixture-harborview-scholastic-oars-2024",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/04-0000104-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "program_service_revenue",
+      "tax_year": 2024,
+      "fy_end": "2025-06-30",
+      "value": 260000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 260000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2025-06-30",
+          "label": "FY2024 (Jul 2024–Jun 2025)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "04-0000104-2024-990",
+          "source_path": "/Return/ReturnData/IRS990/ProgramServiceRevenueAmt",
+          "raw_url": "https://example.test/filings/04-0000104-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    }
+  ],
+  "juniper-creek-rowing": [
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2024,
+      "fy_end": "2024-12-31",
+      "value": 46000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 46000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2024-12-31",
+          "label": "FY2024 (Jan 2024–Dec 2024)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "01-0000108-2024-990",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/01-0000108-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2024,
+      "fy_end": "2024-12-31",
+      "value": 43000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 43000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2024-12-31",
+          "label": "FY2024 (Jan 2024–Dec 2024)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "01-0000108-2024-990",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/01-0000108-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    }
+  ],
+  "larkspur-river-adaptive": [],
+  "millbrook-community-rowing": [
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2020,
+      "fy_end": "2021-06-30",
+      "value": 520000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 520000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2020,
+          "fy_end": "2021-06-30",
+          "label": "FY2020 (Jul 2020–Jun 2021)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "01-fixture-millbrook-community-rowing-2020",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/01-0000101-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2020,
+      "fy_end": "2021-06-30",
+      "value": 500000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 500000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2020,
+          "fy_end": "2021-06-30",
+          "label": "FY2020 (Jul 2020–Jun 2021)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "01-fixture-millbrook-community-rowing-2020",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/01-0000101-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2021,
+      "fy_end": "2022-06-30",
+      "value": 560000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 560000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2021,
+          "fy_end": "2022-06-30",
+          "label": "FY2021 (Jul 2021–Jun 2022)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "01-fixture-millbrook-community-rowing-2021",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/01-0000101-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2021,
+      "fy_end": "2022-06-30",
+      "value": 525000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 525000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2021,
+          "fy_end": "2022-06-30",
+          "label": "FY2021 (Jul 2021–Jun 2022)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "01-fixture-millbrook-community-rowing-2021",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/01-0000101-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2022,
+      "fy_end": "2023-06-30",
+      "value": 590000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 590000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2022,
+          "fy_end": "2023-06-30",
+          "label": "FY2022 (Jul 2022–Jun 2023)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "01-fixture-millbrook-community-rowing-2022",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/01-0000101-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2022,
+      "fy_end": "2023-06-30",
+      "value": 545000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 545000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2022,
+          "fy_end": "2023-06-30",
+          "label": "FY2022 (Jul 2022–Jun 2023)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "01-fixture-millbrook-community-rowing-2022",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/01-0000101-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2023,
+      "fy_end": "2024-06-30",
+      "value": 615000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 615000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2023,
+          "fy_end": "2024-06-30",
+          "label": "FY2023 (Jul 2023–Jun 2024)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "01-fixture-millbrook-community-rowing-2023",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/01-0000101-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2023,
+      "fy_end": "2024-06-30",
+      "value": 570000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 570000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2023,
+          "fy_end": "2024-06-30",
+          "label": "FY2023 (Jul 2023–Jun 2024)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "01-fixture-millbrook-community-rowing-2023",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/01-0000101-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2024,
+      "fy_end": "2025-06-30",
+      "value": 640000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 640000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2025-06-30",
+          "label": "FY2024 (Jul 2024–Jun 2025)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "01-fixture-millbrook-community-rowing-2024",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/01-0000101-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2024,
+      "fy_end": "2025-06-30",
+      "value": 590000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 590000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2025-06-30",
+          "label": "FY2024 (Jul 2024–Jun 2025)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "01-fixture-millbrook-community-rowing-2024",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/01-0000101-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "net_assets",
+      "tax_year": 2024,
+      "fy_end": "2025-06-30",
+      "value": 1400000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 1400000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2025-06-30",
+          "label": "FY2024 (Jul 2024–Jun 2025)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "01-0000101-2024-990",
+          "source_path": "/Return/ReturnData/IRS990/NetAssetsOrFundBalancesEOYAmt",
+          "raw_url": "https://example.test/filings/01-0000101-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "grant_revenue",
+      "tax_year": 2024,
+      "fy_end": "2025-06-30",
+      "value": 90000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 90000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2025-06-30",
+          "label": "FY2024 (Jul 2024–Jun 2025)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "01-0000101-2024-990",
+          "source_path": "/Return/ReturnData/IRS990/GrantsAndContributionsAmt",
+          "raw_url": "https://example.test/filings/01-0000101-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    }
+  ],
+  "northfield-masters-rowing": [
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2024,
+      "fy_end": "2024-12-31",
+      "value": 515000,
+      "quality_state": "under_review",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 515000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2024-12-31",
+          "label": "FY2024 (Jan 2024–Dec 2024)"
+        },
+        "quality_state": "under_review",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "06-0000106-2024-990",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/06-0000106-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2024,
+      "fy_end": "2024-12-31",
+      "value": 480000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 480000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2024-12-31",
+          "label": "FY2024 (Jan 2024–Dec 2024)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "06-0000106-2024-990",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/06-0000106-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "net_assets",
+      "tax_year": 2024,
+      "fy_end": "2024-12-31",
+      "value": 920000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 920000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2024-12-31",
+          "label": "FY2024 (Jan 2024–Dec 2024)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "06-0000106-2024-990",
+          "source_path": "/Return/ReturnData/IRS990/NetAssetsOrFundBalancesEOYAmt",
+          "raw_url": "https://example.test/filings/06-0000106-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    }
+  ],
+  "pineglass-collegiate-club": [
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2020,
+      "fy_end": "2020-10-31",
+      "value": 330000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 330000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2020,
+          "fy_end": "2020-10-31",
+          "label": "FY2020 (Nov 2020–Oct 2020)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "05-fixture-pineglass-collegiate-club-2020",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/05-0000105-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2020,
+      "fy_end": "2020-10-31",
+      "value": 320000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 320000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2020,
+          "fy_end": "2020-10-31",
+          "label": "FY2020 (Nov 2020–Oct 2020)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "05-fixture-pineglass-collegiate-club-2020",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/05-0000105-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2021,
+      "fy_end": "2021-10-31",
+      "value": 365000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 365000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2021,
+          "fy_end": "2021-10-31",
+          "label": "FY2021 (Nov 2021–Oct 2021)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "05-fixture-pineglass-collegiate-club-2021",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/05-0000105-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2021,
+      "fy_end": "2021-10-31",
+      "value": 350000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 350000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2021,
+          "fy_end": "2021-10-31",
+          "label": "FY2021 (Nov 2021–Oct 2021)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "05-fixture-pineglass-collegiate-club-2021",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/05-0000105-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2022,
+      "fy_end": "2022-10-31",
+      "value": 395000,
+      "quality_state": "verified",
+      "is_amended": true,
+      "unit": "USD",
+      "source_ref": {
+        "value": 395000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2022,
+          "fy_end": "2022-10-31",
+          "label": "FY2022 (Nov 2022–Oct 2022)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "05-fixture-pineglass-collegiate-club-2022",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/05-0000105-2024-990.xml",
+          "is_amended": true
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2022,
+      "fy_end": "2022-10-31",
+      "value": 380000,
+      "quality_state": "verified",
+      "is_amended": true,
+      "unit": "USD",
+      "source_ref": {
+        "value": 380000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2022,
+          "fy_end": "2022-10-31",
+          "label": "FY2022 (Nov 2022–Oct 2022)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "05-fixture-pineglass-collegiate-club-2022",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/05-0000105-2024-990.xml",
+          "is_amended": true
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2023,
+      "fy_end": "2023-10-31",
+      "value": 425000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 425000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2023,
+          "fy_end": "2023-10-31",
+          "label": "FY2023 (Nov 2023–Oct 2023)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "05-fixture-pineglass-collegiate-club-2023",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/05-0000105-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2023,
+      "fy_end": "2023-10-31",
+      "value": 405000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 405000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2023,
+          "fy_end": "2023-10-31",
+          "label": "FY2023 (Nov 2023–Oct 2023)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "05-fixture-pineglass-collegiate-club-2023",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/05-0000105-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2024,
+      "fy_end": "2024-10-31",
+      "value": 455000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 455000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2024-10-31",
+          "label": "FY2024 (Nov 2024–Oct 2024)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "05-fixture-pineglass-collegiate-club-2024",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/05-0000105-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2024,
+      "fy_end": "2024-10-31",
+      "value": 430000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 430000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2024-10-31",
+          "label": "FY2024 (Nov 2024–Oct 2024)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "05-fixture-pineglass-collegiate-club-2024",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/05-0000105-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "net_assets",
+      "tax_year": 2024,
+      "fy_end": "2024-10-31",
+      "value": 800000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 800000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2024-10-31",
+          "label": "FY2024 (Nov 2023–Oct 2024)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "05-0000105-2024-990",
+          "source_path": "/Return/ReturnData/IRS990/NetAssetsOrFundBalancesEOYAmt",
+          "raw_url": "https://example.test/filings/05-0000105-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "amended_total_revenue",
+      "tax_year": 2022,
+      "fy_end": "2022-10-31",
+      "value": 398000,
+      "quality_state": "verified",
+      "is_amended": true,
+      "unit": "USD",
+      "source_ref": {
+        "value": 398000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2022,
+          "fy_end": "2022-10-31",
+          "label": "FY2022 (Nov 2021–Oct 2022)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "05-0000105-2022-990-amended",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/05-0000105-2022-990-amended.xml",
+          "is_amended": true
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    }
+  ],
+  "redstone-river-collective": [
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2024,
+      "fy_end": "2025-06-30",
+      "value": 275000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 275000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2025-06-30",
+          "label": "FY2024 (Jul 2024–Jun 2025)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "03-0000110-2024-990",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/03-0000110-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2024,
+      "fy_end": "2025-06-30",
+      "value": 250000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 250000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2025-06-30",
+          "label": "FY2024 (Jul 2024–Jun 2025)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "03-0000110-2024-990",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/03-0000110-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "net_assets",
+      "tax_year": 2024,
+      "fy_end": "2025-06-30",
+      "value": 470000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 470000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2025-06-30",
+          "label": "FY2024 (Jul 2024–Jun 2025)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "03-0000110-2024-990",
+          "source_path": "/Return/ReturnData/IRS990/NetAssetsOrFundBalancesEOYAmt",
+          "raw_url": "https://example.test/filings/03-0000110-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    }
+  ],
+  "silverplain-river-collective": [
+    {
+      "series_key": "total_revenue",
+      "tax_year": 2024,
+      "fy_end": "2024-10-31",
+      "value": 385000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 385000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2024-10-31",
+          "label": "FY2024 (Nov 2023–Oct 2024)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "02-0000109-2024-990",
+          "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
+          "raw_url": "https://example.test/filings/02-0000109-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "total_expenses",
+      "tax_year": 2024,
+      "fy_end": "2024-10-31",
+      "value": 350000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 350000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2024-10-31",
+          "label": "FY2024 (Nov 2023–Oct 2024)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "02-0000109-2024-990",
+          "source_path": "/Return/ReturnData/IRS990/TotalExpensesAmt",
+          "raw_url": "https://example.test/filings/02-0000109-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    },
+    {
+      "series_key": "net_assets",
+      "tax_year": 2024,
+      "fy_end": "2024-10-31",
+      "value": 610000,
+      "quality_state": "verified",
+      "is_amended": false,
+      "unit": "USD",
+      "source_ref": {
+        "value": 610000,
+        "unit": "USD",
+        "period": {
+          "tax_year": 2024,
+          "fy_end": "2024-10-31",
+          "label": "FY2024 (Nov 2023–Oct 2024)"
+        },
+        "quality_state": "verified",
+        "source": {
+          "source_key": "irs_990_xml",
+          "form_type": "990",
+          "filing_id": "02-0000109-2024-990",
+          "source_path": "/Return/ReturnData/IRS990/NetAssetsOrFundBalancesEOYAmt",
+          "raw_url": "https://example.test/filings/02-0000109-2024-990.xml",
+          "is_amended": false
+        },
+        "retrieved_at": "2026-07-20T12:00:00Z",
+        "parser_version": "cm-2026.07.1",
+        "metric": null
+      }
+    }
+  ]
+}

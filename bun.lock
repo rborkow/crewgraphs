@@ -9,6 +9,7 @@
       "name": "@crewgraphs/web",
       "version": "0.0.0",
       "dependencies": {
+        "@crewgraphs/charts": "workspace:*",
         "@crewgraphs/contracts": "workspace:*",
         "@opennextjs/cloudflare": "latest",
         "@radix-ui/react-dialog": "latest",

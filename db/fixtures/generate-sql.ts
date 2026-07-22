@@ -5,6 +5,7 @@ import { directoryBlobSchema, orgProfilePayloadSchema } from "../../packages/con
 const fixtureDir = new URL("./", import.meta.url);
 const payloadDir = new URL("./payloads/", import.meta.url);
 const outputPath = new URL("./fixtures.sql", import.meta.url);
+const seriesOutputPath = new URL("./series.json", import.meta.url);
 const snapshotId = "00000000-0000-4000-8000-000000000001";
 const generatedAt = "2026-07-21T12:00:00Z";
 
@@ -98,8 +99,26 @@ for (const payload of payloads) {
   lines.push(`INSERT INTO read.org_profile (snapshot_id, organization_id, payload, payload_schema_version, created_at) VALUES (${sqlText(snapshotId)}, ${sqlText(payload.org_id)}, ${sqlJson(payload)}::jsonb, ${payload.payload_schema_version}, ${sqlText(generatedAt)});`);
 }
 
+// The read.org_financial_series rows, also emitted as db/fixtures/series.json
+// keyed by slug — the exact same tidy/long rows the SQL carries, with each
+// row's source_ref, so the web tier can build AnnualSeries + a provenance map
+// (keyed by series_key/tax_year) for chart-point SourceDrawers. Emitting it in
+// lockstep here keeps the JSON and the SQL from ever drifting.
+interface SeriesJsonRow {
+  series_key: string;
+  tax_year: number;
+  fy_end: string;
+  value: number | null;
+  quality_state: string;
+  is_amended: boolean;
+  unit: string;
+  source_ref: unknown;
+}
+const seriesJson: Record<string, SeriesJsonRow[]> = {};
+
 let seriesId = 300;
 for (const payload of payloads) {
+  const rows: SeriesJsonRow[] = (seriesJson[payload.slug] = []);
   const directoryEntry = directory.entries.find((entry) => entry.slug === payload.slug)!;
   const financialFacts = payload.snapshot.filter((fact) => fact.ref.unit === "USD");
   const historical = historicalSeries[payload.slug];
@@ -112,6 +131,7 @@ for (const payload of payloads) {
         const fyEnd = coverage.fy_end ?? expectedFyEnd(taxYear, directoryEntry.fye_month!);
         const ref = historicalRef(fact.ref, value, taxYear, fyEnd, coverage.status, payload.slug);
         lines.push(`INSERT INTO read.org_financial_series (id, snapshot_id, organization_id, series_key, series_version, tax_year, fiscal_year_end, value, quality_state, is_amended, source_ref, created_at) VALUES (${sqlText(uuid(seriesId++))}, ${sqlText(snapshotId)}, ${sqlText(payload.org_id)}, ${sqlText(seriesKey)}, 1, ${taxYear}, ${sqlText(fyEnd)}, ${value === null ? "NULL" : value}, ${sqlText(ref.quality_state)}, ${ref.source.is_amended}, ${sqlJson(ref)}::jsonb, ${sqlText(generatedAt)});`);
+        rows.push({ series_key: seriesKey, tax_year: taxYear, fy_end: fyEnd, value, quality_state: ref.quality_state, is_amended: ref.source.is_amended, unit: ref.unit, source_ref: ref });
       }
     }
   }
@@ -119,6 +139,7 @@ for (const payload of payloads) {
     if (historical && (fact.key === "total_revenue" || fact.key === "total_expenses")) continue;
     const ref = fact.ref;
     lines.push(`INSERT INTO read.org_financial_series (id, snapshot_id, organization_id, series_key, series_version, tax_year, fiscal_year_end, value, quality_state, is_amended, source_ref, created_at) VALUES (${sqlText(uuid(seriesId++))}, ${sqlText(snapshotId)}, ${sqlText(payload.org_id)}, ${sqlText(fact.key)}, 1, ${ref.period.tax_year}, ${sqlText(ref.period.fy_end)}, ${ref.value === null ? "NULL" : ref.value}, ${sqlText(ref.quality_state)}, ${ref.source.is_amended}, ${sqlJson(ref)}::jsonb, ${sqlText(generatedAt)});`);
+    rows.push({ series_key: fact.key, tax_year: ref.period.tax_year, fy_end: ref.period.fy_end, value: ref.value, quality_state: ref.quality_state, is_amended: ref.source.is_amended, unit: ref.unit, source_ref: ref });
   }
 }
 
@@ -141,4 +162,6 @@ lines.push(`INSERT INTO read.org_slug_history (slug, snapshot_id, org_id, is_cur
 lines.push("COMMIT;", "");
 
 await writeFile(outputPath, lines.join("\n"));
+await writeFile(seriesOutputPath, `${JSON.stringify(seriesJson, null, 2)}\n`);
 console.log(`Wrote ${outputPath.pathname} (${payloads.length} payloads, ${seriesId - 300} financial rows).`);
+console.log(`Wrote ${seriesOutputPath.pathname} (${Object.keys(seriesJson).length} orgs).`);
