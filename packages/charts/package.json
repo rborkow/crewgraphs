@@ -8,6 +8,6 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "typescript": "latest"
+    "typescript": "^5"
   }
 }

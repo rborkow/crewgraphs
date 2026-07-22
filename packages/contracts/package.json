@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@types/node": "latest",
-    "typescript": "latest",
+    "typescript": "^5",
     "vitest": "latest"
   }
 }
