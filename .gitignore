@@ -12,3 +12,4 @@ spike/cache/
 dist/
 coverage/
 *.tsbuildinfo
+!.env.example

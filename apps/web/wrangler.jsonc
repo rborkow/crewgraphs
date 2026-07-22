@@ -11,15 +11,15 @@
   "hyperdrive": [
     {
       "binding": "HYPERDRIVE",
-      // Replace with the Hyperdrive ID from SETUP.md.
-      "id": "REPLACE_WITH_HYPERDRIVE_ID"
+      // Hyperdrive config "crewgraphs-web" -> Neon (web_ro role)
+      "id": "2c7d018ae9ac484295250bf861d7218a"
     }
   ],
   "kv_namespaces": [
     {
       "binding": "KV",
-      // Replace with the KV namespace ID from SETUP.md.
-      "id": "REPLACE_WITH_KV_NAMESPACE_ID"
+      // KV namespace "crewgraphs-web"
+      "id": "2614e1f65b44458884a9334d9bc449ce"
     }
   ]
 }
