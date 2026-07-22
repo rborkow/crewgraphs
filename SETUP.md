@@ -1,8 +1,10 @@
 # CrewGraphs owner setup
 
-Status as of 2026-07-21: steps 1–4, 6, and 7 are DONE (Hyperdrive `crewgraphs-web` → Neon as `web_ro`; KV `crewgraphs-web`; crewgraphs.com + www bound; deployed). Remaining: the Neon role fix below, GitHub secrets (step 5, needed before Phase 2 cloud ingestion), and the `/admin/*` Access policy (step 8, needed before the admin routes exist).
+Status as of 2026-07-21: steps 1–7 are DONE (Hyperdrive `crewgraphs-web` → Neon as `web_ro`; KV `crewgraphs-web`; crewgraphs.com + www bound; deployed; GitHub secrets set; Neon roles recreated via SQL with separation verified). Remaining: only the `/admin/*` Access policy (step 8, needed when the admin routes land in Phase 3).
 
-## Required: recreate Neon roles via SQL
+## RESOLVED: recreate Neon roles via SQL
+
+*(Completed 2026-07-21: console roles deleted by owner, recreated via SQL, all separation checks pass. Kept for reference — any future role must be created via SQL, never the Neon console.)*
 
 The `pipeline_rw` / `curator` / `web_ro` roles were created in the Neon console, which makes them members of `neon_superuser` — that membership carries `pg_read_all_data`/`pg_write_all_data` and silently bypasses the grant-based role separation the migrations set up. `neondb_owner` cannot demote or drop console-created roles, so:
 
@@ -24,7 +26,7 @@ SELECT app.apply_phase1_role_grants();
 2. ~~Create the Cloudflare R2 bucket `crewgraphs-raw`.~~ DONE.
 3. ~~Create a Cloudflare Hyperdrive configuration pointing at Neon, then paste its ID into `apps/web/wrangler.jsonc`.~~ DONE (`crewgraphs-web`, connects as `web_ro`; no VPC/tunnel — Neon's public TLS endpoint with password auth).
 4. ~~Create a Cloudflare KV namespace, then paste its ID into `apps/web/wrangler.jsonc`.~~ DONE (`crewgraphs-web`).
-5. Add GitHub secrets to `rborkow/crewgraphs`: `NEON_DATABASE_URL`, `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`. (R2 API token: Cloudflare dashboard → R2 → Manage API Tokens → Object Read & Write scoped to `crewgraphs-raw`.) Needed before Phase 2 cloud ingestion; CI runs without them.
+5. ~~Add GitHub secrets to `rborkow/crewgraphs`: `NEON_DATABASE_URL`, `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`.~~ DONE (all four verified present 2026-07-21).
 6. ~~Run `wrangler login` on the owner workstation.~~ DONE.
 7. ~~Bind `crewgraphs.com` to the Worker with a Cloudflare custom domain.~~ DONE (apex + www, via `routes` in wrangler.jsonc).
 8. Add a Cloudflare Access policy for `/admin/*` for the owner email. (Do when admin routes land in Phase 3.)
