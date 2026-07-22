@@ -7,6 +7,7 @@ from collections.abc import Mapping
 from typing import Any
 
 from ..db import DatabaseGateway
+from ..quarantine import quarantine
 from ..runlog import IngestRun
 
 
@@ -33,7 +34,7 @@ def cross_check(db: DatabaseGateway) -> str:
             run.add_stat(stat, 0)
         extracts = db.execute(
             """
-            SELECT id, source_record_id, ein, irs_object_id, concepts
+            SELECT id, source_record_id, ein, irs_object_id, concepts, tax_period_end
             FROM staging.filing_extract
             """
         )
@@ -80,13 +81,34 @@ def _cross_check_extract(
 ) -> None:
     document = _as_mapping(extract.get("concepts"))
     if document is None:
-        raise ValueError(f"filing_extract {extract.get('id')} concepts is not a JSON object")
+        quarantine(
+            db,
+            run.id or "",
+            "cross_check",
+            str(extract.get("irs_object_id") or extract.get("id")),
+            "cross_check_bad_extract",
+            details={"filing_extract_id": str(extract.get("id")), "problem": "concepts is not a JSON object"},
+        )
+        run.add_stat("quarantines")
+        return
     # Filing extraction stages the complete parsed-document envelope.  Supporting
     # a direct concept map keeps this boundary usable by simple staging clients.
     concepts = _as_mapping(document.get("concepts")) or document
-    tax_period = tax_prd_from_end(str(document.get("tax_period_end") or ""))
+    # tax_period_end is a header column (migration 010); the jsonb fallback keeps
+    # older staged rows comparable.
+    period_end = extract.get("tax_period_end") or document.get("tax_period_end")
+    tax_period = tax_prd_from_end(str(period_end or ""))
     if not tax_period:
-        raise ValueError(f"filing_extract {extract.get('id')} has no tax_period_end")
+        quarantine(
+            db,
+            run.id or "",
+            "cross_check",
+            str(extract.get("irs_object_id") or extract.get("id")),
+            "cross_check_missing_tax_period",
+            details={"filing_extract_id": str(extract.get("id"))},
+        )
+        run.add_stat("quarantines")
+        return
     pp_filing = pp_filings.get(tax_period)
 
     for concept, pp_field in ANCHORS.items():

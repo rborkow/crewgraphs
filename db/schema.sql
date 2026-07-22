@@ -941,7 +941,12 @@ CREATE TABLE staging.filing_extract (
     concepts jsonb DEFAULT '{}'::jsonb NOT NULL,
     people jsonb DEFAULT '[]'::jsonb NOT NULL,
     warnings jsonb DEFAULT '[]'::jsonb NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    form_type text,
+    return_version text,
+    tax_period_begin date,
+    tax_period_end date,
+    amended_return boolean DEFAULT false NOT NULL
 );
 
 
@@ -2167,4 +2172,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('006'),
     ('007'),
     ('008'),
-    ('009');
+    ('009'),
+    ('010');

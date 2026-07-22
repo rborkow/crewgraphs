@@ -63,7 +63,7 @@ def test_efile_parse_drives_validated_extractor_and_quarantines_bad_xml() -> Non
     assert stats["parse_failures"] == 1
     inserts = [call for call in db.calls if "INSERT INTO staging.filing_extract" in call[0]]
     assert len(inserts) == 2
-    inserted_concepts = {params[3]: json.loads(params[4]) for _, params in inserts}
+    inserted_concepts = {params[3]: json.loads(params[9]) for _, params in inserts}
     golden_990 = json.loads((fixtures / "202121129349301317.parsed.json").read_text())["concepts"]
     golden_ez = json.loads((fixtures / "202133159349200948.parsed.json").read_text())["concepts"]
     for name in ("total_revenue", "total_expenses", "officer_compensation"):

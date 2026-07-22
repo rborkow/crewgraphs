@@ -55,8 +55,9 @@ def efile_parse(
                 """
                 INSERT INTO staging.filing_extract
                     (ingest_run_id, source_record_id, ein, irs_object_id,
-                     concepts, people, warnings)
-                VALUES (%s, %s, %s, %s, %s::jsonb, %s::jsonb, %s::jsonb)
+                     form_type, return_version, tax_period_begin, tax_period_end,
+                     amended_return, concepts, people, warnings)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s::jsonb, %s::jsonb)
                 ON CONFLICT DO NOTHING
                 """,
                 (
@@ -64,6 +65,11 @@ def efile_parse(
                     source_record_id,
                     extracted.ein,
                     object_id,
+                    extracted.form_type,
+                    extracted.return_version,
+                    extracted.tax_period_begin,
+                    extracted.tax_period_end,
+                    extracted.amended,
                     json.dumps({name: asdict(result) for name, result in extracted.concepts.items()}),
                     json.dumps([asdict(row) for row in extracted.officer_rows]),
                     json.dumps([]),
