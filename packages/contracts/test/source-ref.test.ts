@@ -99,6 +99,23 @@ describe("orgProfilePayloadSchema", () => {
   it("rejects the wrong payload_schema_version", () => {
     expect(orgProfilePayloadSchema.safeParse({ ...payload, payload_schema_version: 99 }).success).toBe(false);
   });
+
+  it("defaults role_flags for payloads published before capture", () => {
+    const parsed = orgProfilePayloadSchema.parse(payload);
+    expect(parsed.people[0].compensated[0].role_flags).toEqual([]);
+  });
+
+  it("rejects a role flag outside the Part VII checkbox set", () => {
+    const person = {
+      ...payload.people[0].compensated[0],
+      role_flags: ["board_chair"]
+    };
+    const bad = {
+      ...payload,
+      people: [{ ...payload.people[0], compensated: [person] }]
+    };
+    expect(orgProfilePayloadSchema.safeParse(bad).success).toBe(false);
+  });
 });
 
 describe("directoryBlobSchema", () => {

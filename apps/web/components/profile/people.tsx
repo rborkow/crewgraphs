@@ -2,6 +2,15 @@ import type { OrgProfilePayload } from "@crewgraphs/contracts";
 import { ProvenancedValue } from "@/components/provenanced-value";
 import { DrawerLink } from "@/components/profile/drawer-link";
 
+/** Display labels for the Form 990 Part VII position checkboxes. */
+const ROLE_LABELS: Record<string, string> = {
+  individual_trustee_or_director: "Trustee/Director",
+  officer: "Officer",
+  key_employee: "Key employee",
+  highest_compensated_employee: "Highest compensated",
+  former_officer_director_trustee: "Former"
+};
+
 /**
  * People from filings. Per the spike display rule, only compensated individuals
  * are listed; the many $0 volunteer directors are collapsed into one aggregate
@@ -46,7 +55,16 @@ export function People({
                     {year.compensated.map((person) => (
                       <tr key={person.name} className="border-b border-mist last:border-0">
                         <td className="py-2 pr-4 text-river">{person.name}</td>
-                        <td className="py-2 pr-4 text-muted">{person.title ?? "—"}</td>
+                        <td className="py-2 pr-4 text-muted">
+                          {person.title ?? "—"}
+                          {person.role_flags.length > 0 ? (
+                            <span className="block text-xs text-faint">
+                              {person.role_flags
+                                .map((flag) => ROLE_LABELS[flag] ?? flag)
+                                .join(" · ")}
+                            </span>
+                          ) : null}
+                        </td>
                         <td className="py-2 pr-4 text-right font-mono text-river">
                           {person.avg_hours_week ?? "—"}
                         </td>

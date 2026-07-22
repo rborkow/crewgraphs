@@ -619,7 +619,8 @@ CREATE TABLE core.person_role (
     nontaxable_benefits numeric(16,2),
     related_organization_compensation numeric(16,2),
     role_flags text[] DEFAULT ARRAY[]::text[] NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    avg_hours_week numeric(5,2)
 );
 
 
@@ -2176,4 +2177,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('009'),
     ('010'),
     ('011'),
-    ('012');
+    ('012'),
+    ('013');

@@ -27,6 +27,19 @@ class OfficerRow:
     title: str | None
     comp: int | None
     avg_hours: str | None
+    other_comp: int | None
+    related_org_comp: int | None
+    role_flags: tuple[str, ...]
+
+
+# Form 990 Part VII position checkboxes; the 990-EZ officer table has none.
+_ROLE_FLAGS_990 = (
+    ("IndividualTrusteeOrDirectorInd", "individual_trustee_or_director"),
+    ("OfficerInd", "officer"),
+    ("KeyEmployeeInd", "key_employee"),
+    ("HighestCompensatedEmployeeInd", "highest_compensated_employee"),
+    ("FormerOfcrDirectorTrusteeInd", "former_officer_director_trustee"),
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -115,7 +128,8 @@ def _find_form(root: etree._Element) -> tuple[etree._Element, str]:
 
 
 def _officer_rows(form: etree._Element, form_type: str) -> tuple[OfficerRow, ...]:
-    if form_type == "IRS990":
+    is_990 = form_type == "IRS990"
+    if is_990:
         group, name, title, comp, hours = (
             "e:Form990PartVIISectionAGrp",
             "e:PersonNm",
@@ -136,12 +150,27 @@ def _officer_rows(form: etree._Element, form_type: str) -> tuple[OfficerRow, ...
         result = element.xpath(xpath, namespaces=NS)
         return (result[0].text or "").strip() if result else None
 
+    def role_flags(element: etree._Element) -> tuple[str, ...]:
+        # A checkbox is checked by presence (fixed "X" value in the IRS schema).
+        if not is_990:
+            return ()
+        return tuple(
+            flag
+            for tag, flag in _ROLE_FLAGS_990
+            if element.xpath(f"e:{tag}", namespaces=NS)
+        )
+
     return tuple(
         OfficerRow(
             name=group_text(element, name) or group_text(element, "e:NamePerson"),
             title=group_text(element, title),
             comp=_as_int(group_text(element, comp)),
             avg_hours=group_text(element, hours),
+            other_comp=_as_int(group_text(element, "e:OtherCompensationAmt")) if is_990 else None,
+            related_org_comp=(
+                _as_int(group_text(element, "e:ReportableCompFromRltdOrgAmt")) if is_990 else None
+            ),
+            role_flags=role_flags(element),
         )
         for element in form.xpath(group, namespaces=NS)
     )

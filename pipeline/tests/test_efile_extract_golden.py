@@ -50,3 +50,35 @@ def test_extract_filing_matches_spike_golden_concepts_and_headers(json_path: Pat
         concept: _normalise_concept(result)
         for concept, result in expected["concepts"].items()
     }
+
+
+def test_extract_filing_captures_990_part_vii_compensation_and_role_flags() -> None:
+    extract = extract_filing(
+        (FIXTURES / "202031719349300818.xml").read_bytes(), load_concept_map()
+    )
+
+    rows = {row.name: row for row in extract.officer_rows}
+    officer = rows["SANDY ARMSTRONG"]
+    assert officer.title == "Executive Dir."
+    assert officer.comp == 140539
+    assert officer.other_comp == 20334
+    assert officer.related_org_comp == 0
+    assert officer.avg_hours == "40.00"
+    assert officer.role_flags == ("officer",)
+    director = rows["Raoul Wertz"]
+    assert director.comp == 0
+    assert director.role_flags == ("individual_trustee_or_director",)
+
+
+def test_extract_filing_990ez_officer_rows_have_no_990_only_fields() -> None:
+    extract = extract_filing(
+        (FIXTURES / "202133159349200948.xml").read_bytes(), load_concept_map()
+    )
+
+    rows = {row.name: row for row in extract.officer_rows}
+    compensated = rows["STEVEN GARSIDE"]
+    assert compensated.comp == 3850
+    assert compensated.avg_hours == "1.00"
+    assert compensated.other_comp is None
+    assert compensated.related_org_comp is None
+    assert compensated.role_flags == ()

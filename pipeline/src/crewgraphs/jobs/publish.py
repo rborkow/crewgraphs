@@ -269,7 +269,8 @@ def _load_source_rows(db: DatabaseGateway) -> dict[str, list[dict[str, Any]]]:
             SELECT pr.id AS person_role_id, pr.filing_id, pr.person_name,
                    pr.title, pr.reportable_compensation, pr.other_compensation,
                    pr.deferred_compensation, pr.nontaxable_benefits,
-                   pr.related_organization_compensation, pr.role_flags,
+                   pr.related_organization_compensation, pr.avg_hours_week,
+                   pr.role_flags, pr.created_at AS captured_at,
                    f.organization_id, f.form_type, f.tax_period_begin,
                    f.tax_period_end, f.tax_year, f.amended_return,
                    sr.created_at AS retrieved_at
@@ -960,6 +961,7 @@ def _people_year(
     *,
     parser_version: str,
 ) -> dict[str, Any] | None:
+    rows = _latest_captures(rows)
     if not rows:
         return None
     filing_id = str(filing["filing_id"])
@@ -989,7 +991,8 @@ def _people_year(
             {
                 "name": str(row["person_name"]),
                 "title": _optional_string(row.get("title")),
-                "avg_hours_week": None,
+                "avg_hours_week": _number(row.get("avg_hours_week")),
+                "role_flags": [str(flag) for flag in _sequence(row.get("role_flags"))],
                 "total_comp": value,
                 "ref": _source_ref(
                     value=value,
@@ -1031,6 +1034,30 @@ def _people_year(
         "volunteer_count": volunteer_count,
         "ref": group_ref,
     }
+
+
+def _latest_captures(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Collapse superseded person_role rows to the newest capture per person.
+
+    Derive never updates core rows; a richer re-parse inserts a new row for the
+    same (filing, person, title) instead. Later captures win here, so published
+    profiles show the fullest extraction while old rows stay behind as evidence.
+    """
+
+    def order(row: Mapping[str, Any]) -> tuple[str, str]:
+        captured_at = row.get("captured_at")
+        return (
+            _iso_datetime(captured_at) if captured_at is not None else "",
+            str(row.get("person_role_id")),
+        )
+
+    latest: dict[tuple[str, str | None], dict[str, Any]] = {}
+    for row in rows:
+        key = (str(row["person_name"]), _optional_string(row.get("title")))
+        current = latest.get(key)
+        if current is None or order(row) > order(current):
+            latest[key] = row
+    return [row for row in rows if latest[(str(row["person_name"]), _optional_string(row.get("title")))] is row]
 
 
 def _source_ref(
