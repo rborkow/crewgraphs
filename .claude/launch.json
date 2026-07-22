@@ -3,12 +3,10 @@
   "configurations": [
     {
       "name": "web",
-      "runtimeExecutable": "bun",
+      "runtimeExecutable": "bash",
       "runtimeArgs": [
-        "run",
-        "--cwd",
-        "apps/web",
-        "dev"
+        "-c",
+        "set -a && source .env && set +a && exec bun run --cwd apps/web dev"
       ],
       "port": 3000,
       "autoPort": true

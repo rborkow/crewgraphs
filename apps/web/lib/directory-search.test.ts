@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { directory } from "@/lib/directory";
+import { fixtureDirectory } from "@/test/fixtures";
 import {
   buildFacets,
   entryMatchesQuery,
@@ -11,7 +11,7 @@ import {
   type DirectoryQueryState
 } from "@/lib/directory-search";
 
-const entries = directory.entries;
+const entries = fixtureDirectory.entries;
 const bySlug = (slug: string) => {
   const entry = entries.find((e) => e.slug === slug);
   if (!entry) throw new Error(`fixture missing ${slug}`);

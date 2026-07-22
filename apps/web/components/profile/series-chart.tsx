@@ -5,7 +5,10 @@ import { ChartWithTable, type AnnualSeries, type ChartKind } from "@crewgraphs/c
 import type { SourceRef } from "@crewgraphs/contracts";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { SourceDrawer } from "@/components/source-drawer";
-import { provenanceKey } from "@/lib/profile-data";
+// Import the pure helper from the db-free read-model module — importing it from
+// the profile-data seam would drag the server-only `pg` client into this client
+// component's browser bundle.
+import { provenanceKey } from "@/lib/read-model";
 
 export interface SeriesChartProps {
   series: AnnualSeries;

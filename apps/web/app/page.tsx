@@ -1,8 +1,13 @@
 import { Suspense } from "react";
-import { directory } from "@/lib/directory";
+import { getDirectory } from "@/lib/directory";
 import { DirectoryExplorer } from "@/components/directory/directory-explorer";
 
-export default function HomePage() {
+// The roster is read live from the published snapshot on each request.
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const directory = await getDirectory();
+
   return (
     <main className="mx-auto w-full max-w-5xl px-5 sm:px-8">
       {/* Hero — kept concise so search sits above the fold on a laptop. */}

@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { directory } from "@/lib/directory";
+import { fixtureDirectory } from "@/test/fixtures";
 import { DirectoryExplorer } from "./directory-explorer";
 
 function renderExplorer() {
-  return render(<DirectoryExplorer entries={directory.entries} />);
+  return render(<DirectoryExplorer entries={fixtureDirectory.entries} />);
 }
 
 const search = () => screen.getByPlaceholderText(/Search clubs, programs, boosters/);

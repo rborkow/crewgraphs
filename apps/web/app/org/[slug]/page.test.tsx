@@ -14,7 +14,7 @@ vi.mock("next/link", () => ({
 
 // notFound()/permanentRedirect() throw control-flow errors that Next catches at
 // the framework boundary; here we make them throw digest-carrying errors so the
-// route's 404 and 301 behavior is unit-testable without the Next runtime.
+// route's 404 and 308 behavior is unit-testable without the Next runtime.
 vi.mock("next/navigation", () => ({
   notFound: () => {
     const error = new Error("NEXT_NOT_FOUND") as Error & { digest: string };
@@ -28,21 +28,48 @@ vi.mock("next/navigation", () => ({
   }
 }));
 
-import OrgProfilePage, { generateMetadata, generateStaticParams } from "./page";
-import { getProfile, getRouteSlugs, resolveSlug, SLUG_HISTORY } from "@/lib/profile-data";
+// The data-access seams are mocked so the page's routing/metadata glue is
+// exercised offline. provenanceKey (used by the chart wrapper) is the real
+// pure helper. Component behaviors are tested by rendering the presentational
+// components directly with fixture payloads, below.
+vi.mock("@/lib/profile-data", async () => {
+  const { provenanceKey } = await vi.importActual<typeof import("@/lib/read-model")>(
+    "@/lib/read-model"
+  );
+  return {
+    provenanceKey,
+    resolveSlug: vi.fn(),
+    getProfile: vi.fn(),
+    getTrends: vi.fn()
+  };
+});
+vi.mock("@/lib/directory", () => ({
+  getPublishMeta: vi.fn(async () => ({
+    snapshot_id: "snap",
+    published_at: "2026-07-22T18:50:46.994Z",
+    data_through_label: "Data through the Jul 22, 2026 publish"
+  }))
+}));
+
+import OrgProfilePage, { generateMetadata } from "./page";
+import { getProfile, getTrends, resolveSlug } from "@/lib/profile-data";
+import { IdentityHeader } from "@/components/profile/identity-header";
 import { SnapshotFacts } from "@/components/profile/snapshot-facts";
+import { FinancialTrends } from "@/components/profile/financial-trends";
 import { People } from "@/components/profile/people";
+import { fixturePayload, fixtureTrends } from "@/test/fixtures";
 import { sampleRef } from "@/test/source-ref.fixture";
 
 afterEach(cleanup);
 
-async function renderPage(slug: string) {
-  return render(await OrgProfilePage({ params: Promise.resolve({ slug }) }));
-}
+// ---------------------------------------------------------------------------
+// Presentational components (fixture payloads as props — fully offline)
+// ---------------------------------------------------------------------------
 
-describe("org profile page", () => {
-  it("renders the identity header and the filer note for the booster org", async () => {
-    await renderPage("juniper-creek-rowing");
+describe("profile components", () => {
+  it("renders the identity header and the filer note for the booster org", () => {
+    const { header, org_id } = fixturePayload("juniper-creek-rowing");
+    render(<IdentityHeader header={header} orgId={org_id} />);
     expect(screen.getByRole("heading", { level: 1 }).textContent).toContain("Juniper Creek Rowing");
     // Whose money is shown is surfaced as a visible trust note, not a footnote.
     expect(
@@ -50,8 +77,16 @@ describe("org profile page", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows the 990-N explainer and no charts for a 990-N-only filer", async () => {
-    await renderPage("larkspur-river-adaptive");
+  it("shows the 990-N explainer and no charts for a 990-N-only filer", () => {
+    const profile = fixturePayload("larkspur-river-adaptive");
+    render(
+      <FinancialTrends
+        slug={profile.slug}
+        coverage={profile.coverage}
+        coverageState={profile.header.coverage_state}
+        trends={fixtureTrends(profile.slug)}
+      />
+    );
     expect(screen.getByText(/This organization files Form 990-N/)).toBeInTheDocument();
     // No chart/table figure is rendered — the explainer stands in for empty charts.
     expect(screen.queryByTestId("cg-chart-region")).toBeNull();
@@ -59,7 +94,7 @@ describe("org profile page", () => {
   });
 
   it("opens the source drawer from a snapshot fact", () => {
-    const profile = getProfile("millbrook-community-rowing")!;
+    const profile = fixturePayload("millbrook-community-rowing");
     render(<SnapshotFacts snapshot={profile.snapshot} slug={profile.slug} />);
 
     const trigger = screen.getByRole("button", { name: /\$640,000/ });
@@ -72,9 +107,17 @@ describe("org profile page", () => {
     ).toBeInTheDocument();
   });
 
-  it("wires chart points to the source drawer and disables the missing-year point", async () => {
+  it("wires chart points to the source drawer and disables the missing-year point", () => {
     // Harborview (story org 4): FY2021 is a missing filing.
-    await renderPage("harborview-scholastic-oars");
+    const profile = fixturePayload("harborview-scholastic-oars");
+    render(
+      <FinancialTrends
+        slug={profile.slug}
+        coverage={profile.coverage}
+        coverageState={profile.header.coverage_state}
+        trends={fixtureTrends(profile.slug)}
+      />
+    );
 
     // The missing year is a discoverable-but-disabled 'no filing' button in
     // each chart (revenue and expenses).
@@ -124,50 +167,66 @@ describe("org profile page", () => {
       screen.getByRole("button", { name: /12 volunteer board members, \$0 compensation/ })
     ).toBeInTheDocument();
   });
+});
+
+// ---------------------------------------------------------------------------
+// Page routing + metadata glue (data seam mocked)
+// ---------------------------------------------------------------------------
+
+async function renderPage(slug: string) {
+  return render(await OrgProfilePage({ params: Promise.resolve({ slug }) }));
+}
+
+describe("org profile page routing", () => {
+  it("composes the page for a current slug", async () => {
+    const profile = fixturePayload("millbrook-community-rowing");
+    vi.mocked(resolveSlug).mockResolvedValue({ kind: "current", slug: profile.slug });
+    vi.mocked(getProfile).mockResolvedValue(profile);
+    vi.mocked(getTrends).mockResolvedValue(fixtureTrends(profile.slug));
+
+    await renderPage(profile.slug);
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toContain(
+      "Millbrook Community Rowing"
+    );
+    // The snapshot fact renders (the figure also appears in the trend chart, so
+    // there is more than one $640,000 trigger on the composed page).
+    expect(screen.getAllByRole("button", { name: /\$640,000/ }).length).toBeGreaterThan(0);
+    // The data-through label threaded from getPublishMeta into the sources footer.
+    expect(screen.getByText(/Data through the Jul 22, 2026 publish/)).toBeInTheDocument();
+  });
 
   it("builds the metadata title from the org name", async () => {
+    vi.mocked(getProfile).mockResolvedValue(fixturePayload("millbrook-community-rowing"));
     const meta = await generateMetadata({
       params: Promise.resolve({ slug: "millbrook-community-rowing" })
     });
     expect(meta.title).toBe("Millbrook Community Rowing — CrewGraphs");
   });
-});
 
-describe("renamed-org slug history", () => {
-  it("maps a renamed org's old slug to its current slug", () => {
-    expect(SLUG_HISTORY["redstone-river-club-301s"]).toBe("redstone-river-collective");
-    expect(resolveSlug("redstone-river-club-301s")).toEqual({
+  it("permanent-redirects a renamed org's old slug", async () => {
+    vi.mocked(resolveSlug).mockResolvedValue({
       kind: "redirect",
       slug: "redstone-river-collective"
     });
-    expect(resolveSlug("redstone-river-collective")).toEqual({
-      kind: "current",
-      slug: "redstone-river-collective"
-    });
-    // generateStaticParams must include the old slug so the route can 301 it.
-    expect(getRouteSlugs()).toContain("redstone-river-club-301s");
-    expect(generateStaticParams()).toContainEqual({ slug: "redstone-river-club-301s" });
-  });
-
-  it("permanent-redirects the old slug at the route level", async () => {
     let error: unknown;
     try {
       await OrgProfilePage({ params: Promise.resolve({ slug: "redstone-river-club-301s" }) });
     } catch (e) {
       error = e;
     }
-    expect(error).toBeDefined();
     const digest = (error as { digest?: string })?.digest ?? String(error);
     expect(digest).toContain("redstone-river-collective");
+    expect(digest).toContain("308");
   });
 
   it("404s an unknown slug", async () => {
+    vi.mocked(resolveSlug).mockResolvedValue({ kind: "not_found" });
     let error: unknown;
     try {
       await OrgProfilePage({ params: Promise.resolve({ slug: "not-a-real-club" }) });
     } catch (e) {
       error = e;
     }
-    expect(error).toBeDefined();
+    expect((error as { digest?: string })?.digest).toBe("NEXT_NOT_FOUND");
   });
 });

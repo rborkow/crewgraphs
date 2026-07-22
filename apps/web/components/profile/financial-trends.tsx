@@ -1,5 +1,5 @@
 import type { OrgProfilePayload } from "@crewgraphs/contracts";
-import { getTrends } from "@/lib/profile-data";
+import type { Trends } from "@/lib/profile-data";
 import { SeriesChart } from "@/components/profile/series-chart";
 import { CoverageTimeline } from "@/components/profile/coverage-timeline";
 import { CoverageExplainer } from "@/components/profile/coverage-explainer";
@@ -10,17 +10,22 @@ import { CoverageExplainer } from "@/components/profile/coverage-explainer";
  * chartable series (a 990-N-only filer), the coverage explainer stands in for
  * empty charts. The filing-coverage timeline always shows which years are on
  * record, so missing years are legible even without a chart.
+ *
+ * Presentational: the page fetches `trends` (via `getTrends`) and passes them in,
+ * so this component stays synchronous and renders offline in tests.
  */
 export function FinancialTrends({
   slug,
   coverage,
-  coverageState
+  coverageState,
+  trends
 }: {
   slug: string;
   coverage: OrgProfilePayload["coverage"];
   coverageState: OrgProfilePayload["header"]["coverage_state"];
+  trends: Trends;
 }) {
-  const { charts, provenance } = getTrends(slug);
+  const { charts, provenance } = trends;
 
   return (
     <section className="border-b border-mist py-8">

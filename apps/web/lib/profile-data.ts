@@ -1,220 +1,105 @@
+import type { OrgProfilePayload } from "@crewgraphs/contracts";
+import { query } from "@/lib/db";
 import {
-  orgProfilePayloadSchema,
-  type OrgProfilePayload,
-  type SourceRef
-} from "@crewgraphs/contracts";
-import type { AnnualSeries, ChartKind, QualityState, SeriesUnit } from "@crewgraphs/charts";
-import { formatUSD, formatCount } from "@crewgraphs/charts";
-
-// Profile content: static imports of the fixture payloads, each validated
-// through the shared contract at module scope so drift fails loudly. In
-// production this whole module is the seam where the real read-model query
-// (read.org_profile / read.org_financial_series) swaps in; nothing above it
-// knows the data comes from fixtures.
-import bayward from "../../../db/fixtures/payloads/bayward-community-rowing.json";
-import blueHeron from "../../../db/fixtures/payloads/blue-heron-community-oars.json";
-import cedarPoint from "../../../db/fixtures/payloads/cedar-point-barge-club.json";
-import cobalt from "../../../db/fixtures/payloads/cobalt-reach-club.json";
-import harborview from "../../../db/fixtures/payloads/harborview-scholastic-oars.json";
-import juniper from "../../../db/fixtures/payloads/juniper-creek-rowing.json";
-import larkspur from "../../../db/fixtures/payloads/larkspur-river-adaptive.json";
-import millbrook from "../../../db/fixtures/payloads/millbrook-community-rowing.json";
-import northfield from "../../../db/fixtures/payloads/northfield-masters-rowing.json";
-import pineglass from "../../../db/fixtures/payloads/pineglass-collegiate-club.json";
-import redstone from "../../../db/fixtures/payloads/redstone-river-collective.json";
-import silverplain from "../../../db/fixtures/payloads/silverplain-river-collective.json";
-
-import seriesJson from "../../../db/fixtures/series.json";
-
-// ---------------------------------------------------------------------------
-// Profiles
-// ---------------------------------------------------------------------------
-
-const RAW_PAYLOADS: unknown[] = [
-  bayward,
-  blueHeron,
-  cedarPoint,
-  cobalt,
-  harborview,
-  juniper,
-  larkspur,
-  millbrook,
-  northfield,
-  pineglass,
-  redstone,
-  silverplain
-];
-
-const PROFILES: Map<string, OrgProfilePayload> = new Map(
-  RAW_PAYLOADS.map((raw) => {
-    const payload = orgProfilePayloadSchema.parse(raw);
-    return [payload.slug, payload] as const;
-  })
-);
+  groupTrends,
+  mapProfilePayload,
+  resolveFromRows,
+  type FinancialSeriesRow,
+  type SlugHistoryRow,
+  type SlugResolution,
+  type TrendChart,
+  type Trends
+} from "@/lib/read-model";
+import { getPublishedSnapshotId } from "@/lib/directory";
 
 /**
- * Renamed-org slug history: `read.org_slug_history` non-current rows. Old slugs
- * are never reused; a request for one must permanent-redirect (301/308) to the
- * organization's current slug. Hardcoded from the fixtures (story-10 org,
- * Redstone, was published under an earlier slug).
+ * Profile read-model access. This is the seam the page components consume; the
+ * component-facing types (Trends, SlugResolution, …) and `provenanceKey` are
+ * re-exported unchanged so nothing above this module knows the data now comes
+ * from Postgres (via the Hyperdrive binding) rather than fixtures.
+ *
+ * Every query filters on the single published snapshot id and is parameterized.
+ * Payloads are parsed through the shared contract at the boundary (the contract
+ * is the gate): an invalid payload throws rather than rendering.
  */
-export const SLUG_HISTORY: Record<string, string> = {
-  "redstone-river-club-301s": "redstone-river-collective"
-};
 
-/** Current, canonical slugs — the pages that render directly. */
-export function getCurrentSlugs(): string[] {
-  return [...PROFILES.keys()].sort();
-}
-
-/** Every slug the route must respond to: current pages plus 301 sources. */
-export function getRouteSlugs(): string[] {
-  return [...getCurrentSlugs(), ...Object.keys(SLUG_HISTORY)].sort();
-}
-
-export type SlugResolution =
-  | { kind: "current"; slug: string }
-  | { kind: "redirect"; slug: string }
-  | { kind: "not_found" };
-
-/** Resolve an incoming slug to a current page, a 301 target, or a 404. */
-export function resolveSlug(slug: string): SlugResolution {
-  if (PROFILES.has(slug)) return { kind: "current", slug };
-  const redirectTo = SLUG_HISTORY[slug];
-  if (redirectTo) return { kind: "redirect", slug: redirectTo };
-  return { kind: "not_found" };
-}
-
-export function getProfile(slug: string): OrgProfilePayload | null {
-  return PROFILES.get(slug) ?? null;
-}
-
-// ---------------------------------------------------------------------------
-// Financial series (trends) + chart-point provenance
-// ---------------------------------------------------------------------------
-
-interface SeriesJsonRow {
-  series_key: string;
-  tax_year: number;
-  fy_end: string;
-  value: number | null;
-  quality_state: string;
-  is_amended: boolean;
-  unit: string;
-  source_ref: SourceRef;
-}
-
-const SERIES_BY_SLUG = seriesJson as unknown as Record<string, SeriesJsonRow[]>;
-
-/** Human labels for the charted concepts. */
-const SERIES_LABELS: Record<string, string> = {
-  total_revenue: "Total revenue",
-  total_expenses: "Total expenses"
-};
+// Re-export the component-facing shapes so nothing above this seam needs to
+// know they originate in the read-model module. (`provenanceKey` intentionally
+// stays in the db-free read-model module — client components import it there.)
+export type { Trends, TrendChart, SlugResolution };
 
 /**
- * The concept series rendered as financial-trend charts. The read model carries
- * many namespaced keys (net assets, derived ratios, …) but revenue and expenses
- * are the annual trajectory; other facts live in the snapshot, not as charts.
+ * Resolve an incoming slug against the published directory + slug history:
+ * a current page, a permanent-redirect target for a renamed org's old slug,
+ * or a 404.
  */
-const TREND_SERIES_KEYS = ["total_revenue", "total_expenses"] as const;
+export async function resolveSlug(slug: string): Promise<SlugResolution> {
+  const snapshotId = await getPublishedSnapshotId();
+  if (!snapshotId) return { kind: "not_found" };
 
-/** The provenance-map key the chart consumer looks up on point activation. */
-export function provenanceKey(seriesKey: string, taxYear: number): string {
-  return `${seriesKey}::${taxYear}`;
+  const [directoryRows, historyRows] = await Promise.all([
+    query<{ organization_id: string; slug: string }>(
+      "SELECT organization_id, slug FROM read.org_directory WHERE snapshot_id = $1",
+      [snapshotId]
+    ),
+    query<SlugHistoryRow>(
+      "SELECT slug, org_id, is_current FROM read.org_slug_history WHERE snapshot_id = $1",
+      [snapshotId]
+    )
+  ]);
+
+  return resolveFromRows(slug, directoryRows, historyRows);
 }
 
-export interface TrendChart {
-  series: AnnualSeries;
-  ariaSummary: string;
-  kind: ChartKind;
-}
+/** The org profile payload for a current slug, or null when there is none. */
+export async function getProfile(slug: string): Promise<OrgProfilePayload | null> {
+  const snapshotId = await getPublishedSnapshotId();
+  if (!snapshotId) return null;
 
-export interface Trends {
-  charts: TrendChart[];
-  /** SourceRef by `${series_key}::${tax_year}` — opens the chart-point drawer. */
-  provenance: Record<string, SourceRef>;
-}
-
-const NUMBER_WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight"];
-
-function numberWord(n: number): string {
-  return NUMBER_WORDS[n] ?? String(n);
-}
-
-/**
- * One honest sentence describing a series for the SVG `aria-label`, calling out
- * missing and amended fiscal years explicitly (they are product facts, not
- * noise). E.g. "Total revenue, five fiscal years FY2020–FY2024, ranging
- * $180,000–$310,000; FY2021 missing."
- */
-function buildAriaSummary(series: AnnualSeries): string {
-  const points = series.points;
-  const fmt = (v: number) => (series.unit === "USD" ? formatUSD(v) : formatCount(v));
-  const first = points[0].tax_year;
-  const last = points[points.length - 1].tax_year;
-  const span = points.length === 1 ? `FY${first}` : `FY${first}–FY${last}`;
-
-  const values = points.filter((p) => p.value !== null).map((p) => p.value as number);
-  const missing = points.filter((p) => p.value === null).map((p) => `FY${p.tax_year}`);
-  const amended = points.filter((p) => p.is_amended).map((p) => `FY${p.tax_year}`);
-
-  let body: string;
-  if (values.length === 0) body = "no reported values";
-  else if (values.length === 1) body = fmt(values[0]);
-  else body = `ranging ${fmt(Math.min(...values))}–${fmt(Math.max(...values))}`;
-
-  const yearWord = points.length === 1 ? "fiscal year" : "fiscal years";
-  let summary = `${series.label}, ${numberWord(points.length)} ${yearWord} ${span}, ${body}`;
-  if (missing.length > 0) summary += `; ${missing.join(", ")} missing`;
-  if (amended.length > 0) summary += `; ${amended.join(", ")} amended`;
-  return `${summary}.`;
-}
-
-function toAnnualSeries(seriesKey: string, rows: SeriesJsonRow[]): AnnualSeries {
-  const points = [...rows]
-    .sort((a, b) => a.tax_year - b.tax_year)
-    .map((row) => ({
-      tax_year: row.tax_year,
-      fy_end: row.fy_end,
-      value: row.value,
-      quality_state: row.quality_state as QualityState,
-      is_amended: row.is_amended,
-      label: row.source_ref.period.label
-    }));
-  return {
-    key: seriesKey,
-    label: SERIES_LABELS[seriesKey] ?? seriesKey,
-    unit: (rows[0]?.unit as SeriesUnit) ?? "USD",
-    points
-  };
+  const rows = await query<{ payload: unknown }>(
+    `SELECT p.payload
+       FROM read.org_profile p
+       JOIN read.org_directory d
+         ON d.snapshot_id = p.snapshot_id AND d.organization_id = p.organization_id
+      WHERE p.snapshot_id = $1 AND d.slug = $2`,
+    [snapshotId, slug]
+  );
+  if (rows.length === 0) return null;
+  return mapProfilePayload(rows[0].payload);
 }
 
 /**
  * Financial-trend charts + the chart-point provenance map for an org. Returns
  * empty charts when the org has no chartable series (e.g. a 990-N-only filer);
- * the caller renders the coverage explainer instead of an empty chart.
+ * the caller renders the coverage explainer instead of an empty chart. Coverage
+ * comes from the profile payload so injected missing-year gaps stay legible.
  */
-export function getTrends(slug: string): Trends {
-  const rows = SERIES_BY_SLUG[slug] ?? [];
-  const provenance: Record<string, SourceRef> = {};
-  for (const row of rows) {
-    provenance[provenanceKey(row.series_key, row.tax_year)] = row.source_ref;
-  }
+export async function getTrends(slug: string): Promise<Trends> {
+  const snapshotId = await getPublishedSnapshotId();
+  if (!snapshotId) return { charts: [], provenance: {} };
 
-  const charts: TrendChart[] = [];
-  for (const key of TREND_SERIES_KEYS) {
-    const keyRows = rows.filter((row) => row.series_key === key);
-    if (keyRows.length === 0) continue;
-    const series = toAnnualSeries(key, keyRows);
-    charts.push({
-      series,
-      ariaSummary: buildAriaSummary(series),
-      // A single filed year is a bar (a lone dot reads as an error); a real
-      // multi-year trend is a line.
-      kind: series.points.length >= 2 ? "line" : "bar"
-    });
-  }
+  const rows = await query<{ payload: unknown } & Record<string, unknown>>(
+    `SELECT p.payload, d.organization_id
+       FROM read.org_profile p
+       JOIN read.org_directory d
+         ON d.snapshot_id = p.snapshot_id AND d.organization_id = p.organization_id
+      WHERE p.snapshot_id = $1 AND d.slug = $2`,
+    [snapshotId, slug]
+  );
+  if (rows.length === 0) return { charts: [], provenance: {} };
 
-  return { charts, provenance };
+  const organizationId = rows[0].organization_id as string;
+  const payload = mapProfilePayload(rows[0].payload);
+
+  const seriesRows = await query<FinancialSeriesRow>(
+    `SELECT series_key, tax_year, value, quality_state, is_amended, source_ref
+       FROM read.org_financial_series
+      WHERE snapshot_id = $1
+        AND organization_id = $2
+        AND series_key IN ('total_revenue', 'total_expenses')
+      ORDER BY series_key, tax_year`,
+    [snapshotId, organizationId]
+  );
+
+  return groupTrends(seriesRows, payload.coverage);
 }
