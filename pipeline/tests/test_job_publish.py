@@ -150,6 +150,15 @@ def source_rows() -> dict[str, list[dict[str, Any]]]:
         "people": [
             _person("Alice Cox", 100, "Coach", avg_hours_week=40, role_flags=["officer"]),
             _person("Vera Volunteer", 0, "Director"),
+            _person(
+                "Old Salt",
+                60,
+                "Head Coach",
+                filing_id="filing-june-2022",
+                tax_year=2022,
+                begin="2022-07-01",
+                end="2023-06-30",
+            ),
         ],
         "relationships": [
             {
@@ -267,13 +276,17 @@ def _person(
     title: str,
     *,
     person_role_id: str | None = None,
+    filing_id: str = "filing-june-2024",
+    tax_year: int = 2024,
+    begin: str = "2024-07-01",
+    end: str = "2025-06-30",
     avg_hours_week: float | None = None,
     role_flags: list[str] | None = None,
     captured_at: str = RETRIEVED,
 ) -> dict[str, Any]:
     return {
         "person_role_id": person_role_id or f"person-{name}",
-        "filing_id": "filing-june-2024",
+        "filing_id": filing_id,
         "person_name": name,
         "title": title,
         "reportable_compensation": comp,
@@ -286,9 +299,9 @@ def _person(
         "captured_at": captured_at,
         "organization_id": ORG_JUNE,
         "form_type": "990",
-        "tax_period_begin": "2024-07-01",
-        "tax_period_end": "2025-06-30",
-        "tax_year": 2024,
+        "tax_period_begin": begin,
+        "tax_period_end": end,
+        "tax_year": tax_year,
         "amended_return": False,
         "retrieved_at": RETRIEVED,
     }
@@ -343,10 +356,15 @@ def test_published_payload_and_source_refs_validate_against_real_contracts() -> 
     assert all(not list(profile_validator.iter_errors(payload)) for payload in payloads)
     june = next(payload for payload in payloads if payload["org_id"] == ORG_JUNE)
     assert june["snapshot"][0]["ref"]["period"]["label"] == "FY2024 (Jul 2024–Jun 2025)"
+    # People cover every filed year that reported officers, newest year first.
+    assert [year["tax_year"] for year in june["people"]] == [2024, 2022]
     assert june["people"][0]["volunteer_count"] == 1
     assert june["people"][0]["compensated"][0]["name"] == "Alice Cox"
     assert june["people"][0]["compensated"][0]["avg_hours_week"] == 40
     assert june["people"][0]["compensated"][0]["role_flags"] == ["officer"]
+    assert june["people"][1]["volunteer_count"] == 0
+    assert june["people"][1]["compensated"][0]["name"] == "Old Salt"
+    assert june["people"][1]["ref"]["period"]["label"] == "FY2022 (Jul 2022–Jun 2023)"
     postcard = next(payload for payload in payloads if payload["org_id"] == ORG_POSTCARD)
     assert postcard["snapshot"][0]["key"] == "filing_presence"
 

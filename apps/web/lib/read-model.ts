@@ -263,6 +263,184 @@ export function groupTrends(
 }
 
 // ---------------------------------------------------------------------------
+// Revenue & spending composition
+// ---------------------------------------------------------------------------
+
+interface CompositionLine {
+  key: string;
+  label: string;
+}
+
+/**
+ * The revenue lines shown in "Where the money comes from". Shown as reported —
+ * they are NOT claimed to sum to total revenue: on the full Form 990 membership
+ * dues nest inside contributions & grants and net fundraising-event income
+ * inside other revenue, while the 990-EZ reports each as its own line.
+ */
+const REVENUE_COMPOSITION_LINES: CompositionLine[] = [
+  { key: "contributions_grants", label: "Contributions & grants" },
+  { key: "membership_dues", label: "Membership dues" },
+  { key: "program_service_revenue", label: "Program service revenue" },
+  { key: "investment_income", label: "Investment income" },
+  { key: "fundraising_events_net", label: "Fundraising events, net" },
+  { key: "other_revenue", label: "Other revenue" }
+];
+
+/** The functional expense split — reported only on the full Form 990. */
+const EXPENSE_FUNCTION_LINES: CompositionLine[] = [
+  { key: "program_service_expense", label: "Program services" },
+  { key: "management_general_expense", label: "Management & general" },
+  { key: "fundraising_expense", label: "Fundraising" }
+];
+
+/** Notable expense line items; they overlap the functional split above. */
+const EXPENSE_LINE_ITEMS: CompositionLine[] = [
+  { key: "salaries_benefits_total", label: "Salaries & benefits" },
+  { key: "officer_compensation", label: "Officer compensation" },
+  { key: "occupancy", label: "Occupancy" },
+  { key: "grants_paid", label: "Grants paid" },
+  { key: "professional_fundraising_fees", label: "Professional fundraising fees" }
+];
+
+/**
+ * Every series key the profile fetches in one query: the charted trends plus
+ * the composition lines and their anchoring totals.
+ */
+export const PROFILE_SERIES_KEYS: readonly string[] = [
+  ...TREND_SERIES_KEYS,
+  ...REVENUE_COMPOSITION_LINES.map((line) => line.key),
+  ...EXPENSE_FUNCTION_LINES.map((line) => line.key),
+  ...EXPENSE_LINE_ITEMS.map((line) => line.key)
+];
+
+export interface CompositionCell {
+  ref: SourceRef;
+  value: number | null;
+  /**
+   * Fraction of the table's same-year total (negative for a money-losing
+   * line); null when the total is missing or non-positive.
+   */
+  share: number | null;
+}
+
+export interface CompositionRow {
+  key: string;
+  label: string;
+  /** Cell per reported tax year; a missing year means the line is not on that year's form. */
+  cells: Partial<Record<number, CompositionCell>>;
+}
+
+export interface CompositionGroup {
+  /** Sub-heading within the table, e.g. "By function"; null for an ungrouped table. */
+  label: string | null;
+  rows: CompositionRow[];
+}
+
+export interface CompositionTable {
+  /** The anchoring total line (total revenue / total expenses); shares stay null. */
+  total: CompositionRow | null;
+  groups: CompositionGroup[];
+}
+
+export interface Composition {
+  /** Fiscal years (ascending) with any 990/990-EZ series — the shared column axis. */
+  years: number[];
+  revenue: CompositionTable;
+  expenses: CompositionTable;
+}
+
+/** The full profile financial read: trend charts plus the composition tables. */
+export interface ProfileFinancials extends Trends {
+  composition: Composition;
+}
+
+function shareOf(value: number | null, total: number | null | undefined): number | null {
+  if (value === null || total === null || total === undefined || total <= 0) return null;
+  return value / total;
+}
+
+/**
+ * Group the profile's series rows into the two composition tables ("where the
+ * money comes from" / "where the money goes"). Lines a filer never reported
+ * (e.g. the functional split for a 990-EZ-only org) drop out entirely; a line
+ * missing in one year keeps a hole for that year rather than a zero — absent
+ * optional lines were already published as real zeros upstream.
+ */
+export function groupComposition(rows: FinancialSeriesRow[]): Composition {
+  const wanted = new Set(PROFILE_SERIES_KEYS);
+  const byKey = new Map<string, Map<number, CompositionCell>>();
+  for (const row of rows) {
+    if (!wanted.has(row.series_key)) continue;
+    let cells = byKey.get(row.series_key);
+    if (!cells) byKey.set(row.series_key, (cells = new Map()));
+    // Rows arrive ordered by series_version, so the highest version wins.
+    cells.set(row.tax_year, {
+      ref: sourceRefSchema.parse(row.source_ref),
+      value: toNumber(row.value),
+      share: null
+    });
+  }
+
+  const years = [...new Set([...byKey.values()].flatMap((cells) => [...cells.keys()]))].sort(
+    (a, b) => a - b
+  );
+
+  function buildRow(
+    line: CompositionLine,
+    totals: Map<number, CompositionCell> | undefined
+  ): CompositionRow | null {
+    const source = byKey.get(line.key);
+    if (!source) return null;
+    // An every-year-zero line is dropped: upstream publishes an omitted
+    // optional line as $0, so an all-zero row usually means "not itemized on
+    // this club's filings" (e.g. dues folded into program service revenue) —
+    // showing it would over-claim. A zero year among real values still renders.
+    if ([...source.values()].every((cell) => cell.value === 0)) return null;
+    const cells: Partial<Record<number, CompositionCell>> = {};
+    for (const [year, cell] of source) {
+      cells[year] = { ...cell, share: shareOf(cell.value, totals?.get(year)?.value) };
+    }
+    return { key: line.key, label: line.label, cells };
+  }
+
+  function buildTable(
+    totalKey: string,
+    totalLabel: string,
+    groups: Array<{ label: string | null; lines: CompositionLine[] }>
+  ): CompositionTable {
+    const totals = byKey.get(totalKey);
+    let total: CompositionRow | null = null;
+    if (totals) {
+      const cells: Partial<Record<number, CompositionCell>> = {};
+      for (const [year, cell] of totals) cells[year] = cell;
+      total = { key: totalKey, label: totalLabel, cells };
+    }
+    return {
+      total,
+      groups: groups
+        .map((group) => ({
+          label: group.label,
+          rows: group.lines
+            .map((line) => buildRow(line, totals))
+            .filter((row): row is CompositionRow => row !== null)
+        }))
+        .filter((group) => group.rows.length > 0)
+    };
+  }
+
+  return {
+    years,
+    revenue: buildTable("total_revenue", "Total revenue", [
+      { label: null, lines: REVENUE_COMPOSITION_LINES }
+    ]),
+    expenses: buildTable("total_expenses", "Total expenses", [
+      { label: "By function", lines: EXPENSE_FUNCTION_LINES },
+      { label: "Notable line items", lines: EXPENSE_LINE_ITEMS }
+    ])
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Slug resolution
 // ---------------------------------------------------------------------------
 

@@ -6,6 +6,7 @@ import { orgTypeLabel } from "@/lib/format";
 import { IdentityHeader } from "@/components/profile/identity-header";
 import { SnapshotFacts } from "@/components/profile/snapshot-facts";
 import { FinancialTrends } from "@/components/profile/financial-trends";
+import { FinancialComposition } from "@/components/profile/financial-composition";
 import { RegattaPlaceholder } from "@/components/profile/regatta-placeholder";
 import { People } from "@/components/profile/people";
 import { Relationships } from "@/components/profile/relationships";
@@ -63,6 +64,11 @@ export default async function OrgProfilePage({ params }: PageProps) {
         coverage={coverage}
         coverageState={header.coverage_state}
         trends={trends}
+      />
+      <FinancialComposition
+        composition={trends.composition}
+        coverage={coverage}
+        slug={resolution.slug}
       />
       <RegattaPlaceholder />
       {people.length > 0 ? <People people={people} slug={resolution.slug} /> : null}

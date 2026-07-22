@@ -1,10 +1,14 @@
 import type { OrgProfilePayload } from "@crewgraphs/contracts";
 import { query } from "@/lib/db";
 import {
+  groupComposition,
   groupTrends,
   mapProfilePayload,
   resolveFromRows,
+  PROFILE_SERIES_KEYS,
+  type Composition,
   type FinancialSeriesRow,
+  type ProfileFinancials,
   type SlugHistoryRow,
   type SlugResolution,
   type TrendChart,
@@ -26,7 +30,7 @@ import { getPublishedSnapshotId } from "@/lib/directory";
 // Re-export the component-facing shapes so nothing above this seam needs to
 // know they originate in the read-model module. (`provenanceKey` intentionally
 // stays in the db-free read-model module — client components import it there.)
-export type { Trends, TrendChart, SlugResolution };
+export type { Composition, ProfileFinancials, Trends, TrendChart, SlugResolution };
 
 /**
  * Resolve an incoming slug against the published directory + slug history:
@@ -68,15 +72,23 @@ export async function getProfile(slug: string): Promise<OrgProfilePayload | null
   return mapProfilePayload(rows[0].payload);
 }
 
+const EMPTY_COMPOSITION: Composition = {
+  years: [],
+  revenue: { total: null, groups: [] },
+  expenses: { total: null, groups: [] }
+};
+
 /**
- * Financial-trend charts + the chart-point provenance map for an org. Returns
- * empty charts when the org has no chartable series (e.g. a 990-N-only filer);
- * the caller renders the coverage explainer instead of an empty chart. Coverage
- * comes from the profile payload so injected missing-year gaps stay legible.
+ * The profile's financial read: trend charts, the chart-point provenance map,
+ * and the revenue/spending composition tables, all from one series query.
+ * Returns empty charts and composition when the org has no chartable series
+ * (e.g. a 990-N-only filer); the caller renders the coverage explainer instead
+ * of an empty chart. Coverage comes from the profile payload so injected
+ * missing-year gaps stay legible.
  */
-export async function getTrends(slug: string): Promise<Trends> {
+export async function getTrends(slug: string): Promise<ProfileFinancials> {
   const snapshotId = await getPublishedSnapshotId();
-  if (!snapshotId) return { charts: [], provenance: {} };
+  if (!snapshotId) return { charts: [], provenance: {}, composition: EMPTY_COMPOSITION };
 
   const rows = await query<{ payload: unknown } & Record<string, unknown>>(
     `SELECT p.payload, d.organization_id
@@ -86,20 +98,25 @@ export async function getTrends(slug: string): Promise<Trends> {
       WHERE p.snapshot_id = $1 AND d.slug = $2`,
     [snapshotId, slug]
   );
-  if (rows.length === 0) return { charts: [], provenance: {} };
+  if (rows.length === 0) return { charts: [], provenance: {}, composition: EMPTY_COMPOSITION };
 
   const organizationId = rows[0].organization_id as string;
   const payload = mapProfilePayload(rows[0].payload);
 
+  // postgres.js `unsafe` does not adapt JS arrays, so the code-owned key list
+  // (static identifiers, no quoting hazards) travels as a text[] literal.
   const seriesRows = await query<FinancialSeriesRow>(
     `SELECT series_key, tax_year, value, quality_state, is_amended, source_ref
        FROM read.org_financial_series
       WHERE snapshot_id = $1
         AND organization_id = $2
-        AND series_key IN ('total_revenue', 'total_expenses')
-      ORDER BY series_key, tax_year`,
-    [snapshotId, organizationId]
+        AND series_key = ANY($3::text[])
+      ORDER BY series_key, tax_year, series_version`,
+    [snapshotId, organizationId, `{${PROFILE_SERIES_KEYS.join(",")}}`]
   );
 
-  return groupTrends(seriesRows, payload.coverage);
+  return {
+    ...groupTrends(seriesRows, payload.coverage),
+    composition: groupComposition(seriesRows)
+  };
 }

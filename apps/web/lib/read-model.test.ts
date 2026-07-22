@@ -4,6 +4,7 @@ import {
   assembleDirectory,
   assembleDirectoryEntry,
   buildDataThroughLabel,
+  groupComposition,
   groupTrends,
   mapProfilePayload,
   resolveFromRows,
@@ -121,6 +122,121 @@ describe("groupTrends edge cases", () => {
     const trends = groupTrends(rows, coverage);
     expect(trends.charts[0].kind).toBe("bar");
     expect(trends.charts[0].series.points).toHaveLength(1);
+  });
+});
+
+describe("groupComposition", () => {
+  function row(key: string, taxYear: number, value: number): FinancialSeriesRow {
+    return {
+      series_key: key,
+      tax_year: taxYear,
+      value: String(value),
+      quality_state: "verified",
+      is_amended: false,
+      source_ref: ref(taxYear, value)
+    };
+  }
+
+  const composition = groupComposition([
+    row("total_revenue", 2023, 100000),
+    row("total_revenue", 2024, 200000),
+    row("contributions_grants", 2023, 40000),
+    row("contributions_grants", 2024, 90000),
+    row("membership_dues", 2024, 30000),
+    row("fundraising_events_net", 2024, -5000),
+    row("total_expenses", 2024, 160000),
+    row("program_service_expense", 2024, 120000),
+    row("salaries_benefits_total", 2023, 70000),
+    row("salaries_benefits_total", 2024, 80000),
+    // Published zeros in every year mean "not itemized on this club's filings".
+    row("professional_fundraising_fees", 2023, 0),
+    row("professional_fundraising_fees", 2024, 0),
+    // A single zero year among real values is a real value and must stay.
+    row("occupancy", 2023, 0),
+    row("occupancy", 2024, 12000),
+    // A derived-metric series must never leak into the composition tables.
+    row("operating_margin", 2024, 0.2)
+  ]);
+
+  it("collects the shared ascending year axis from every composition series", () => {
+    expect(composition.years).toEqual([2023, 2024]);
+  });
+
+  it("anchors each table with its total line, shares left null", () => {
+    expect(composition.revenue.total?.cells[2024]?.value).toBe(200000);
+    expect(composition.revenue.total?.cells[2024]?.share).toBeNull();
+    expect(composition.expenses.total?.cells[2024]?.value).toBe(160000);
+  });
+
+  it("computes per-year shares against the same-year total", () => {
+    const contributions = composition.revenue.groups[0].rows.find(
+      (r) => r.key === "contributions_grants"
+    )!;
+    expect(contributions.cells[2023]?.share).toBeCloseTo(0.4);
+    expect(contributions.cells[2024]?.share).toBeCloseTo(0.45);
+  });
+
+  it("keeps a negative line and its negative share", () => {
+    const fundraising = composition.revenue.groups[0].rows.find(
+      (r) => r.key === "fundraising_events_net"
+    )!;
+    expect(fundraising.cells[2024]?.value).toBe(-5000);
+    expect(fundraising.cells[2024]?.share).toBeCloseTo(-0.025);
+  });
+
+  it("leaves a hole (no cell) for a year a line was not reported", () => {
+    const dues = composition.revenue.groups[0].rows.find((r) => r.key === "membership_dues")!;
+    expect(dues.cells[2023]).toBeUndefined();
+    expect(dues.cells[2024]?.value).toBe(30000);
+  });
+
+  it("nulls the share when the year has no positive total", () => {
+    const salaries = composition.expenses.groups
+      .flatMap((g) => g.rows)
+      .find((r) => r.key === "salaries_benefits_total")!;
+    // 2023 has no total_expenses row, so the share is not computable.
+    expect(salaries.cells[2023]?.share).toBeNull();
+    expect(salaries.cells[2024]?.share).toBeCloseTo(0.5);
+  });
+
+  it("drops an every-year-zero line but keeps a zero year among real values", () => {
+    const lineItems = composition.expenses.groups.find(
+      (g) => g.label === "Notable line items"
+    )!;
+    expect(lineItems.rows.map((r) => r.key)).not.toContain("professional_fundraising_fees");
+    const occupancy = lineItems.rows.find((r) => r.key === "occupancy")!;
+    expect(occupancy.cells[2023]?.value).toBe(0);
+    expect(occupancy.cells[2024]?.value).toBe(12000);
+  });
+
+  it("drops never-reported lines and empty groups, and ignores metric series", () => {
+    const revenueKeys = composition.revenue.groups[0].rows.map((r) => r.key);
+    expect(revenueKeys).toEqual([
+      "contributions_grants",
+      "membership_dues",
+      "fundraising_events_net"
+    ]);
+    // Only program services was reported, so the functional group survives with
+    // one row; management & general / fundraising never appear.
+    expect(composition.expenses.groups.map((g) => g.label)).toEqual([
+      "By function",
+      "Notable line items"
+    ]);
+    expect(composition.expenses.groups[0].rows.map((r) => r.key)).toEqual([
+      "program_service_expense"
+    ]);
+    const allKeys = [
+      ...composition.revenue.groups.flatMap((g) => g.rows.map((r) => r.key)),
+      ...composition.expenses.groups.flatMap((g) => g.rows.map((r) => r.key))
+    ];
+    expect(allKeys).not.toContain("operating_margin");
+  });
+
+  it("returns an empty composition for a filer with no composition series", () => {
+    const empty = groupComposition([]);
+    expect(empty.years).toEqual([]);
+    expect(empty.revenue.groups).toEqual([]);
+    expect(empty.expenses.total).toBeNull();
   });
 });
 

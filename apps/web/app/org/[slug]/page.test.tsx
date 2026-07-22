@@ -56,7 +56,9 @@ import { getProfile, getTrends, resolveSlug } from "@/lib/profile-data";
 import { IdentityHeader } from "@/components/profile/identity-header";
 import { SnapshotFacts } from "@/components/profile/snapshot-facts";
 import { FinancialTrends } from "@/components/profile/financial-trends";
+import { FinancialComposition } from "@/components/profile/financial-composition";
 import { People } from "@/components/profile/people";
+import { groupComposition, type FinancialSeriesRow } from "@/lib/read-model";
 import { fixturePayload, fixtureTrends } from "@/test/fixtures";
 import { sampleRef } from "@/test/source-ref.fixture";
 
@@ -136,6 +138,64 @@ describe("profile components", () => {
     expect(
       within(dialog).getByText("/Return/ReturnData/IRS990/CYTotalRevenueAmt")
     ).toBeInTheDocument();
+  });
+
+  it("renders the composition tables with per-cell drawers, shares, and holes", () => {
+    function compositionRow(key: string, taxYear: number, value: number): FinancialSeriesRow {
+      return {
+        series_key: key,
+        tax_year: taxYear,
+        value,
+        quality_state: "verified",
+        is_amended: false,
+        source_ref: {
+          ...sampleRef,
+          value,
+          period: {
+            tax_year: taxYear,
+            fy_end: `${taxYear + 1}-06-30`,
+            label: `FY${taxYear} (Jul ${taxYear}–Jun ${taxYear + 1})`
+          }
+        }
+      };
+    }
+    const composition = groupComposition([
+      compositionRow("total_revenue", 2023, 100000),
+      compositionRow("total_revenue", 2024, 200000),
+      compositionRow("contributions_grants", 2024, 90000),
+      compositionRow("membership_dues", 2023, 10000),
+      compositionRow("total_expenses", 2024, 160000),
+      compositionRow("salaries_benefits_total", 2024, 80000)
+    ]);
+    const coverage: OrgProfilePayload["coverage"] = [
+      { tax_year: 2023, fy_end: "2024-06-30", status: "990ez" },
+      { tax_year: 2024, fy_end: "2025-06-30", status: "990" }
+    ];
+
+    render(
+      <FinancialComposition
+        composition={composition}
+        coverage={coverage}
+        slug="millbrook-community-rowing"
+      />
+    );
+
+    expect(screen.getByText("Where the money comes from")).toBeInTheDocument();
+    expect(screen.getByText("Where the money goes")).toBeInTheDocument();
+    // Year columns carry the filing-form context from coverage.
+    expect(screen.getAllByText("Form 990-EZ").length).toBeGreaterThan(0);
+
+    // A cell opens its own source drawer with the line's provenance.
+    fireEvent.click(screen.getByRole("button", { name: /\$90,000/ }));
+    const dialog = screen.getByRole("dialog");
+    expect(
+      within(dialog).getByText("/Return/ReturnData/IRS990/CYTotalRevenueAmt")
+    ).toBeInTheDocument();
+
+    // Share of the same-year total renders under the value (90,000 / 200,000).
+    expect(screen.getByText("45%")).toBeInTheDocument();
+    // Membership dues were not reported in FY2024 — a visible hole, not a zero.
+    expect(screen.getAllByText("—").length).toBeGreaterThan(0);
   });
 
   it("renders compensated people rows and the volunteer aggregate line", () => {
