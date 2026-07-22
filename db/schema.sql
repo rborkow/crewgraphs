@@ -571,6 +571,7 @@ CREATE TABLE core.organization (
     notes text,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    program_mix text[] DEFAULT '{}'::text[] NOT NULL,
     CONSTRAINT organization_founded_year_check CHECK (((founded_year IS NULL) OR ((founded_year >= 1600) AND (founded_year <= 9999))))
 );
 
@@ -2174,4 +2175,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('008'),
     ('009'),
     ('010'),
-    ('011');
+    ('011'),
+    ('012');
