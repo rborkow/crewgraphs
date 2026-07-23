@@ -55,8 +55,10 @@ Ordered roughly by product value; independent tracks can run in parallel.
 - [ ] **SEO/OG + a11y/perf hardening pass** `[luna, lead review]`.
 - [ ] **Fixture enrichment** `[luna]`: people/relationships demo coverage for the new profile sections.
 
-### Track D — North star (permission-gated, owner-led)
-- [ ] **RegattaCentral / Concept2 / row2k outreach** `[owner]`: open permission conversations from the live-site position. Not a launch gate; ratings work (rank-ordered-field models per boat class + age bracket) starts only when a results source is secured.
+### Track D — North star (results + ratings)
+- [x] **Results source secured** (2026-07-23): the timing-provider layer (HereNow, Time-Team USRowing white-label) is open — verified JSON APIs, no usage restrictions. Survey: `docs/superpowers/research/2026-07-23-results-timing-providers.md`. The permission-gated framing now applies only to aggregators (RegattaCentral, Concept2, row2k content).
+- [ ] **Results ingestion + ratings program** → own living plan: `docs/superpowers/plans/2026-07-23-results-ingestion.md` (spec `2026-07-23-results-ingestion-design.md`, PII policy `2026-07-23-athlete-pii-policy.md`).
+- [ ] **RegattaCentral / Concept2 outreach** `[owner]`: still valuable for entries data and erg scores; open conversations from the live-site position. Courtesy notes to Time-Team/HereNow move to the results plan.
 
 ## Verification bar (unchanged)
 

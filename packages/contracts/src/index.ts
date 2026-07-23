@@ -215,3 +215,103 @@ export const directoryBlobSchema = z.object({
 
 export type DirectoryEntry = z.infer<typeof directoryEntrySchema>;
 export type DirectoryBlob = z.infer<typeof directoryBlobSchema>;
+
+// ---------------------------------------------------------------------------
+// Results contracts — regatta results provenance + payload (v1)
+//
+// Parallel family to SourceRef/OrgProfilePayload: results units (times, ranks)
+// are not expressible in source-ref.v1, and IRS payloads must not churn when
+// results evolve. Spec: docs/superpowers/specs/2026-07-23-results-ingestion-design.md
+// ---------------------------------------------------------------------------
+
+export const RESULTS_PAYLOAD_SCHEMA_VERSION = 1;
+
+export const resultMetricKeySchema = z.enum([
+  "finish_time",
+  "adjusted_time",
+  "handicap",
+  "place",
+  "adjusted_place",
+  "margin"
+]);
+
+/** ResultRef — the provenance atom for a published result value. */
+export const resultRefSchema = z.object({
+  value: z.number().nullable(),
+  unit: z.enum(["seconds", "rank", "margin_seconds", "handicap_seconds", "count"]),
+  /** Calendar year of the regatta — the results comparison axis. */
+  season: z.number().int(),
+  quality_state: qualityStateSchema,
+  source: z.object({
+    /** db source_type enum value, e.g. "herenow" | "time_team". */
+    source_key: z.string(),
+    regatta_external_key: z.string(),
+    event_external_key: z.string(),
+    /** Provider results page for link-out attribution. */
+    provider_url: z.url().nullable()
+  }),
+  retrieved_at: z.iso.datetime(),
+  /** Adapter parser version, e.g. "herenow-2026.07.1". */
+  parser_version: z.string()
+});
+
+export type ResultRef = z.infer<typeof resultRefSchema>;
+
+/**
+ * Crew member as published in the official record. PII policy (2026-07-23):
+ * names appear in race-result context only; the publish job applies the
+ * suppression list and U13 redaction BEFORE payload assembly, so a name in
+ * this payload is by construction publishable.
+ */
+export const crewMemberSchema = z.object({
+  role: z.enum(["stroke", "cox", "bow", "rower", "coach"]),
+  name: z.string()
+});
+
+export const regattaEntryResultSchema = z.object({
+  crew_label: z.string().nullable(),
+  /** Provider club string verbatim (identity resolution notes live in core). */
+  club_display_name: z.string(),
+  /** Provider status vocabulary, raw (e.g. "finished", "DNS", "DSQ"). */
+  status: z.string(),
+  crew: z.array(crewMemberSchema),
+  results: z
+    .array(z.object({ metric_key: resultMetricKeySchema, ref: resultRefSchema }))
+    .min(1)
+});
+
+export const regattaEventPayloadSchema = z.object({
+  event_key: z.string(),
+  name: z.string(),
+  /** Provider-raw boat class label; canonical classification ships in Wave 3. */
+  boat_class: z.string().nullable(),
+  round: z.string().nullable(),
+  entries: z.array(regattaEntryResultSchema).min(1)
+});
+
+export const orgRegattaPayloadSchema = z.object({
+  payload_schema_version: z.literal(RESULTS_PAYLOAD_SCHEMA_VERSION),
+  org_id: z.uuid(),
+  slug: z.string(),
+  seasons: z.array(
+    z.object({
+      season: z.number().int(),
+      regattas: z
+        .array(
+          z.object({
+            regatta_key: z.string(),
+            name: z.string(),
+            date: z.iso.date().nullable(),
+            venue: z.string().nullable(),
+            source_key: z.string(),
+            provider_url: z.url().nullable(),
+            events: z.array(regattaEventPayloadSchema).min(1)
+          })
+        )
+        .min(1)
+    })
+  ),
+  generated_at: z.iso.datetime()
+});
+
+export type OrgRegattaPayload = z.infer<typeof orgRegattaPayloadSchema>;

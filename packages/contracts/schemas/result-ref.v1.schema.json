@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "value": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "unit": {
+      "type": "string",
+      "enum": [
+        "seconds",
+        "rank",
+        "margin_seconds",
+        "handicap_seconds",
+        "count"
+      ]
+    },
+    "season": {
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991
+    },
+    "quality_state": {
+      "type": "string",
+      "enum": [
+        "verified",
+        "derived",
+        "partial",
+        "unavailable",
+        "under_review"
+      ]
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "source_key": {
+          "type": "string"
+        },
+        "regatta_external_key": {
+          "type": "string"
+        },
+        "event_external_key": {
+          "type": "string"
+        },
+        "provider_url": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "source_key",
+        "regatta_external_key",
+        "event_external_key",
+        "provider_url"
+      ]
+    },
+    "retrieved_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+    },
+    "parser_version": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "value",
+    "unit",
+    "season",
+    "quality_state",
+    "source",
+    "retrieved_at",
+    "parser_version"
+  ]
+}
