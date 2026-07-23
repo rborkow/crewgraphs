@@ -1,43 +1,19 @@
 from __future__ import annotations
 
-import contextlib
 from datetime import date
-from typing import Any, Iterator
 
 import typer
 
 from .config import Settings
 from .db import DatabaseGateway, PostgresGateway
-from .raw_store import RawStore
 from .runlog import IngestRun
+from .runtime import USER_AGENT, job_context, split_csv
 from .summary import emit_summary, render_summary
 
 app = typer.Typer(help="CrewGraphs ingestion pipeline.")
 
-USER_AGENT = "CrewGraphs/0.1 (public IRS data pipeline; crewgraphs.com/methods)"
-
-
-@contextlib.contextmanager
-def _job_context() -> Iterator[tuple[DatabaseGateway, RawStore, Any]]:
-    import httpx
-
-    settings = Settings.from_env()
-    gateway = PostgresGateway(settings.database_url)
-    store = RawStore(settings)
-    http = httpx.Client(
-        timeout=httpx.Timeout(300.0, connect=30.0),
-        follow_redirects=True,
-        headers={"User-Agent": USER_AGENT},
-    )
-    try:
-        yield gateway, store, http
-    finally:
-        http.close()
-        gateway.close()
-
-
-def _csv(value: str) -> list[str]:
-    return [item.strip() for item in value.split(",") if item.strip()]
+_job_context = job_context
+_csv = split_csv
 
 
 def not_implemented() -> None:
