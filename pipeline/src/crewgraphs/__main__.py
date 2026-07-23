@@ -15,6 +15,16 @@ app = typer.Typer(help="CrewGraphs ingestion pipeline.")
 _job_context = job_context
 _csv = split_csv
 
+# Results adapters register their commands module-locally (frozen-file rule
+# during the Wave-1 fan-out); __main__ stays the single integration point.
+from .jobs import herenow as _herenow
+from .jobs import regattatiming as _regattatiming
+from .jobs import row2k as _row2k
+from .jobs import timeteam as _timeteam
+
+for _register in (_herenow.register, _timeteam.register, _row2k.register, _regattatiming.register):
+    _register(app)
+
 
 def not_implemented() -> None:
     typer.echo("not implemented")

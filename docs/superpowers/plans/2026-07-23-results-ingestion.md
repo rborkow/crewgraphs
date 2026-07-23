@@ -20,18 +20,18 @@
 - [x] Contracts: `resultRefSchema` + `orgRegattaPayloadSchema` v1, schema export, `test_contracts.py` golden fixtures (9 pass).
 - [x] Verify (2026-07-23, ephemeral PG16+PG18): dbmate up + full 14-step rollback/reapply; 9/9 role-grant probes (web_ro denied on `result_person`/`person_suppression`; pipeline_rw INSERT-only on `regatta`, read-only on suppression, no DELETE on `result_person`; curator purge works); `db/schema.sql` regenerated in dbmate format.
 
-## Wave 1 — adapter fan-out (parallel worktrees)
+## Wave 1 — adapter fan-out (parallel worktrees) — MERGED 2026-07-23
 
-- [ ] **W1a HereNow** `[terra]`: `jobs/herenow.py` — `herenow-catalog-sync`, `herenow-race-backfill` (refetch window, sleep), `herenow-load` (checksum no-op → revision trees; masters raw/handicap/adjusted mapping); test-race skip-set; fixtures + tests; `HERENOW_BASE_URL` override.
-- [ ] **W1b Time-Team** `[terra]`: `jobs/timeteam.py` — `timeteam-regatta-index` (`__NEXT_DATA__` parse, `--slugs` fallback), `timeteam-race-sync`, `timeteam-load` (club UUIDs → provider_club; stroke → result_person; progression + splits jsonb); fixtures + tests.
-- [ ] **W1c row2k index** `[terra/luna]`: migration `015_row2k_registry.sql` (`core.regatta_source_link` — facts + outbound URLs only, test asserts no content columns), `jobs/row2k.py` (`row2k-index-sync`, honest UA, 403 → `row2k_blocked` quarantine), `results-gap-report`.
-- [ ] **W1d RegattaTiming** `[terra]`: migration `016_regattatiming.sql`, `jobs/regattatiming.py` (`regattatiming-sync` id-range + probe-forward, `regattatiming-load`, lxml parse with column-count shape check → quarantine on drift).
-- [ ] **USER_AGENT generalization** (one line in `__main__.py`, lead applies at first merge): "public rowing data pipeline; crewgraphs.com/methods".
-- [ ] `.github/workflows/results-backfill.yml` `[lead]` at merge: dispatch inputs + weekly cron (offset from IRS monthly), sequential steps → shared publish-gate/publish tail.
+- [x] **W1a HereNow** (terra, commit fbfe7fe): all three commands; real Cromwell Cup fixtures; canonical checksum resolves Breeze `$ref`/strips `$id` (R1 blocker); provider-only classification; namespaced club keys; contact stripping.
+- [x] **W1b Time-Team** (terra, 4754a37): index via server-rendered anchors (`?year=` verified live; `__NEXT_DATA__` was a dead end); real 1x + 8+ fixtures (payload carries stroke_fullname only — full rosters are a separate uncalled endpoint); volatile-timestamp canonicalization (R1 blocker); PHP `[]`-for-`{}` empties tolerated.
+- [x] **W1c row2k index** (terra, 9a6a0f8): migration 015 w/ `NULLS NOT DISTINCT` dedupe; parser validated on the real 2025 directory (883/883 dated+categorized, 29 archive years from the `<select>` — not anchors); revision-safe gap report.
+- [x] **W1d RegattaTiming** (terra, 77f6fd6): migration 016; strict six-column real-markup parser (browser-captured 2025 IRA fixture; Cloudflare fronts the site — challenge/403/429/503 all quarantine-and-stop); `data-org-id` club keys; PII blocker fixed (entry raw is club-only).
+- [x] **USER_AGENT generalization** (landed with the runtime extraction, 9305288).
+- [x] `.github/workflows/results-backfill.yml` (integration commit): dispatch inputs + weekly Monday cron offset from the IRS monthly.
 
-### Review pass R1 (per branch, before merge)
-- [ ] Lenses: correctness vs raw fixtures · idempotency/quarantine/revision behavior · scraping posture (UA, rates, 403) · PII containment (names only in `result_person`). `[sol]` on the hardest branch, `/codex:adversarial-review` cross-model on the rest; lead inspects diff + test output.
-- [ ] Live smokes post-merge: 2–3 HereNow races (one masters), one Time-Team regional-champs year; `run-report` clean.
+### Review pass R1 — done (4 × opus adversarial reviewers; cross-model vs the GPT builders)
+- [x] All four lenses per branch; 2 blockers found and fixed (checksum instability from volatile serialization artifacts in both JSON adapters; stroke-name PII leak into entry raw in W1d); ~12 should-fixes landed via Codex fix rounds; lead verified every branch with full pytest (119 total post-merge) + ephemeral-Postgres migration checks (PG16 rollback/reapply, PG18 dump parity).
+- [ ] Live smokes post-merge: 2–3 HereNow races (one masters), one Time-Team regional-champs year; `run-report` clean. `[lead]` — needs DB/R2 secrets, run via workflow dispatch or locally with .env.
 
 ## Wave 2 — convergence (serial: shared files unfreeze)
 

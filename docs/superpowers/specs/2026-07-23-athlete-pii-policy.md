@@ -21,7 +21,7 @@ Verified 2026-07-23:
 3. **No person search.** Person names are excluded from site search and from `read.org_directory.search_text`. Enforced by a fatal publish invariant + test.
 4. **Removal on request, any age, no questions.** A curator-managed suppression list (`core.person_suppression`) is honored at every publish; the next snapshot redacts the name from all published surfaces. Raw R2 archives (private, non-published) retain the official record. Takedown contact and expected turnaround are documented on the methods page.
 5. **Proactive U13 redaction.** Entries in events designated U13 or younger publish without athlete names (GameChanger precedent at the COPPA line). Effectively free — rowing has almost no U13 racing — and it puts our line at the strictest peer practice.
-6. **Data minimization.** No dates of birth, no photos, no contact details, no school-grade data. Masters ages appear only as published in handicap context (adults). Person data lives in exactly one core table (`core.result_person`), which has no web-role grant and can be purged or partially redacted without touching results.
+6. **Data minimization.** No dates of birth, no photos, no contact details, no school-grade data. Masters ages appear only as published in handicap context (adults). Person data lives in exactly one core table (`core.result_person`), which has no web-role grant and can be purged or partially redacted without touching results. Provider payloads can carry registration metadata beyond the official record (verified: HereNow entries expose a `RegEmail` registrant-email field) — adapters strip email/contact fields from everything persisted to Postgres, staging included; only the private R2 archive retains original bytes.
 
 ## Enforcement points (technical)
 
@@ -30,7 +30,8 @@ Verified 2026-07-23:
 | 1, 2 | Names exist in read models only inside `read.org_regatta_result.crew jsonb`; no person-keyed table, route, or page exists |
 | 3 | Publish fatal invariant: no `result_person` name appears in `org_directory.search_text` or directory payloads; unit test pins the publish SQL surface |
 | 4, 5 | Publish assembles crew via `result_person LEFT JOIN person_suppression` + U13 event rule; fatal invariant: zero suppressed names in any assembled payload |
-| 6 | Schema: `core.result_person` is the only person store; `REVOKE ALL FROM web_ro`; FK direction (person → entry) makes the table purgeable |
+| 6 | Schema: `core.result_person` is the only **core** person store; `REVOKE ALL FROM web_ro`; FK direction (person → entry) makes the table purgeable |
+| 6 (staging) | `staging.*` provider payloads are raw-archive tier: they necessarily retain published person names (they are the load input for `result_person`) but carry no web grants and have contact/registration fields stripped at write time; the takedown SOP includes deleting the affected staging rows alongside the `result_person` redaction |
 
 ## Posture notes
 

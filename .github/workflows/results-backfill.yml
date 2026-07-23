@@ -1,0 +1,71 @@
+name: Results backfill
+
+# Regatta-results acquisition chain (spec: docs/superpowers/specs/
+# 2026-07-23-results-ingestion-design.md): HereNow catalog -> race backfill
+# -> load; Time-Team index -> race sync -> load; then the shared gate/report
+# tail. Weekly cron is offset from the IRS monthly (5th 09:00 UTC) so the
+# publish-gate --since windows never overlap.
+#
+# Wave-2 appends: resolve-clubs before publish-gate, then publish.
+# Wave-1 merges append: row2k-index-sync + results-gap-report, regattatiming.
+
+on:
+  schedule:
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+    inputs:
+      herenow_race_ids:
+        description: Comma-separated HereNow race ids (empty = staged catalog selection)
+        default: ""
+      herenow_limit:
+        description: Cap on HereNow races fetched this run (0 = no cap)
+        default: "0"
+      timeteam_years:
+        description: Comma-separated Time-Team white-label years to index
+        default: "2020,2021,2022,2023,2024,2025,2026"
+      timeteam_slugs:
+        description: Manual slug override (empty = parse the white-label index)
+        default: ""
+      sleep_ms:
+        description: Delay between provider requests
+        default: "750"
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: pipeline
+    env:
+      DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      GIT_SHA: ${{ github.sha }}
+      HERENOW_RACE_IDS: ${{ inputs.herenow_race_ids || '' }}
+      HERENOW_LIMIT: ${{ inputs.herenow_limit || '0' }}
+      TIMETEAM_YEARS: ${{ inputs.timeteam_years || '2020,2021,2022,2023,2024,2025,2026' }}
+      TIMETEAM_SLUGS: ${{ inputs.timeteam_slugs || '' }}
+      SLEEP_MS: ${{ inputs.sleep_ms || '750' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync
+      - name: Capture chain start
+        run: echo "CHAIN_STARTED_AT=$(date --utc +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+      - name: HereNow catalog sync
+        run: uv run python -m crewgraphs herenow-catalog-sync
+      - name: HereNow race backfill
+        run: uv run python -m crewgraphs herenow-race-backfill --race-ids "$HERENOW_RACE_IDS" --limit "$HERENOW_LIMIT" --sleep-ms "$SLEEP_MS"
+      - name: HereNow load
+        run: uv run python -m crewgraphs herenow-load
+      - name: Time-Team regatta index
+        run: uv run python -m crewgraphs timeteam-regatta-index --years "$TIMETEAM_YEARS" --slugs "$TIMETEAM_SLUGS"
+      - name: Time-Team race sync
+        run: uv run python -m crewgraphs timeteam-race-sync --all-staged --sleep-ms "$SLEEP_MS"
+      - name: Time-Team load
+        run: uv run python -m crewgraphs timeteam-load
+      - name: Publish gate (chain hygiene)
+        run: uv run python -m crewgraphs publish-gate --since "$CHAIN_STARTED_AT"
+      - name: Run report
+        run: uv run python -m crewgraphs run-report

@@ -262,8 +262,8 @@ BEGIN
       EXECUTE 'REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLE core.organization, core.external_identifier, core.organization_alias, core.organization_relationship FROM pipeline_rw';
     END IF;
     IF to_regclass('core.regatta') IS NOT NULL THEN
-      EXECUTE 'REVOKE UPDATE, DELETE, TRUNCATE ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person FROM pipeline_rw';
-      EXECUTE 'GRANT SELECT, INSERT ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person TO pipeline_rw';
+      EXECUTE 'REVOKE UPDATE, DELETE, TRUNCATE ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person, core.regatta_source_link FROM pipeline_rw';
+      EXECUTE 'GRANT SELECT, INSERT ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person, core.regatta_source_link TO pipeline_rw';
       EXECUTE 'REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLE core.person_suppression FROM pipeline_rw';
       EXECUTE 'GRANT SELECT ON TABLE core.person_suppression TO pipeline_rw';
     END IF;
@@ -806,6 +806,33 @@ COMMENT ON TABLE core.regatta_result IS 'status keeps the provider vocabulary ra
 
 
 --
+-- Name: regatta_source_link; Type: TABLE; Schema: core; Owner: -
+--
+
+CREATE TABLE core.regatta_source_link (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    regatta_name text NOT NULL,
+    event_date date,
+    category text,
+    location text,
+    outbound_url text NOT NULL,
+    outbound_host text NOT NULL,
+    provider core.source_type,
+    credit_url text NOT NULL,
+    source_record_id uuid,
+    retrieved_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: TABLE regatta_source_link; Type: COMMENT; Schema: core; Owner: -
+--
+
+COMMENT ON TABLE core.regatta_source_link IS 'row2k discovery facts and outbound links only; never result content, per row2k link-don''t-copy policy.';
+
+
+--
 -- Name: result_person; Type: TABLE; Schema: core; Owner: -
 --
 
@@ -1195,6 +1222,38 @@ CREATE TABLE staging.propublica_org (
 
 
 --
+-- Name: regattatiming_page; Type: TABLE; Schema: staging; Owner: -
+--
+
+CREATE TABLE staging.regattatiming_page (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    ingest_run_id uuid,
+    source_record_id uuid NOT NULL,
+    race_id integer NOT NULL,
+    page_kind text NOT NULL,
+    title text,
+    retrieved_at timestamp with time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT regattatiming_page_page_kind_check CHECK ((page_kind = ANY (ARRAY['summary'::text, 'static'::text])))
+);
+
+
+--
+-- Name: row2k_index_page; Type: TABLE; Schema: staging; Owner: -
+--
+
+CREATE TABLE staging.row2k_index_page (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    ingest_run_id uuid,
+    source_record_id uuid,
+    year integer NOT NULL,
+    category text,
+    retrieved_at timestamp with time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
 -- Name: time_team_race; Type: TABLE; Schema: staging; Owner: -
 --
 
@@ -1499,6 +1558,22 @@ ALTER TABLE ONLY core.regatta
 
 
 --
+-- Name: regatta_source_link regatta_source_link_event_date_outbound_url_uniq; Type: CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.regatta_source_link
+    ADD CONSTRAINT regatta_source_link_event_date_outbound_url_uniq UNIQUE NULLS NOT DISTINCT (event_date, outbound_url);
+
+
+--
+-- Name: regatta_source_link regatta_source_link_pkey; Type: CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.regatta_source_link
+    ADD CONSTRAINT regatta_source_link_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: result_person result_person_pkey; Type: CONSTRAINT; Schema: core; Owner: -
 --
 
@@ -1720,6 +1795,30 @@ ALTER TABLE ONLY staging.herenow_race_payload
 
 ALTER TABLE ONLY staging.propublica_org
     ADD CONSTRAINT propublica_org_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: regattatiming_page regattatiming_page_pkey; Type: CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.regattatiming_page
+    ADD CONSTRAINT regattatiming_page_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: regattatiming_page regattatiming_page_race_id_key; Type: CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.regattatiming_page
+    ADD CONSTRAINT regattatiming_page_race_id_key UNIQUE (race_id);
+
+
+--
+-- Name: row2k_index_page row2k_index_page_pkey; Type: CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.row2k_index_page
+    ADD CONSTRAINT row2k_index_page_pkey PRIMARY KEY (id);
 
 
 --
@@ -2301,6 +2400,20 @@ CREATE INDEX propublica_org_source_record_id_idx ON staging.propublica_org USING
 
 
 --
+-- Name: regattatiming_page_ingest_run_id_idx; Type: INDEX; Schema: staging; Owner: -
+--
+
+CREATE INDEX regattatiming_page_ingest_run_id_idx ON staging.regattatiming_page USING btree (ingest_run_id);
+
+
+--
+-- Name: row2k_index_page_ingest_run_id_idx; Type: INDEX; Schema: staging; Owner: -
+--
+
+CREATE INDEX row2k_index_page_ingest_run_id_idx ON staging.row2k_index_page USING btree (ingest_run_id);
+
+
+--
 -- Name: time_team_race_ingest_run_id_idx; Type: INDEX; Schema: staging; Owner: -
 --
 
@@ -2503,6 +2616,14 @@ ALTER TABLE ONLY core.regatta_event
 
 ALTER TABLE ONLY core.regatta_result
     ADD CONSTRAINT regatta_result_entry_fk FOREIGN KEY (entry_id) REFERENCES core.regatta_entry(id);
+
+
+--
+-- Name: regatta_source_link regatta_source_link_source_record_fk; Type: FK CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.regatta_source_link
+    ADD CONSTRAINT regatta_source_link_source_record_fk FOREIGN KEY (source_record_id) REFERENCES core.source_record(id);
 
 
 --
@@ -2770,6 +2891,38 @@ ALTER TABLE ONLY staging.propublica_org
 
 
 --
+-- Name: regattatiming_page regattatiming_page_ingest_run_id_fkey; Type: FK CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.regattatiming_page
+    ADD CONSTRAINT regattatiming_page_ingest_run_id_fkey FOREIGN KEY (ingest_run_id) REFERENCES ops.ingest_run(id);
+
+
+--
+-- Name: regattatiming_page regattatiming_page_source_record_id_fkey; Type: FK CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.regattatiming_page
+    ADD CONSTRAINT regattatiming_page_source_record_id_fkey FOREIGN KEY (source_record_id) REFERENCES core.source_record(id);
+
+
+--
+-- Name: row2k_index_page row2k_index_page_ingest_run_fk; Type: FK CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.row2k_index_page
+    ADD CONSTRAINT row2k_index_page_ingest_run_fk FOREIGN KEY (ingest_run_id) REFERENCES ops.ingest_run(id);
+
+
+--
+-- Name: row2k_index_page row2k_index_page_source_record_fk; Type: FK CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.row2k_index_page
+    ADD CONSTRAINT row2k_index_page_source_record_fk FOREIGN KEY (source_record_id) REFERENCES core.source_record(id);
+
+
+--
 -- Name: time_team_race time_team_race_ingest_run_fk; Type: FK CONSTRAINT; Schema: staging; Owner: -
 --
 
@@ -2827,4 +2980,6 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('011'),
     ('012'),
     ('013'),
-    ('014');
+    ('014'),
+    ('015'),
+    ('016');
