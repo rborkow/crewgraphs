@@ -58,6 +58,9 @@ class PublishFake:
             return deepcopy(self.source["relationships"])
         if "FROM core.metric_definition" in compact:
             return deepcopy(self.source["metric_definitions"])
+        if compact.startswith("INSERT INTO core.review_task"):
+            self.writes.append(("core.review_task", tuple(params or ())))
+            return []
         if compact.startswith("INSERT INTO ops.publish_snapshot"):
             snapshot_id = "new-4"
             self.snapshot_ids.append(snapshot_id)
@@ -145,6 +148,7 @@ def source_rows() -> dict[str, list[dict[str, Any]]]:
                 "tax_period_end": "2025-06-30",
                 "amended_return": False,
                 "retrieved_at": RETRIEVED,
+                "input_filing_ids": ["filing-june-2024"],
             }
         ],
         "people": [
@@ -314,13 +318,29 @@ def _schema(name: str) -> dict[str, Any]:
     )
 
 
-def test_all_invariant_gate_failures_are_collected_before_publish_writes() -> None:
+def test_structural_invariant_failures_are_collected_before_publish_writes() -> None:
     source = source_rows()
     source["organizations"][0]["slug"] = None
     source["organizations"][1]["slug"] = "stolen-slug"
     source["slug_history"] = [
         {"slug": "stolen-slug", "org_id": ORG_JUNE, "is_current": False}
     ]
+    db = PublishFake(source)
+
+    with pytest.raises(PublishInvariantError) as error:
+        publish(db, generated_at=GENERATED)
+
+    message = str(error.value)
+    assert "has no slug" in message
+    assert "stolen-slug" in message
+    assert not any(name.startswith("read.") for name, _ in db.writes)
+    assert not any("INSERT INTO ops.publish_snapshot" in query for query, _ in db.calls)
+
+
+def test_filing_identity_failure_downgrades_to_under_review_instead_of_blocking() -> None:
+    # A filer whose own arithmetic is wrong (net assets ≠ assets − liabilities)
+    # publishes with that filing's facts under_review; the cohort still ships.
+    source = source_rows()
     for fact in source["facts"]:
         if fact["filing_id"] == "filing-june-2024" and fact["concept"] == "revenue_less_expenses":
             fact["amount"] = 9999
@@ -328,16 +348,36 @@ def test_all_invariant_gate_failures_are_collected_before_publish_writes() -> No
             fact["amount"] = 9999
     db = PublishFake(source)
 
-    with pytest.raises(PublishInvariantError) as error:
-        publish(db, generated_at=GENERATED)
+    assert publish(db, generated_at=GENERATED) == "run-publish"
 
-    message = str(error.value)
-    assert "revenue identity" in message
-    assert "balance sheet identity" in message
-    assert "has no slug" in message
-    assert "stolen-slug" in message
-    assert not any(name.startswith("read.") for name, _ in db.writes)
-    assert not any("INSERT INTO ops.publish_snapshot" in query for query, _ in db.calls)
+    reviews = db.table_writes("core.review_task")
+    assert len(reviews) == 1
+    assert reviews[0][0] == "filing-june-2024"
+    details = json.loads(reviews[0][1])
+    assert "revenue identity" in details["message"]
+    assert "balance sheet identity" in details["message"]
+
+    series = db.table_writes("read.org_financial_series")
+    by_filing_state: dict[tuple[str, str], set[str]] = {}
+    for row in series:
+        ref = json.loads(row[9])
+        key = (ref["source"]["filing_id"], row[2])
+        by_filing_state.setdefault(key, set()).add(row[7])
+    # Every fact and metric fed by the bad filing is under_review; the org's
+    # clean 2022 filing and the other orgs stay verified.
+    for (filing_id, _series_key), states in by_filing_state.items():
+        expected = {"under_review"} if filing_id == "filing-june-2024" else {"verified"}
+        if filing_id != "filing-june-2024":
+            assert "under_review" not in states
+        else:
+            assert states == expected
+    metric_rows = [row for row in series if row[2] == "operating_margin"]
+    assert metric_rows and all(row[7] == "under_review" for row in metric_rows)
+
+    # The snapshot facts sourced from the bad filing carry the state too.
+    profiles = [json.loads(row[2]) for row in db.table_writes("read.org_profile")]
+    june = next(payload for payload in profiles if payload["org_id"] == ORG_JUNE)
+    assert all(fact["ref"]["quality_state"] == "under_review" for fact in june["snapshot"])
 
 
 def test_published_payload_and_source_refs_validate_against_real_contracts() -> None:
@@ -455,6 +495,7 @@ def test_publish_flip_is_one_atomic_cte_statement_and_stats_are_collected() -> N
         "series_rows": len(db.table_writes("read.org_financial_series")),
         "coverage_rows": len(db.table_writes("read.org_filing_coverage")),
         "payloads_validated": 3,
+        "identity_downgrades": 0,
         "gc_snapshots_deleted": 1,
     }
 

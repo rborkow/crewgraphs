@@ -64,20 +64,39 @@ def publish(db: DatabaseGateway, *, generated_at: str) -> str:
             "series_rows",
             "coverage_rows",
             "payloads_validated",
+            "identity_downgrades",
             "gc_snapshots_deleted",
         ):
             run.add_stat(stat, 0)
 
         source = _load_source_rows(db)
-        failures = _invariant_failures(
+        failures, identity_findings = _invariant_failures(
             source["organizations"], source["facts"], source["slug_history"]
         )
         if failures:
             raise PublishInvariantError(
                 "publish invariant gates failed:\n- " + "\n- ".join(failures)
             )
+        # A filer's own arithmetic error is that filing's quality problem, not a
+        # site outage: its facts publish as under_review (suppressed in compare,
+        # state shown on profiles) and a curator review task records the finding.
+        for filing_id, message in sorted(identity_findings.items()):
+            db.execute(
+                """
+                INSERT INTO core.review_task (entity_type, entity_id, task_type, details)
+                VALUES ('filing', %s, 'identity_check', %s::jsonb)
+                ON CONFLICT DO NOTHING
+                """,
+                (filing_id, json.dumps({"message": message})),
+            )
+        run.add_stat("identity_downgrades", len(identity_findings))
 
-        build = _assemble(source, generated=generated, parser_version=concept_map.version)
+        build = _assemble(
+            source,
+            generated=generated,
+            parser_version=concept_map.version,
+            under_review_filing_ids=frozenset(identity_findings),
+        )
         validation_failures = _validate_build(build)
         if validation_failures:
             raise PublishInvariantError(
@@ -243,7 +262,12 @@ def _load_source_rows(db: DatabaseGateway) -> dict[str, list[dict[str, Any]]]:
                    ff.source_path, ff.normalization_version,
                    f.id AS filing_id, f.form_type, f.tax_period_begin,
                    f.tax_period_end, f.amended_return,
-                   sr.created_at AS retrieved_at
+                   sr.created_at AS retrieved_at,
+                   ARRAY(
+                       SELECT DISTINCT input_ff.filing_id::text
+                       FROM unnest(mv.input_fact_ids) AS input(id)
+                       JOIN core.financial_fact AS input_ff ON input_ff.id = input.id
+                   ) AS input_filing_ids
             FROM core.metric_value AS mv
             JOIN core.metric_definition AS md
               ON md.metric_key = mv.metric_key
@@ -312,8 +336,16 @@ def _invariant_failures(
     organizations: list[dict[str, Any]],
     facts: list[dict[str, Any]],
     slug_history: list[dict[str, Any]],
-) -> list[str]:
+) -> tuple[list[str], dict[str, str]]:
+    """Fatal structural failures, plus per-filing accounting-identity findings.
+
+    Structural problems (slugs, scope) abort the publish. An accounting
+    identity that fails inside a single filing is the filer's error, not
+    ours — those filings publish with every fact downgraded to under_review
+    rather than blocking the rest of the cohort.
+    """
     failures: list[str] = []
+    identity_findings: dict[str, str] = {}
     by_filing: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
     for fact in facts:
         filing_id = str(fact["filing_id"])
@@ -338,9 +370,14 @@ def _invariant_failures(
                     filing_facts[right]["amount"]
                 )
                 if abs(actual - expected) > Decimal("1"):
-                    failures.append(
+                    message = (
                         f"filing {filing_id} fails {label} identity: "
                         f"{result}={actual}, expected {expected}"
+                    )
+                    identity_findings[filing_id] = (
+                        f"{identity_findings[filing_id]}; {message}"
+                        if filing_id in identity_findings
+                        else message
                     )
     org_ids = {str(row["organization_id"]) for row in organizations}
     for organization in organizations:
@@ -361,7 +398,7 @@ def _invariant_failures(
     # Keep this explicit so malformed fake/source rows do not silently evade scope.
     if any(str(row["organization_id"]) not in org_ids for row in facts):
         failures.append("authoritative facts contain an organization outside publish scope")
-    return failures
+    return failures, identity_findings
 
 
 def _assemble(
@@ -369,6 +406,7 @@ def _assemble(
     *,
     generated: str,
     parser_version: str,
+    under_review_filing_ids: frozenset[str] = frozenset(),
 ) -> dict[str, list[dict[str, Any]]]:
     organizations = source["organizations"]
     org_by_id = {str(row["organization_id"]): row for row in organizations}
@@ -453,10 +491,24 @@ def _assemble(
         )
 
     for fact in source["facts"]:
-        build["series"].append(_fact_series(fact, parser_version))
+        build["series"].append(
+            _fact_series(
+                fact,
+                parser_version,
+                downgraded=str(fact["filing_id"]) in under_review_filing_ids,
+            )
+        )
     for metric in source["metrics"]:
+        # A metric inherits under_review when any input fact came from a
+        # downgraded filing — a ratio over unreliable inputs is unreliable.
+        downgraded = any(
+            str(filing_id) in under_review_filing_ids
+            for filing_id in _sequence(metric.get("input_filing_ids"))
+        )
         try:
-            build["series"].append(_metric_series(metric, parser_version))
+            build["series"].append(
+                _metric_series(metric, parser_version, downgraded=downgraded)
+            )
         except (KeyError, TypeError, ValueError) as exc:
             build["assembly_errors"].append(
                 {"message": f"metric {metric.get('metric_value_id')}: {exc}"}
@@ -480,11 +532,16 @@ def _assemble(
                     latest_by_concept[concept] = fact
             for concept, (key, label) in SNAPSHOT_FACTS.items():
                 if concept in latest_by_concept:
+                    fact = latest_by_concept[concept]
                     snapshot.append(
                         {
                             "key": key,
                             "label": label,
-                            "ref": _fact_ref(latest_by_concept[concept], parser_version),
+                            "ref": _fact_ref(
+                                fact,
+                                parser_version,
+                                downgraded=str(fact["filing_id"]) in under_review_filing_ids,
+                            ),
                         }
                     )
         elif posts_by_org.get(org_id):
@@ -827,7 +884,10 @@ def _coverage_rows(
     return rows
 
 
-def _fact_series(fact: Mapping[str, Any], parser_version: str) -> dict[str, Any]:
+def _fact_series(
+    fact: Mapping[str, Any], parser_version: str, *, downgraded: bool = False
+) -> dict[str, Any]:
+    quality_state = "under_review" if downgraded else str(fact["quality_state"])
     return {
         "organization_id": str(fact["organization_id"]),
         "series_key": str(fact["concept"]),
@@ -835,16 +895,19 @@ def _fact_series(fact: Mapping[str, Any], parser_version: str) -> dict[str, Any]
         "tax_year": int(fact["tax_year"]),
         "fiscal_year_end": _iso_date(fact["tax_period_end"]),
         "value": _number(fact.get("amount")),
-        "quality_state": str(fact["quality_state"]),
+        "quality_state": quality_state,
         "is_amended": bool(fact["amended_return"]),
-        "source_ref": _fact_ref(fact, parser_version),
+        "source_ref": _fact_ref(fact, parser_version, downgraded=downgraded),
     }
 
 
-def _metric_series(metric: Mapping[str, Any], parser_version: str) -> dict[str, Any]:
+def _metric_series(
+    metric: Mapping[str, Any], parser_version: str, *, downgraded: bool = False
+) -> dict[str, Any]:
     if not metric.get("filing_id") or not metric.get("source_path"):
         raise ValueError("has no input financial-fact provenance")
     value = _number(metric.get("value"))
+    quality_state = "under_review" if downgraded else str(metric["quality_state"])
     ref = _source_ref(
         value=value,
         # SourceRef v1 has no percent unit. The canonical public fixtures encode
@@ -854,7 +917,7 @@ def _metric_series(metric: Mapping[str, Any], parser_version: str) -> dict[str, 
         tax_year=int(metric["tax_year"]),
         period_begin=metric.get("tax_period_begin"),
         period_end=metric["fiscal_year_end"],
-        quality_state=str(metric["quality_state"]),
+        quality_state=quality_state,
         source_key="irs_990_xml",
         form_type=str(metric["form_type"]),
         filing_id=str(metric["filing_id"]),
@@ -871,20 +934,22 @@ def _metric_series(metric: Mapping[str, Any], parser_version: str) -> dict[str, 
         "tax_year": int(metric["tax_year"]),
         "fiscal_year_end": _iso_date(metric["fiscal_year_end"]),
         "value": value,
-        "quality_state": str(metric["quality_state"]),
+        "quality_state": quality_state,
         "is_amended": bool(metric["amended_return"]),
         "source_ref": ref,
     }
 
 
-def _fact_ref(fact: Mapping[str, Any], parser_version: str) -> dict[str, Any]:
+def _fact_ref(
+    fact: Mapping[str, Any], parser_version: str, *, downgraded: bool = False
+) -> dict[str, Any]:
     return _source_ref(
         value=_number(fact.get("amount")),
         unit=str(fact["unit"]),
         tax_year=int(fact["tax_year"]),
         period_begin=fact.get("tax_period_begin"),
         period_end=fact["tax_period_end"],
-        quality_state=str(fact["quality_state"]),
+        quality_state="under_review" if downgraded else str(fact["quality_state"]),
         source_key="irs_990_xml",
         form_type=str(fact["form_type"]),
         filing_id=str(fact["filing_id"]),
