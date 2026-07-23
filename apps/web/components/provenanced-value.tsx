@@ -17,6 +17,8 @@ export interface ProvenancedValueProps {
   orgSlug?: string;
   metricKey?: string;
   className?: string;
+  /** Comparison tables show a compact quality chip in every populated cell. */
+  alwaysShowQuality?: boolean;
 }
 
 /**
@@ -31,13 +33,14 @@ export function ProvenancedValue({
   label,
   orgSlug,
   metricKey,
-  className
+  className,
+  alwaysShowQuality = false
 }: ProvenancedValueProps) {
   const { value, unit, quality_state } = refData;
   const fmt = format ?? defaultFormatForUnit(unit);
   const isNull = value === null;
   const display = isNull ? qualityStateLabel(quality_state) : formatValue(value, fmt);
-  const showChip = !isNull && quality_state !== "verified";
+  const showChip = alwaysShowQuality || (!isNull && quality_state !== "verified");
   const drawerLabel = label ?? refData.metric?.key ?? "Reported figure";
 
   return (
