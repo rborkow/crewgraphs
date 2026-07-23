@@ -1042,6 +1042,45 @@ COMMENT ON TABLE read.org_profile IS 'Versioned public profile payload.';
 
 
 --
+-- Name: org_regatta_result; Type: TABLE; Schema: read; Owner: -
+--
+
+CREATE TABLE read.org_regatta_result (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    snapshot_id uuid NOT NULL,
+    organization_id uuid NOT NULL,
+    season integer NOT NULL,
+    regatta_key text NOT NULL,
+    regatta_name text NOT NULL,
+    regatta_date date,
+    venue text,
+    source_key text NOT NULL,
+    event_key text NOT NULL,
+    entry_external_key text NOT NULL,
+    event_name text NOT NULL,
+    boat_class text,
+    round text,
+    crew_label text,
+    crew jsonb DEFAULT '[]'::jsonb NOT NULL,
+    metric_key text NOT NULL,
+    value numeric,
+    unit text NOT NULL,
+    status text NOT NULL,
+    quality_state text NOT NULL,
+    source_ref jsonb NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT org_regatta_result_metric_key_check CHECK ((metric_key = ANY (ARRAY['finish_time'::text, 'adjusted_time'::text, 'handicap'::text, 'place'::text, 'adjusted_place'::text, 'margin'::text])))
+);
+
+
+--
+-- Name: TABLE org_regatta_result; Type: COMMENT; Schema: read; Owner: -
+--
+
+COMMENT ON TABLE read.org_regatta_result IS 'Snapshot-scoped long-form regatta results. crew contains only post-suppression race-context names.';
+
+
+--
 -- Name: org_slug_history; Type: TABLE; Schema: read; Owner: -
 --
 
@@ -1702,6 +1741,14 @@ ALTER TABLE ONLY read.org_profile
 
 
 --
+-- Name: org_regatta_result org_regatta_result_pkey; Type: CONSTRAINT; Schema: read; Owner: -
+--
+
+ALTER TABLE ONLY read.org_regatta_result
+    ADD CONSTRAINT org_regatta_result_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: org_slug_history org_slug_history_pkey; Type: CONSTRAINT; Schema: read; Owner: -
 --
 
@@ -2222,6 +2269,27 @@ CREATE INDEX org_peer_cohort_organization_id_idx ON read.org_peer_cohort USING b
 --
 
 CREATE INDEX org_profile_organization_id_idx ON read.org_profile USING btree (organization_id);
+
+
+--
+-- Name: org_regatta_result_snapshot_metric_uniq; Type: INDEX; Schema: read; Owner: -
+--
+
+CREATE UNIQUE INDEX org_regatta_result_snapshot_metric_uniq ON read.org_regatta_result USING btree (snapshot_id, organization_id, regatta_key, event_key, entry_external_key, COALESCE(crew_label, ''::text), metric_key);
+
+
+--
+-- Name: org_regatta_result_snapshot_organization_idx; Type: INDEX; Schema: read; Owner: -
+--
+
+CREATE INDEX org_regatta_result_snapshot_organization_idx ON read.org_regatta_result USING btree (snapshot_id, organization_id);
+
+
+--
+-- Name: org_regatta_result_snapshot_organization_season_idx; Type: INDEX; Schema: read; Owner: -
+--
+
+CREATE INDEX org_regatta_result_snapshot_organization_season_idx ON read.org_regatta_result USING btree (snapshot_id, organization_id, season);
 
 
 --
@@ -2747,6 +2815,22 @@ ALTER TABLE ONLY read.org_profile
 
 
 --
+-- Name: org_regatta_result org_regatta_result_organization_id_fkey; Type: FK CONSTRAINT; Schema: read; Owner: -
+--
+
+ALTER TABLE ONLY read.org_regatta_result
+    ADD CONSTRAINT org_regatta_result_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES core.organization(id);
+
+
+--
+-- Name: org_regatta_result org_regatta_result_snapshot_id_fkey; Type: FK CONSTRAINT; Schema: read; Owner: -
+--
+
+ALTER TABLE ONLY read.org_regatta_result
+    ADD CONSTRAINT org_regatta_result_snapshot_id_fkey FOREIGN KEY (snapshot_id) REFERENCES ops.publish_snapshot(id);
+
+
+--
 -- Name: org_slug_history org_slug_history_org_fk; Type: FK CONSTRAINT; Schema: read; Owner: -
 --
 
@@ -2982,4 +3066,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('013'),
     ('014'),
     ('015'),
-    ('016');
+    ('016'),
+    ('017');

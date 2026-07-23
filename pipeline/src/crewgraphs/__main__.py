@@ -19,10 +19,17 @@ _csv = split_csv
 # during the Wave-1 fan-out); __main__ stays the single integration point.
 from .jobs import herenow as _herenow
 from .jobs import regattatiming as _regattatiming
+from .jobs import resolve_clubs as _resolve_clubs
 from .jobs import row2k as _row2k
 from .jobs import timeteam as _timeteam
 
-for _register in (_herenow.register, _timeteam.register, _row2k.register, _regattatiming.register):
+for _register in (
+    _herenow.register,
+    _timeteam.register,
+    _row2k.register,
+    _regattatiming.register,
+    _resolve_clubs.register,
+):
     _register(app)
 
 

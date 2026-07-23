@@ -33,16 +33,16 @@
 - [x] All four lenses per branch; 2 blockers found and fixed (checksum instability from volatile serialization artifacts in both JSON adapters; stroke-name PII leak into entry raw in W1d); ~12 should-fixes landed via Codex fix rounds; lead verified every branch with full pytest (119 total post-merge) + ephemeral-Postgres migration checks (PG16 rollback/reapply, PG18 dump parity).
 - [ ] Live smokes post-merge: 2–3 HereNow races (one masters), one Time-Team regional-champs year; `run-report` clean. `[lead]` — needs DB/R2 secrets, run via workflow dispatch or locally with .env.
 
-## Wave 2 — convergence (serial: shared files unfreeze)
+## Wave 2 — convergence — MERGED 2026-07-23
 
-- [ ] **Phase 3 identity join** `[terra]`: `jobs/resolve_clubs.py` (exact UUID tier → near-legal-name similarity ≥0.85 auto-candidate / 0.6–0.85 review / BMF EIN-boost `inclusion` tasks; HereNow frequency gate ≥3 regattas); `club-curation --csv seed/club_links.csv` curator promotion; match-rate stats (expect Time-Team ≥60% auto, HereNow 20–30%).
-- [ ] Seed `seed/club_links.csv` for the published cohort `[lead triage, owner sign-off]`.
-- [ ] **Phase 4 publish** `[sol]`: migration `017_read_regatta.sql` (+`_GC_SQL`); `publish.py` — regatta source rows through verified links only, suppression + U13 assembly, ResultRef/payload validation, per-item `under_review` downgrades, fatal name-leakage + search_text invariants, `SOURCE_REGISTRY` entries.
-- [ ] **Phase 4 web** `[lead]`: `regatta-activity.tsx` replaces the placeholder (season-grouped, provenanced, provider link-outs, mm:ss.t); methods page results section + PII policy plain-language + takedown contact.
+- [x] **Phase 3 identity join** (terra, 378c0ea): `resolve-clubs` (exact-link skip; Time-Team ≥0.85 auto-candidate with any-two-≥0.85 ambiguity guard + durable rejects; 0.6–0.85 review; BMF EIN-boost inclusion tasks; revision-safe ≥3-regatta frequency gate) + `club-curation` curator promotion + `seed/club_links.csv` scaffold.
+- [ ] Seed `seed/club_links.csv` from real resolve-clubs output `[lead triage, owner sign-off]` — needs a live run (secrets).
+- [x] **Phase 4 publish** (sol, 9837584): migration 017 (`read.org_regatta_result` incl. `entry_external_key`), curated-links-only join with a single-org ambiguity guard, NFKC/token-set suppression + broadened U13 redaction (incl. `crew_label` nulling), fatal invariants (suppressed-name scan over crew/crew_label/club_display_name, person-names-in-search_text, duplicates, assembly errors), sanity downgrades, six ResultRef metrics, SOURCE_REGISTRY, GC.
+- [x] **Phase 4 web** (lead, 48a0967): `RegattaActivity` + `ResultValue` (ResultRef-required twin of ProvenancedValue) + pure mappers/formatters with tests; attribution/takedown line inline (methods page itself remains Track B).
 
-### Review pass R2 (on the convergence diff)
-- [ ] PII enforcement (suppression, search leakage, U13) `[sol]` · schema/grants/GC `[terra]` · product/copy/a11y `[lead or opus]`. Cross-model mandatory.
-- [ ] Full chain on cohort: results render on a live profile; rollback + GC verified.
+### Review pass R2 — done
+- [x] Dual review of the publish diff: opus PII lens (3 redaction bypasses found: unguarded `crew_label`, U13 regex false negatives, unicode-asymmetric suppression) + terra technical lens (multi-org alias-join blocker, entry-key collision, `assembly_errors` KeyError) — all findings landed in one sol fix round; identity branch reviewed by opus (frequency-gate revision overcount + non-durable rejects, fixed). 159 pipeline + 88 web tests green; migrations 015–017 each verified up/rollback/reapply on ephemeral PG16 with grant probes.
+- [ ] Full chain on cohort against the live DB: curate first links, dispatch results-backfill, verify a profile renders results + rollback/GC `[lead/owner]` — needs secrets.
 
 ## Wave 3 — ratings (3a may start parallel to Wave 2)
 

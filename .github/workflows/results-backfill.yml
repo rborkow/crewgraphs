@@ -65,7 +65,11 @@ jobs:
         run: uv run python -m crewgraphs timeteam-race-sync --all-staged --sleep-ms "$SLEEP_MS"
       - name: Time-Team load
         run: uv run python -m crewgraphs timeteam-load
-      - name: Publish gate (chain hygiene)
+      - name: Resolve provider clubs
+        run: uv run python -m crewgraphs resolve-clubs
+      - name: Publish gate
         run: uv run python -m crewgraphs publish-gate --since "$CHAIN_STARTED_AT"
+      - name: Publish
+        run: uv run python -m crewgraphs publish
       - name: Run report
         run: uv run python -m crewgraphs run-report
