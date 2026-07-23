@@ -1,0 +1,3 @@
+source,external_key,org_slug,decision,note
+# time_team,provider-club-uuid,example-rowing-club,link,Reviewed against official club identity.
+# herenow,example-rowing-club,example-rowing-club,reject,Not the same organization.
