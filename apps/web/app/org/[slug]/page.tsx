@@ -7,7 +7,8 @@ import { IdentityHeader } from "@/components/profile/identity-header";
 import { SnapshotFacts } from "@/components/profile/snapshot-facts";
 import { FinancialTrends } from "@/components/profile/financial-trends";
 import { FinancialComposition } from "@/components/profile/financial-composition";
-import { RegattaPlaceholder } from "@/components/profile/regatta-placeholder";
+import { RegattaActivity } from "@/components/profile/regatta-activity";
+import { getRegattaActivity } from "@/lib/regatta-data";
 import { People } from "@/components/profile/people";
 import { Relationships } from "@/components/profile/relationships";
 import { SourcesFooter } from "@/components/profile/sources-footer";
@@ -45,10 +46,11 @@ export default async function OrgProfilePage({ params }: PageProps) {
   if (resolution.kind === "not_found") notFound();
   if (resolution.kind === "redirect") permanentRedirect(`/org/${resolution.slug}`);
 
-  const [profile, trends, publishMeta] = await Promise.all([
+  const [profile, trends, publishMeta, regattaSeasons] = await Promise.all([
     getProfile(resolution.slug),
     getTrends(resolution.slug),
-    getPublishMeta()
+    getPublishMeta(),
+    getRegattaActivity(resolution.slug)
   ]);
   if (!profile) notFound();
 
@@ -70,7 +72,7 @@ export default async function OrgProfilePage({ params }: PageProps) {
         coverage={coverage}
         slug={resolution.slug}
       />
-      <RegattaPlaceholder />
+      <RegattaActivity seasons={regattaSeasons} />
       {people.length > 0 ? <People people={people} slug={resolution.slug} /> : null}
       <Relationships relationships={relationships} />
       <SourcesFooter coverage={coverage} slug={resolution.slug} dataThroughLabel={dataThroughLabel} />

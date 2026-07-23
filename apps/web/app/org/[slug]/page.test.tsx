@@ -43,6 +43,9 @@ vi.mock("@/lib/profile-data", async () => {
     getTrends: vi.fn()
   };
 });
+vi.mock("@/lib/regatta-data", () => ({
+  getRegattaActivity: vi.fn(async () => [])
+}));
 vi.mock("@/lib/directory", () => ({
   getPublishMeta: vi.fn(async () => ({
     snapshot_id: "snap",
