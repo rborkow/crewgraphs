@@ -1,0 +1,1012 @@
+{
+ "timestamp": 1784845706725,
+ "regatta": {
+  "763136aa-ad6f-480e-a7f8-4785b85c16e6": {
+   "id": "763136aa-ad6f-480e-a7f8-4785b85c16e6",
+   "name": "USRowing Youth National Championships",
+   "city": "Sarasota, FL",
+   "code": "usrowing-youth-national",
+   "year": 2026,
+   "locale": "en-US",
+   "timezone": "America/New_York",
+   "website": "https://usrowing.org/youth-national-championships",
+   "regatta_days": [
+    {
+     "id": "5a483129-a4a3-4392-8944-405dedb26377",
+     "day_date": "2026-06-11"
+    },
+    {
+     "id": "102f84f5-a93a-4e56-b760-f289c4b8ce4f",
+     "day_date": "2026-06-12"
+    },
+    {
+     "id": "0d5eddb0-9513-4325-853f-3170be37bbb4",
+     "day_date": "2026-06-13"
+    },
+    {
+     "id": "3cf42af1-d4ec-4cbe-9d2f-f70e13b22eae",
+     "day_date": "2026-06-14"
+    }
+   ],
+   "current_regatta_day": null,
+   "logo_url": "https://cdn.time-team.nl/media/regatta/thumb/95a60dda-f677-4328-887c-76f5eced91ec.png",
+   "sponsor_logos": [],
+   "config": {
+    "website": {
+     "video_iframe_url": "",
+     "video": "0",
+     "audio_hls_mountpoint": "",
+     "googlemaps_layout": "{}",
+     "origin": "club",
+     "audio": "0",
+     "audio_mountpoint": "roeiradio",
+     "tracker": "classic"
+    }
+   }
+  }
+ },
+ "venue_layouts": {
+  "4a8fbe39-b11d-44a5-bb86-b75ee7f5e8cd": {
+   "id": "4a8fbe39-b11d-44a5-bb86-b75ee7f5e8cd",
+   "name": "Sarasota, FL",
+   "code": null,
+   "timetrial": false,
+   "sort_order": 0
+  }
+ },
+ "regatta_ranking": [],
+ "race": {
+  "95efa4c6-cdab-430a-9fbf-4bb57e24be3c": {
+   "id": "95efa4c6-cdab-430a-9fbf-4bb57e24be3c",
+   "event_nr": "001",
+   "event_code": "M Y 1x",
+   "event_name": "Mens Youth 1x",
+   "round_type_code": "TT",
+   "round_type_name": "Time Trial",
+   "round_id": "c9d26885-e653-4c8e-ae9f-7d3803af9d4b",
+   "round_nr": null,
+   "start_time": "07:30",
+   "sequence": "101",
+   "embargo": false,
+   "status": 32,
+   "timetrial": true,
+   "crew_order": 0,
+   "nr_lanes_per_crew": null,
+   "regatta_day_id": "5a483129-a4a3-4392-8944-405dedb26377",
+   "timing_layout_id": "d23899dd-78bb-4321-b37b-e395a0a07fd4",
+   "venue_layout_id": "4a8fbe39-b11d-44a5-bb86-b75ee7f5e8cd",
+   "round_type_id": "32360000-0000-0000-0000-000000000000",
+   "string": "Thu, 7:30\u202fAM - Race 101 - [001] M Y 1x Time Trial",
+   "regatta_id": "763136aa-ad6f-480e-a7f8-4785b85c16e6",
+   "regatta_day": {
+    "id": "5a483129-a4a3-4392-8944-405dedb26377",
+    "day_date": "2026-06-11"
+   },
+   "start_datetime": "2026-06-11 07:30:00",
+   "rules": [
+    {
+     "code": "16 fastest",
+     "target_round_id": "b9c1ffe0-b108-4817-8561-a0ea2217d79d"
+    },
+    {
+     "code": "17 - 24",
+     "target_round_id": "c14adbcf-ee78-48b6-9749-dd476420fd88"
+    },
+    {
+     "code": "other",
+     "target_round_id": "e0a948b4-a2dd-4309-8608-22d90a6cfd2a"
+    }
+   ],
+   "timing_layout": {
+    "id": "d23899dd-78bb-4321-b37b-e395a0a07fd4",
+    "code": "1900m",
+    "name": "1900 meter",
+    "relay": false,
+    "type": 1,
+    "mode": 1,
+    "display": 0,
+    "reverse": false,
+    "granularity": 2,
+    "distance": 1900,
+    "timing_layout_locations": [
+     {
+      "id": "a4c5127f-f1e6-4402-ad67-a618012ff171",
+      "name": "start",
+      "distance": 0,
+      "timing_location_id": "28c6337d-7a32-4557-94ab-8f6c72ca450e"
+     },
+     {
+      "id": "25ff115d-aadf-4e66-9680-d571c69534c3",
+      "name": "finish",
+      "distance": 1900,
+      "timing_location_id": "08abf3aa-6a74-4490-adc9-e20e51f098b2"
+     }
+    ]
+   }
+  }
+ },
+ "race_crew": {
+  "5933eec6-9b37-4572-90dd-42d1dfa5a0da": {
+   "id": "5933eec6-9b37-4572-90dd-42d1dfa5a0da",
+   "race_id": "95efa4c6-cdab-430a-9fbf-4bb57e24be3c",
+   "round_id": "c9d26885-e653-4c8e-ae9f-7d3803af9d4b",
+   "entry_id": "02db63fd-61ff-4562-b2c5-882931073fa0",
+   "bib": "4",
+   "status": 4,
+   "sort_order": 4,
+   "is_ooc": false,
+   "lane": null,
+   "entry": {
+    "id": "02db63fd-61ff-4562-b2c5-882931073fa0",
+    "code": "MRWC",
+    "name": "Miami Rowing and Watersports Center, Inc.",
+    "shortname": "Miami RC",
+    "string": "Daniil McLaughlin",
+    "combination": false,
+    "club_id": "78471b7a-856d-422e-92bf-45d5c1f267e5",
+    "event_id": "dbb87d3f-1927-4832-ba34-393533f0c2a2",
+    "status": 2,
+    "club": {
+     "id": "78471b7a-856d-422e-92bf-45d5c1f267e5",
+     "code": "MRWC",
+     "shortname": "Miami RC",
+     "name": "Miami Rowing and Watersports Center, Inc.",
+     "federation": "USA",
+     "blades": {
+      "crop": "https://cdn.time-team.nl/assets/club_blade/img/crop/78471b7a-856d-422e-92bf-45d5c1f267e5.png",
+      "full": "https://cdn.time-team.nl/assets/club_blade/img/crop/78471b7a-856d-422e-92bf-45d5c1f267e5.png"
+     }
+    },
+    "country": {
+     "id": "d8a57daa-d201-4b7e-a540-fe4d7b5a598f",
+     "name": "United States",
+     "flags": {
+      "1x1": "https://cdn.time-team.nl/assets/country_flag/svg/1x1/d8a57daa-d201-4b7e-a540-fe4d7b5a598f.svg",
+      "4x3": "https://cdn.time-team.nl/assets/country_flag/svg/4x3/d8a57daa-d201-4b7e-a540-fe4d7b5a598f.svg",
+      "native": "https://cdn.time-team.nl/assets/country_flag/svg/native/d8a57daa-d201-4b7e-a540-fe4d7b5a598f.svg"
+     }
+    },
+    "stroke_fullname": "Daniil McLaughlin"
+   },
+   "adjusted_order": 8,
+   "adjusted_pos": 8,
+   "adjusted_result": "07:03.35",
+   "adjusted_plus": "+13.37",
+   "penalty": null,
+   "correction": null,
+   "event_adjusted_pos": [],
+   "times": [
+    {
+     "crew_id": "5933eec6-9b37-4572-90dd-42d1dfa5a0da",
+     "location_id": "25ff115d-aadf-4e66-9680-d571c69534c3",
+     "location_name": "finish",
+     "total": {
+      "pos": 8,
+      "result": "07:03.35",
+      "plus": "+13.37"
+     }
+    }
+   ],
+   "progression": {
+    "crew_id": "5933eec6-9b37-4572-90dd-42d1dfa5a0da",
+    "target_round_id": "b9c1ffe0-b108-4817-8561-a0ea2217d79d"
+   },
+   "has_tracking_data": false
+  },
+  "2aab8485-a142-4e24-803a-07fa2cfdef4b": {
+   "id": "2aab8485-a142-4e24-803a-07fa2cfdef4b",
+   "race_id": "95efa4c6-cdab-430a-9fbf-4bb57e24be3c",
+   "round_id": "c9d26885-e653-4c8e-ae9f-7d3803af9d4b",
+   "entry_id": "03730ce1-0340-4efe-af27-09e2fa6f03ac",
+   "bib": "13",
+   "status": 4,
+   "sort_order": 13,
+   "is_ooc": false,
+   "lane": null,
+   "entry": {
+    "id": "03730ce1-0340-4efe-af27-09e2fa6f03ac",
+    "code": "ONRA",
+    "name": "Oak Neck Rowing Academy",
+    "shortname": "Oak Neck RA",
+    "string": "Jakob Masata",
+    "combination": false,
+    "club_id": "f0506816-f04f-40d2-9f84-a7d26ed697d4",
+    "event_id": "dbb87d3f-1927-4832-ba34-393533f0c2a2",
+    "status": 2,
+    "club": {
+     "id": "f0506816-f04f-40d2-9f84-a7d26ed697d4",
+     "code": "ONRA",
+     "shortname": "Oak Neck RA",
+     "name": "Oak Neck Rowing Academy",
+     "federation": "USA",
+     "blades": {
+      "crop": "https://cdn.time-team.nl/assets/club_blade/img/crop/f0506816-f04f-40d2-9f84-a7d26ed697d4.png",
+      "full": "https://cdn.time-team.nl/assets/club_blade/img/crop/f0506816-f04f-40d2-9f84-a7d26ed697d4.png"
+     }
+    },
+    "country": {
+     "id": "d8a57daa-d201-4b7e-a540-fe4d7b5a598f",
+     "name": "United States",
+     "flags": {
+      "1x1": "https://cdn.time-team.nl/assets/country_flag/svg/1x1/d8a57daa-d201-4b7e-a540-fe4d7b5a598f.svg",
+      "4x3": "https://cdn.time-team.nl/assets/country_flag/svg/4x3/d8a57daa-d201-4b7e-a540-fe4d7b5a598f.svg",
+      "native": "https://cdn.time-team.nl/assets/country_flag/svg/native/d8a57daa-d201-4b7e-a540-fe4d7b5a598f.svg"
+     }
+    },
+    "stroke_fullname": "Jakob Masata"
+   },
+   "adjusted_order": 11,
+   "adjusted_pos": 11,
+   "adjusted_result": "07:05.87",
+   "adjusted_plus": "+15.89",
+   "penalty": null,
+   "correction": null,
+   "event_adjusted_pos": [],
+   "times": [
+    {
+     "crew_id": "2aab8485-a142-4e24-803a-07fa2cfdef4b",
+     "location_id": "25ff115d-aadf-4e66-9680-d571c69534c3",
+     "location_name": "finish",
+     "total": {
+      "pos": 11,
+      "result": "07:05.87",
+      "plus": "+15.89"
+     }
+    }
+   ],
+   "progression": {
+    "crew_id": "2aab8485-a142-4e24-803a-07fa2cfdef4b",
+    "target_round_id": "b9c1ffe0-b108-4817-8561-a0ea2217d79d"
+   },
+   "has_tracking_data": false
+  },
+  "df077ba4-9ee2-4e2d-affa-44a06032fadb": {
+   "id": "df077ba4-9ee2-4e2d-affa-44a06032fadb",
+   "race_id": "95efa4c6-cdab-430a-9fbf-4bb57e24be3c",
+   "round_id": "c9d26885-e653-4c8e-ae9f-7d3803af9d4b",
+   "entry_id": "03961988-2cbe-4748-8419-c7ce2f72b06f",
+   "bib": "30",
+   "status": 4,
+   "sort_order": 30,
+   "is_ooc": false,
+   "lane": null,
+   "entry": {
+    "id": "03961988-2cbe-4748-8419-c7ce2f72b06f",
+    "code": "CTC",
+    "name": "Chicago Training Center",
+    "shortname": "Chicago Training",
+    "string": "Christopher Janz",
+    "combination": false,
+    "club_id": "18e640d6-2e1f-4e9c-a0f4-46b012ff219e",
+    "event_id": "dbb87d3f-1927-4832-ba34-393533f0c2a2",
+    "status": 2,
+    "club": {
+     "id": "18e640d6-2e1f-4e9c-a0f4-46b012ff219e",
+     "code": "CTC",
+     "shortname": "Chicago Training",
+     "name": "Chicago Training Center",
+     "federation": "USA",
+     "blades": {
+      "crop": "https://cdn.time-team.nl/assets/club_blade/img/crop/18e640d6-2e1f-4e9c-a0f4-46b012ff219e.png",
+      "full": "https://cdn.time-team.nl/assets/club_blade/img/crop/18e640d6-2e1f-4e9c-a0f4-46b012ff219e.png"
+     }
+    },
+    "country": {
+     "id": "d8a57daa-d201-4b7e-a540-fe4d7b5a598f",
+     "name": "United States",
+     "flags": {
+      "1x1": "https://cdn.time-team.nl/assets/country_flag/svg/1x1/d8a57daa-d201-4b7e-a540-fe4d7b5a598f.svg",
+      "4x3": "https://cdn.time-team.nl/assets/country_flag/svg/4x3/d8a57daa-d201-4b7e-a540-fe4d7b5a598f.svg",
+      "native": "https://cdn.time-team.nl/assets/country_flag/svg/native/d8a57daa-d201-4b7e-a540-fe4d7b5a598f.svg"
+     }
+    },
+    "stroke_fullname": "Christopher Janz"
+   },
+   "adjusted_order": 18,
+   "adjusted_pos": 18,
+   "adjusted_result": "07:13.72",
+   "adjusted_plus": "+23.74",
+   "penalty": null,
+   "correction": null,
+   "event_adjusted_pos": [],
+   "times": [
+    {
+     "crew_id": "df077ba4-9ee2-4e2d-affa-44a06032fadb",
+     "location_id": "25ff115d-aadf-4e66-9680-d571c69534c3",
+     "location_name": "finish",
+     "total": {
+      "pos": 18,
+      "result": "07:13.72",
+      "plus": "+23.74"
+     }
+    }
+   ],
+   "progression": {
+    "crew_id": "df077ba4-9ee2-4e2d-affa-44a06032fadb",
+    "target_round_id": "c14adbcf-ee78-48b6-9749-dd476420fd88"
+   },
+   "has_tracking_data": false
+  },
+  "1bdcc8f0-9db4-4ca6-8b38-c7a61985fd9e": {
+   "id": "1bdcc8f0-9db4-4ca6-8b38-c7a61985fd9e",
+   "race_id": "95efa4c6-cdab-430a-9fbf-4bb57e24be3c",
+   "round_id": "c9d26885-e653-4c8e-ae9f-7d3803af9d4b",
+   "entry_id": "05a97c7a-9071-47a4-a80e-180fe3bc284c",
+   "bib": "2",
+   "status": 4,
+   "sort_order": 2,
+   "is_ooc": false,
+   "lane": null,
+   "entry": {
+    "id": "05a97c7a-9071-47a4-a80e-180fe3bc284c",
+    "code": "MAC",
+    "name": "Marina Aquatic Center Junior Rowing",
+    "shortname": "Marina Aquatic Center",
+    "string": "Goose Faynsod",
+    "combination": false,
+    "club_id": "20325c3e-21d7-4180-9e53-cbcc8cabe024",
+    "event_id": "dbb87d3f-1927-4832-ba34-393533f0c2a2",
+    "status": 2,
+    "club": {
+     "id": "20325c3e-21d7-4180-9e53-cbcc8cabe024",
+     "code": "MAC",
+     "shortname": "Marina Aquatic Center",
+     "name": "Marina Aquatic Center Junior Rowing",
+     "federation": "USA",
+     "blades": {
+      "crop": "https://cdn.time-team.nl/assets/club_blade/img/crop/20325c3e-21d7-4180-9e53-cbcc8cabe024.png",
+      "full": "https://cdn.time-team.nl/assets/club_blade/img/crop/20325c3e-21d7-4180-9e53-cbcc8cabe024.png"
+     }
+    },
+    "country": {
+     "id": "d8a57daa-d201-4b7e-a540-fe4d7b5a598f",
+     "name": "United States",
+     "flags": {
+      "1x1": "https://cdn.time-team.nl/assets/country_flag/svg/1x1/d8a57daa-d201-4b7e-a540-fe4d7b5a598f.svg",
+      "4x3": "https://cdn.time-team.nl/assets/country_flag/svg/4x3/d8a57daa-d201-4b7e-a540-fe4d7b5a598f.svg",
+      "native": "https://cdn.time-team.nl/assets/country_flag/svg/native/d8a57daa-d201-4b7e-a540-fe4d7b5a598f.svg"
+     }
+    },
+    "stroke_fullname": "Goose Faynsod"
+   },
+   "adjusted_order": 3,
+   "adjusted_pos": 3,
+   "adjusted_result": "06:54.14",
+   "adjusted_plus": "+4.16",
+   "penalty": null,
+   "correction": null,
+   "event_adjusted_pos": [],
+   "times": [
+    {
+     "crew_id": "1bdcc8f0-9db4-4ca6-8b38-c7a61985fd9e",
+     "location_id": "25ff115d-aadf-4e66-9680-d571c69534c3",
+     "location_name": "finish",
+     "total": {
+      "pos": 3,
+      "result": "06:54.14",
+      "plus": "+4.16"
+     }
+    }
+   ],
+   "progression": {
+    "crew_id": "1bdcc8f0-9db4-4ca6-8b38-c7a61985fd9e",
+    "target_round_id": "b9c1ffe0-b108-4817-8561-a0ea2217d79d"
+   },
+   "has_tracking_data": false
+  }
+ },
+ "round": {
+  "b9c1ffe0-b108-4817-8561-a0ea2217d79d": {
+   "id": "b9c1ffe0-b108-4817-8561-a0ea2217d79d",
+   "event_code": "M Y 1x",
+   "event_name": "Mens Youth 1x",
+   "round_type_code": "S",
+   "round_type_name": "Semifinal",
+   "timetrial": false,
+   "is_final": false,
+   "event_id": "dbb87d3f-1927-4832-ba34-393533f0c2a2",
+   "timing_layout_id": "0467a884-f88f-4a81-bf92-17677c30468d",
+   "round_type_id": "32310000-0000-0000-0000-000000000000",
+   "nr_races": 2,
+   "results_per_race": true,
+   "string": "[001] M Y 1x Semifinal",
+   "sort_order": 28593,
+   "drawn": true,
+   "official": true,
+   "rules": [
+    {
+     "code": "1st, 2nd, 3rd, 4th",
+     "target_round_id": "83873793-5786-40b8-be65-d24f44560131"
+    },
+    {
+     "code": "other",
+     "target_round_id": "08a5c49a-76ce-472c-ac0a-ff55824afabf"
+    }
+   ],
+   "timing_layout": {
+    "id": "0467a884-f88f-4a81-bf92-17677c30468d",
+    "code": "2000m",
+    "name": "2000 meter",
+    "relay": false,
+    "type": 1,
+    "mode": 1,
+    "display": 0,
+    "reverse": false,
+    "granularity": 2,
+    "distance": 2000,
+    "timing_layout_locations": [
+     {
+      "id": "4b755544-f2c8-4929-b951-3c349fe18621",
+      "name": "start",
+      "distance": 0,
+      "timing_location_id": "28c6337d-7a32-4557-94ab-8f6c72ca450e"
+     },
+     {
+      "id": "e0f36b63-3328-4ff3-b4d3-f4330b4eb888",
+      "name": "1000m",
+      "distance": 1000,
+      "timing_location_id": "582d0fda-cefb-465f-a980-c8bf17f42b62"
+     },
+     {
+      "id": "84cf5e2c-a7a9-4699-8514-88ed95efec6e",
+      "name": "finish",
+      "distance": 2000,
+      "timing_location_id": "08abf3aa-6a74-4490-adc9-e20e51f098b2"
+     }
+    ]
+   }
+  },
+  "c9d26885-e653-4c8e-ae9f-7d3803af9d4b": {
+   "id": "c9d26885-e653-4c8e-ae9f-7d3803af9d4b",
+   "event_code": "M Y 1x",
+   "event_name": "Mens Youth 1x",
+   "round_type_code": "TT",
+   "round_type_name": "Time Trial",
+   "timetrial": true,
+   "is_final": false,
+   "event_id": "dbb87d3f-1927-4832-ba34-393533f0c2a2",
+   "timing_layout_id": "d23899dd-78bb-4321-b37b-e395a0a07fd4",
+   "round_type_id": "32360000-0000-0000-0000-000000000000",
+   "nr_races": null,
+   "results_per_race": false,
+   "string": "[001] M Y 1x Time Trial",
+   "sort_order": 10001,
+   "drawn": true,
+   "official": true,
+   "rules": [
+    {
+     "code": "16 fastest",
+     "target_round_id": "b9c1ffe0-b108-4817-8561-a0ea2217d79d"
+    },
+    {
+     "code": "17 - 24",
+     "target_round_id": "c14adbcf-ee78-48b6-9749-dd476420fd88"
+    },
+    {
+     "code": "other",
+     "target_round_id": "e0a948b4-a2dd-4309-8608-22d90a6cfd2a"
+    }
+   ],
+   "timing_layout": {
+    "id": "d23899dd-78bb-4321-b37b-e395a0a07fd4",
+    "code": "1900m",
+    "name": "1900 meter",
+    "relay": false,
+    "type": 1,
+    "mode": 1,
+    "display": 0,
+    "reverse": false,
+    "granularity": 2,
+    "distance": 1900,
+    "timing_layout_locations": [
+     {
+      "id": "a4c5127f-f1e6-4402-ad67-a618012ff171",
+      "name": "start",
+      "distance": 0,
+      "timing_location_id": "28c6337d-7a32-4557-94ab-8f6c72ca450e"
+     },
+     {
+      "id": "25ff115d-aadf-4e66-9680-d571c69534c3",
+      "name": "finish",
+      "distance": 1900,
+      "timing_location_id": "08abf3aa-6a74-4490-adc9-e20e51f098b2"
+     }
+    ]
+   }
+  },
+  "83873793-5786-40b8-be65-d24f44560131": {
+   "id": "83873793-5786-40b8-be65-d24f44560131",
+   "event_code": "M Y 1x",
+   "event_name": "Mens Youth 1x",
+   "round_type_code": "FA",
+   "round_type_name": "Final A",
+   "timetrial": false,
+   "is_final": true,
+   "event_id": "dbb87d3f-1927-4832-ba34-393533f0c2a2",
+   "timing_layout_id": "0467a884-f88f-4a81-bf92-17677c30468d",
+   "round_type_id": "33000000-0000-0000-0000-000000000000",
+   "nr_races": 1,
+   "results_per_race": true,
+   "string": "[001] M Y 1x Final A",
+   "sort_order": 29659,
+   "drawn": true,
+   "official": true,
+   "rules": [],
+   "timing_layout": {
+    "id": "0467a884-f88f-4a81-bf92-17677c30468d",
+    "code": "2000m",
+    "name": "2000 meter",
+    "relay": false,
+    "type": 1,
+    "mode": 1,
+    "display": 0,
+    "reverse": false,
+    "granularity": 2,
+    "distance": 2000,
+    "timing_layout_locations": [
+     {
+      "id": "4b755544-f2c8-4929-b951-3c349fe18621",
+      "name": "start",
+      "distance": 0,
+      "timing_location_id": "28c6337d-7a32-4557-94ab-8f6c72ca450e"
+     },
+     {
+      "id": "e0f36b63-3328-4ff3-b4d3-f4330b4eb888",
+      "name": "1000m",
+      "distance": 1000,
+      "timing_location_id": "582d0fda-cefb-465f-a980-c8bf17f42b62"
+     },
+     {
+      "id": "84cf5e2c-a7a9-4699-8514-88ed95efec6e",
+      "name": "finish",
+      "distance": 2000,
+      "timing_location_id": "08abf3aa-6a74-4490-adc9-e20e51f098b2"
+     }
+    ]
+   }
+  },
+  "08a5c49a-76ce-472c-ac0a-ff55824afabf": {
+   "id": "08a5c49a-76ce-472c-ac0a-ff55824afabf",
+   "event_code": "M Y 1x",
+   "event_name": "Mens Youth 1x",
+   "round_type_code": "FB",
+   "round_type_name": "Final B",
+   "timetrial": false,
+   "is_final": true,
+   "event_id": "dbb87d3f-1927-4832-ba34-393533f0c2a2",
+   "timing_layout_id": "0467a884-f88f-4a81-bf92-17677c30468d",
+   "round_type_id": "34000000-0000-0000-0000-000000000000",
+   "nr_races": 1,
+   "results_per_race": true,
+   "string": "[001] M Y 1x Final B",
+   "sort_order": 29126,
+   "drawn": true,
+   "official": true,
+   "rules": [],
+   "timing_layout": {
+    "id": "0467a884-f88f-4a81-bf92-17677c30468d",
+    "code": "2000m",
+    "name": "2000 meter",
+    "relay": false,
+    "type": 1,
+    "mode": 1,
+    "display": 0,
+    "reverse": false,
+    "granularity": 2,
+    "distance": 2000,
+    "timing_layout_locations": [
+     {
+      "id": "4b755544-f2c8-4929-b951-3c349fe18621",
+      "name": "start",
+      "distance": 0,
+      "timing_location_id": "28c6337d-7a32-4557-94ab-8f6c72ca450e"
+     },
+     {
+      "id": "e0f36b63-3328-4ff3-b4d3-f4330b4eb888",
+      "name": "1000m",
+      "distance": 1000,
+      "timing_location_id": "582d0fda-cefb-465f-a980-c8bf17f42b62"
+     },
+     {
+      "id": "84cf5e2c-a7a9-4699-8514-88ed95efec6e",
+      "name": "finish",
+      "distance": 2000,
+      "timing_location_id": "08abf3aa-6a74-4490-adc9-e20e51f098b2"
+     }
+    ]
+   }
+  },
+  "c14adbcf-ee78-48b6-9749-dd476420fd88": {
+   "id": "c14adbcf-ee78-48b6-9749-dd476420fd88",
+   "event_code": "M Y 1x",
+   "event_name": "Mens Youth 1x",
+   "round_type_code": "FC",
+   "round_type_name": "Final C",
+   "timetrial": false,
+   "is_final": true,
+   "event_id": "dbb87d3f-1927-4832-ba34-393533f0c2a2",
+   "timing_layout_id": "0467a884-f88f-4a81-bf92-17677c30468d",
+   "round_type_id": "35000000-0000-0000-0000-000000000000",
+   "nr_races": 1,
+   "results_per_race": true,
+   "string": "[001] M Y 1x Final C",
+   "sort_order": 27561,
+   "drawn": true,
+   "official": true,
+   "rules": [],
+   "timing_layout": {
+    "id": "0467a884-f88f-4a81-bf92-17677c30468d",
+    "code": "2000m",
+    "name": "2000 meter",
+    "relay": false,
+    "type": 1,
+    "mode": 1,
+    "display": 0,
+    "reverse": false,
+    "granularity": 2,
+    "distance": 2000,
+    "timing_layout_locations": [
+     {
+      "id": "4b755544-f2c8-4929-b951-3c349fe18621",
+      "name": "start",
+      "distance": 0,
+      "timing_location_id": "28c6337d-7a32-4557-94ab-8f6c72ca450e"
+     },
+     {
+      "id": "e0f36b63-3328-4ff3-b4d3-f4330b4eb888",
+      "name": "1000m",
+      "distance": 1000,
+      "timing_location_id": "582d0fda-cefb-465f-a980-c8bf17f42b62"
+     },
+     {
+      "id": "84cf5e2c-a7a9-4699-8514-88ed95efec6e",
+      "name": "finish",
+      "distance": 2000,
+      "timing_location_id": "08abf3aa-6a74-4490-adc9-e20e51f098b2"
+     }
+    ]
+   }
+  },
+  "e0a948b4-a2dd-4309-8608-22d90a6cfd2a": {
+   "id": "e0a948b4-a2dd-4309-8608-22d90a6cfd2a",
+   "event_code": "M Y 1x",
+   "event_name": "Mens Youth 1x",
+   "round_type_code": "FD",
+   "round_type_name": "Final D",
+   "timetrial": false,
+   "is_final": true,
+   "event_id": "dbb87d3f-1927-4832-ba34-393533f0c2a2",
+   "timing_layout_id": "0467a884-f88f-4a81-bf92-17677c30468d",
+   "round_type_id": "36000000-0000-0000-0000-000000000000",
+   "nr_races": 1,
+   "results_per_race": true,
+   "string": "[001] M Y 1x Final D",
+   "sort_order": 26539,
+   "drawn": true,
+   "official": true,
+   "rules": [],
+   "timing_layout": {
+    "id": "0467a884-f88f-4a81-bf92-17677c30468d",
+    "code": "2000m",
+    "name": "2000 meter",
+    "relay": false,
+    "type": 1,
+    "mode": 1,
+    "display": 0,
+    "reverse": false,
+    "granularity": 2,
+    "distance": 2000,
+    "timing_layout_locations": [
+     {
+      "id": "4b755544-f2c8-4929-b951-3c349fe18621",
+      "name": "start",
+      "distance": 0,
+      "timing_location_id": "28c6337d-7a32-4557-94ab-8f6c72ca450e"
+     },
+     {
+      "id": "e0f36b63-3328-4ff3-b4d3-f4330b4eb888",
+      "name": "1000m",
+      "distance": 1000,
+      "timing_location_id": "582d0fda-cefb-465f-a980-c8bf17f42b62"
+     },
+     {
+      "id": "84cf5e2c-a7a9-4699-8514-88ed95efec6e",
+      "name": "finish",
+      "distance": 2000,
+      "timing_location_id": "08abf3aa-6a74-4490-adc9-e20e51f098b2"
+     }
+    ]
+   }
+  }
+ },
+ "event": {
+  "dbb87d3f-1927-4832-ba34-393533f0c2a2": {
+   "id": "dbb87d3f-1927-4832-ba34-393533f0c2a2",
+   "number": "001",
+   "code": "M Y 1x",
+   "name": "Mens Youth 1x",
+   "status": 2,
+   "sex": "M",
+   "boattype": "1x",
+   "lightweight": false,
+   "remarks": null,
+   "string": "[001] M Y 1x",
+   "sort_order": 1,
+   "stroke_pos": 1,
+   "regatta_id": "763136aa-ad6f-480e-a7f8-4785b85c16e6"
+  }
+ },
+ "round_crew": {
+  "5933eec6-9b37-4572-90dd-42d1dfa5a0da": {
+   "id": "5933eec6-9b37-4572-90dd-42d1dfa5a0da",
+   "race_id": "95efa4c6-cdab-430a-9fbf-4bb57e24be3c",
+   "round_id": "c9d26885-e653-4c8e-ae9f-7d3803af9d4b",
+   "entry_id": "02db63fd-61ff-4562-b2c5-882931073fa0",
+   "bib": "4",
+   "status": 4,
+   "sort_order": 4,
+   "is_ooc": false,
+   "lane": null,
+   "entry": {
+    "id": "02db63fd-61ff-4562-b2c5-882931073fa0",
+    "code": "MRWC",
+    "name": "Miami Rowing and Watersports Center, Inc.",
+    "shortname": "Miami RC",
+    "string": "Daniil McLaughlin",
+    "combination": false,
+    "club_id": "78471b7a-856d-422e-92bf-45d5c1f267e5",
+    "event_id": "dbb87d3f-1927-4832-ba34-393533f0c2a2",
+    "status": 2,
+    "club": {
+     "id": "78471b7a-856d-422e-92bf-45d5c1f267e5",
+     "code": "MRWC",
+     "shortname": "Miami RC",
+     "name": "Miami Rowing and Watersports Center, Inc.",
+     "federation": "USA",
+     "blades": {
+      "crop": "https://cdn.time-team.nl/assets/club_blade/img/crop/78471b7a-856d-422e-92bf-45d5c1f267e5.png",
+      "full": "https://cdn.time-team.nl/assets/club_blade/img/crop/78471b7a-856d-422e-92bf-45d5c1f267e5.png"
+     }
+    },
+    "country": {
+     "id": "d8a57daa-d201-4b7e-a540-fe4d7b5a598f",
+     "name": "United States",
+     "flags": {
+      "1x1": "https://cdn.time-team.nl/assets/country_flag/svg/1x1/d8a57daa-d201-4b7e-a540-fe4d7b5a598f.svg",
+      "4x3": "https://cdn.time-team.nl/assets/country_flag/svg/4x3/d8a57daa-d201-4b7e-a540-fe4d7b5a598f.svg",
+      "native": "https://cdn.time-team.nl/assets/country_flag/svg/native/d8a57daa-d201-4b7e-a540-fe4d7b5a598f.svg"
+     }
+    },
+    "stroke_fullname": "Daniil McLaughlin"
+   },
+   "adjusted_order": 8,
+   "adjusted_pos": 8,
+   "adjusted_result": "07:03.35",
+   "adjusted_plus": "+13.37",
+   "penalty": null,
+   "correction": null,
+   "event_adjusted_pos": [],
+   "times": [
+    {
+     "crew_id": "5933eec6-9b37-4572-90dd-42d1dfa5a0da",
+     "location_id": "25ff115d-aadf-4e66-9680-d571c69534c3",
+     "location_name": "finish",
+     "total": {
+      "pos": 8,
+      "result": "07:03.35",
+      "plus": "+13.37"
+     }
+    }
+   ],
+   "progression": {
+    "crew_id": "5933eec6-9b37-4572-90dd-42d1dfa5a0da",
+    "target_round_id": "b9c1ffe0-b108-4817-8561-a0ea2217d79d"
+   },
+   "has_tracking_data": false
+  },
+  "2aab8485-a142-4e24-803a-07fa2cfdef4b": {
+   "id": "2aab8485-a142-4e24-803a-07fa2cfdef4b",
+   "race_id": "95efa4c6-cdab-430a-9fbf-4bb57e24be3c",
+   "round_id": "c9d26885-e653-4c8e-ae9f-7d3803af9d4b",
+   "entry_id": "03730ce1-0340-4efe-af27-09e2fa6f03ac",
+   "bib": "13",
+   "status": 4,
+   "sort_order": 13,
+   "is_ooc": false,
+   "lane": null,
+   "entry": {
+    "id": "03730ce1-0340-4efe-af27-09e2fa6f03ac",
+    "code": "ONRA",
+    "name": "Oak Neck Rowing Academy",
+    "shortname": "Oak Neck RA",
+    "string": "Jakob Masata",
+    "combination": false,
+    "club_id": "f0506816-f04f-40d2-9f84-a7d26ed697d4",
+    "event_id": "dbb87d3f-1927-4832-ba34-393533f0c2a2",
+    "status": 2,
+    "club": {
+     "id": "f0506816-f04f-40d2-9f84-a7d26ed697d4",
+     "code": "ONRA",
+     "shortname": "Oak Neck RA",
+     "name": "Oak Neck Rowing Academy",
+     "federation": "USA",
+     "blades": {
+      "crop": "https://cdn.time-team.nl/assets/club_blade/img/crop/f0506816-f04f-40d2-9f84-a7d26ed697d4.png",
+      "full": "https://cdn.time-team.nl/assets/club_blade/img/crop/f0506816-f04f-40d2-9f84-a7d26ed697d4.png"
+     }
+    },
+    "country": {
+     "id": "d8a57daa-d201-4b7e-a540-fe4d7b5a598f",
+     "name": "United States",
+     "flags": {
+      "1x1": "https://cdn.time-team.nl/assets/country_flag/svg/1x1/d8a57daa-d201-4b7e-a540-fe4d7b5a598f.svg",
+      "4x3": "https://cdn.time-team.nl/assets/country_flag/svg/4x3/d8a57daa-d201-4b7e-a540-fe4d7b5a598f.svg",
+      "native": "https://cdn.time-team.nl/assets/country_flag/svg/native/d8a57daa-d201-4b7e-a540-fe4d7b5a598f.svg"
+     }
+    },
+    "stroke_fullname": "Jakob Masata"
+   },
+   "adjusted_order": 11,
+   "adjusted_pos": 11,
+   "adjusted_result": "07:05.87",
+   "adjusted_plus": "+15.89",
+   "penalty": null,
+   "correction": null,
+   "event_adjusted_pos": [],
+   "times": [
+    {
+     "crew_id": "2aab8485-a142-4e24-803a-07fa2cfdef4b",
+     "location_id": "25ff115d-aadf-4e66-9680-d571c69534c3",
+     "location_name": "finish",
+     "total": {
+      "pos": 11,
+      "result": "07:05.87",
+      "plus": "+15.89"
+     }
+    }
+   ],
+   "progression": {
+    "crew_id": "2aab8485-a142-4e24-803a-07fa2cfdef4b",
+    "target_round_id": "b9c1ffe0-b108-4817-8561-a0ea2217d79d"
+   },
+   "has_tracking_data": false
+  },
+  "df077ba4-9ee2-4e2d-affa-44a06032fadb": {
+   "id": "df077ba4-9ee2-4e2d-affa-44a06032fadb",
+   "race_id": "95efa4c6-cdab-430a-9fbf-4bb57e24be3c",
+   "round_id": "c9d26885-e653-4c8e-ae9f-7d3803af9d4b",
+   "entry_id": "03961988-2cbe-4748-8419-c7ce2f72b06f",
+   "bib": "30",
+   "status": 4,
+   "sort_order": 30,
+   "is_ooc": false,
+   "lane": null,
+   "entry": {
+    "id": "03961988-2cbe-4748-8419-c7ce2f72b06f",
+    "code": "CTC",
+    "name": "Chicago Training Center",
+    "shortname": "Chicago Training",
+    "string": "Christopher Janz",
+    "combination": false,
+    "club_id": "18e640d6-2e1f-4e9c-a0f4-46b012ff219e",
+    "event_id": "dbb87d3f-1927-4832-ba34-393533f0c2a2",
+    "status": 2,
+    "club": {
+     "id": "18e640d6-2e1f-4e9c-a0f4-46b012ff219e",
+     "code": "CTC",
+     "shortname": "Chicago Training",
+     "name": "Chicago Training Center",
+     "federation": "USA",
+     "blades": {
+      "crop": "https://cdn.time-team.nl/assets/club_blade/img/crop/18e640d6-2e1f-4e9c-a0f4-46b012ff219e.png",
+      "full": "https://cdn.time-team.nl/assets/club_blade/img/crop/18e640d6-2e1f-4e9c-a0f4-46b012ff219e.png"
+     }
+    },
+    "country": {
+     "id": "d8a57daa-d201-4b7e-a540-fe4d7b5a598f",
+     "name": "United States",
+     "flags": {
+      "1x1": "https://cdn.time-team.nl/assets/country_flag/svg/1x1/d8a57daa-d201-4b7e-a540-fe4d7b5a598f.svg",
+      "4x3": "https://cdn.time-team.nl/assets/country_flag/svg/4x3/d8a57daa-d201-4b7e-a540-fe4d7b5a598f.svg",
+      "native": "https://cdn.time-team.nl/assets/country_flag/svg/native/d8a57daa-d201-4b7e-a540-fe4d7b5a598f.svg"
+     }
+    },
+    "stroke_fullname": "Christopher Janz"
+   },
+   "adjusted_order": 18,
+   "adjusted_pos": 18,
+   "adjusted_result": "07:13.72",
+   "adjusted_plus": "+23.74",
+   "penalty": null,
+   "correction": null,
+   "event_adjusted_pos": [],
+   "times": [
+    {
+     "crew_id": "df077ba4-9ee2-4e2d-affa-44a06032fadb",
+     "location_id": "25ff115d-aadf-4e66-9680-d571c69534c3",
+     "location_name": "finish",
+     "total": {
+      "pos": 18,
+      "result": "07:13.72",
+      "plus": "+23.74"
+     }
+    }
+   ],
+   "progression": {
+    "crew_id": "df077ba4-9ee2-4e2d-affa-44a06032fadb",
+    "target_round_id": "c14adbcf-ee78-48b6-9749-dd476420fd88"
+   },
+   "has_tracking_data": false
+  },
+  "1bdcc8f0-9db4-4ca6-8b38-c7a61985fd9e": {
+   "id": "1bdcc8f0-9db4-4ca6-8b38-c7a61985fd9e",
+   "race_id": "95efa4c6-cdab-430a-9fbf-4bb57e24be3c",
+   "round_id": "c9d26885-e653-4c8e-ae9f-7d3803af9d4b",
+   "entry_id": "05a97c7a-9071-47a4-a80e-180fe3bc284c",
+   "bib": "2",
+   "status": 4,
+   "sort_order": 2,
+   "is_ooc": false,
+   "lane": null,
+   "entry": {
+    "id": "05a97c7a-9071-47a4-a80e-180fe3bc284c",
+    "code": "MAC",
+    "name": "Marina Aquatic Center Junior Rowing",
+    "shortname": "Marina Aquatic Center",
+    "string": "Goose Faynsod",
+    "combination": false,
+    "club_id": "20325c3e-21d7-4180-9e53-cbcc8cabe024",
+    "event_id": "dbb87d3f-1927-4832-ba34-393533f0c2a2",
+    "status": 2,
+    "club": {
+     "id": "20325c3e-21d7-4180-9e53-cbcc8cabe024",
+     "code": "MAC",
+     "shortname": "Marina Aquatic Center",
+     "name": "Marina Aquatic Center Junior Rowing",
+     "federation": "USA",
+     "blades": {
+      "crop": "https://cdn.time-team.nl/assets/club_blade/img/crop/20325c3e-21d7-4180-9e53-cbcc8cabe024.png",
+      "full": "https://cdn.time-team.nl/assets/club_blade/img/crop/20325c3e-21d7-4180-9e53-cbcc8cabe024.png"
+     }
+    },
+    "country": {
+     "id": "d8a57daa-d201-4b7e-a540-fe4d7b5a598f",
+     "name": "United States",
+     "flags": {
+      "1x1": "https://cdn.time-team.nl/assets/country_flag/svg/1x1/d8a57daa-d201-4b7e-a540-fe4d7b5a598f.svg",
+      "4x3": "https://cdn.time-team.nl/assets/country_flag/svg/4x3/d8a57daa-d201-4b7e-a540-fe4d7b5a598f.svg",
+      "native": "https://cdn.time-team.nl/assets/country_flag/svg/native/d8a57daa-d201-4b7e-a540-fe4d7b5a598f.svg"
+     }
+    },
+    "stroke_fullname": "Goose Faynsod"
+   },
+   "adjusted_order": 3,
+   "adjusted_pos": 3,
+   "adjusted_result": "06:54.14",
+   "adjusted_plus": "+4.16",
+   "penalty": null,
+   "correction": null,
+   "event_adjusted_pos": [],
+   "times": [
+    {
+     "crew_id": "1bdcc8f0-9db4-4ca6-8b38-c7a61985fd9e",
+     "location_id": "25ff115d-aadf-4e66-9680-d571c69534c3",
+     "location_name": "finish",
+     "total": {
+      "pos": 3,
+      "result": "06:54.14",
+      "plus": "+4.16"
+     }
+    }
+   ],
+   "progression": {
+    "crew_id": "1bdcc8f0-9db4-4ca6-8b38-c7a61985fd9e",
+    "target_round_id": "b9c1ffe0-b108-4817-8561-a0ea2217d79d"
+   },
+   "has_tracking_data": false
+  }
+ },
+ "race_media": [],
+ "communication": [],
+ "communication_key": {}
+}

@@ -1,0 +1,840 @@
+{
+ "timestamp": 1784845704603,
+ "regatta": {
+  "763136aa-ad6f-480e-a7f8-4785b85c16e6": {
+   "id": "763136aa-ad6f-480e-a7f8-4785b85c16e6",
+   "name": "USRowing Youth National Championships",
+   "city": "Sarasota, FL",
+   "code": "usrowing-youth-national",
+   "year": 2026,
+   "locale": "en-US",
+   "timezone": "America/New_York",
+   "website": "https://usrowing.org/youth-national-championships",
+   "regatta_days": [
+    {
+     "id": "5a483129-a4a3-4392-8944-405dedb26377",
+     "day_date": "2026-06-11"
+    },
+    {
+     "id": "102f84f5-a93a-4e56-b760-f289c4b8ce4f",
+     "day_date": "2026-06-12"
+    },
+    {
+     "id": "0d5eddb0-9513-4325-853f-3170be37bbb4",
+     "day_date": "2026-06-13"
+    },
+    {
+     "id": "3cf42af1-d4ec-4cbe-9d2f-f70e13b22eae",
+     "day_date": "2026-06-14"
+    }
+   ],
+   "current_regatta_day": null,
+   "logo_url": "https://cdn.time-team.nl/media/regatta/thumb/95a60dda-f677-4328-887c-76f5eced91ec.png",
+   "sponsor_logos": [],
+   "config": {
+    "website": {
+     "video_iframe_url": "",
+     "video": "0",
+     "audio_hls_mountpoint": "",
+     "googlemaps_layout": "{}",
+     "origin": "club",
+     "audio": "0",
+     "audio_mountpoint": "roeiradio",
+     "tracker": "classic"
+    }
+   }
+  }
+ },
+ "venue_layouts": {
+  "4a8fbe39-b11d-44a5-bb86-b75ee7f5e8cd": {
+   "id": "4a8fbe39-b11d-44a5-bb86-b75ee7f5e8cd",
+   "name": "Sarasota, FL",
+   "code": null,
+   "timetrial": false,
+   "sort_order": 0
+  }
+ },
+ "regatta_ranking": [],
+ "race_media": {
+  "7688d968-443b-4cb3-b8c5-05b6ec4825bd": {
+   "id": "7688d968-443b-4cb3-b8c5-05b6ec4825bd",
+   "race_id": "1deb0a61-7b85-4a00-820c-2ffe171d8dea",
+   "type": 8,
+   "key": "finish-photos/c4320ea5-3e64-42fb-a48a-de2aff561176",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "304D 3rd.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/c4320ea5-3e64-42fb-a48a-de2aff561176?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=eb8b0dcf00bda7bd8bfbe4798b1592d82563167dccc0a5e356bb8618c40d85af"
+  },
+  "9cce2137-193a-4ed8-8f1f-3b4637a077f1": {
+   "id": "9cce2137-193a-4ed8-8f1f-3b4637a077f1",
+   "race_id": "1ebcdd5c-2d0f-489b-b90e-f0d3b846c571",
+   "type": 8,
+   "key": "finish-photos/9d695a3f-b721-42df-be9a-8f1a173d6024",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "323W.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/9d695a3f-b721-42df-be9a-8f1a173d6024?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=85566af7fa36aa31e50186e46a0327129bbcd45f62f71966a5eb18cb6853cbff"
+  },
+  "a04be79c-a669-4e41-842c-58ce88ab389d": {
+   "id": "a04be79c-a669-4e41-842c-58ce88ab389d",
+   "race_id": "26c1dfb4-7391-497d-ab6e-e8a6da8dde52",
+   "type": 8,
+   "key": "finish-photos/8588e236-67f4-4a3a-b396-b68b66700830",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "315O.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/8588e236-67f4-4a3a-b396-b68b66700830?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=c511b8a3601ce96b27e456f907c20e4afc15143ea433af978c44ad34cf3ba252"
+  },
+  "eeb4c933-e1b8-41a8-9b98-032ed31999a7": {
+   "id": "eeb4c933-e1b8-41a8-9b98-032ed31999a7",
+   "race_id": "4b7be169-4642-49c2-b98c-293d0384fe1b",
+   "type": 8,
+   "key": "finish-photos/78e0fb6e-7d0e-4244-ab7e-7be3c3ca5b36",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "260H.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/78e0fb6e-7d0e-4244-ab7e-7be3c3ca5b36?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=daf0421e607baa60385e6eb2e0f6403d37a0516b2b70358a648d6959a8925c2a"
+  },
+  "0dca4eb6-9bba-42f8-912e-22fe947203f5": {
+   "id": "0dca4eb6-9bba-42f8-912e-22fe947203f5",
+   "race_id": "521fd777-8912-4dac-afa9-627f09bed67d",
+   "type": 8,
+   "key": "finish-photos/a6091a60-0ca5-40b7-ab44-245898916893",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "343Q.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/a6091a60-0ca5-40b7-ab44-245898916893?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=d471548bd9ed9e43d3ba9dab8d065cab86d5edd66b49099069bd7fee7f30d742"
+  },
+  "e91f2c94-ac56-4950-9e68-7dacc8fcd364": {
+   "id": "e91f2c94-ac56-4950-9e68-7dacc8fcd364",
+   "race_id": "5aedb71d-acec-4ecb-a10a-dcd29c4474d6",
+   "type": 8,
+   "key": "finish-photos/cfada620-6be5-4c30-a845-8cbdcf3096ec",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "341O.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/cfada620-6be5-4c30-a845-8cbdcf3096ec?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=8933e15640d5004fc930e68d3aae92a94dd77acf991ab891a553fe447d52e72f"
+  },
+  "695e8808-3aa7-4d4c-bc1d-8a8849b8dae8": {
+   "id": "695e8808-3aa7-4d4c-bc1d-8a8849b8dae8",
+   "race_id": "69d243be-3299-4bcd-a08f-0ffb33acabd6",
+   "type": 8,
+   "key": "finish-photos/18c5ec3b-2617-421f-b474-8e9518b859aa",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "358F.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/18c5ec3b-2617-421f-b474-8e9518b859aa?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=4c1c1cf6c7502f7c15bf7027f3bbc0a5253c42badaa79f4c1f43e024220fb457"
+  },
+  "8a594132-3e6d-49e0-89f1-6c3ca6ea4bce": {
+   "id": "8a594132-3e6d-49e0-89f1-6c3ca6ea4bce",
+   "race_id": "8f8bb25f-8969-409b-862f-3ac727532ead",
+   "type": 8,
+   "key": "finish-photos/e50a7678-b9af-4ef0-b094-1a443f5fdfa5",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "331E.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/e50a7678-b9af-4ef0-b094-1a443f5fdfa5?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=44de91362a9dff20917c60a2f7c2a531d0be1904f4998df5a71ce4a185838f39"
+  },
+  "84e07e2c-f48d-4f27-982c-1df00d9b5094": {
+   "id": "84e07e2c-f48d-4f27-982c-1df00d9b5094",
+   "race_id": "9da76b08-5026-4eea-8686-d7cf3511f69d",
+   "type": 8,
+   "key": "finish-photos/c7e493f7-42b4-4a92-89ea-9c7818f54a5d",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "245S.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/c7e493f7-42b4-4a92-89ea-9c7818f54a5d?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=1b541dc91bbf5b519f5c5521415304064df1238ae7144d69a12fbf53d1e150a5"
+  },
+  "19459c5d-2410-44bd-8eea-929b37a85269": {
+   "id": "19459c5d-2410-44bd-8eea-929b37a85269",
+   "race_id": "a0266e44-05a2-41b7-a841-f3a043312435",
+   "type": 8,
+   "key": "finish-photos/3a35e969-4a96-4d05-a664-8d3a5b9c1f8c",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "311k.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/3a35e969-4a96-4d05-a664-8d3a5b9c1f8c?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=034d16319b3719c18ac1b78514a972e30969bf683f1d61c980e93629cbc59383"
+  },
+  "507130a0-77c4-44bd-80d3-54501893f648": {
+   "id": "507130a0-77c4-44bd-80d3-54501893f648",
+   "race_id": "b69ea9b3-0f87-4515-963e-b5578da2b9de",
+   "type": 8,
+   "key": "finish-photos/d8d0736f-436d-4cd3-9989-03e68f41a9f0",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "326Z.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/d8d0736f-436d-4cd3-9989-03e68f41a9f0?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=fc4eab6ff479bca74c1d19462509f1ddce56621a697a89a7cdbe0a8404ba997a"
+  },
+  "0a1680e0-d8ca-43c1-a33d-ee86352535cb": {
+   "id": "0a1680e0-d8ca-43c1-a33d-ee86352535cb",
+   "race_id": "cb533408-219c-4444-ac3b-25849248a3b3",
+   "type": 8,
+   "key": "finish-photos/5ab017b4-f48b-4118-8d21-b34fbc7afe0a",
+   "sort_order": 2,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "332F 6th.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/5ab017b4-f48b-4118-8d21-b34fbc7afe0a?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=81c5811a620a7f74f696761027de5237b1444f6f5dab73c4de29ce60c167c200"
+  },
+  "192704e5-958e-4d76-9316-fa9241aa1b1c": {
+   "id": "192704e5-958e-4d76-9316-fa9241aa1b1c",
+   "race_id": "cb533408-219c-4444-ac3b-25849248a3b3",
+   "type": 8,
+   "key": "finish-photos/d8075030-3ba4-4513-a340-b747655059fc",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "332F 4th.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/d8075030-3ba4-4513-a340-b747655059fc?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=86c1c9977fcfb9bc79926f4669df13ec684492d70874ceaa330b5c173c90f83c"
+  },
+  "856ddb09-3aff-4f61-afdc-14f51fa1e75b": {
+   "id": "856ddb09-3aff-4f61-afdc-14f51fa1e75b",
+   "race_id": "cc3b1a06-109f-448a-bc49-9a99fa97e9ac",
+   "type": 8,
+   "key": "finish-photos/71610567-8c28-487f-b731-215eb0205e8d",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "jpg",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "266N.jpg"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/71610567-8c28-487f-b731-215eb0205e8d?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=87c3e21962784d08c9f27cd24b3056618a20d98a8930fb941faef25ddb05cd5c"
+  },
+  "c3a86ed9-4808-445a-aa3a-1acd0dbeba52": {
+   "id": "c3a86ed9-4808-445a-aa3a-1acd0dbeba52",
+   "race_id": "eeec9b42-b3b9-430d-ba25-9f81a0936c89",
+   "type": 8,
+   "key": "finish-photos/e7a54553-5428-447b-b787-5ca2eb7d941e",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "327A.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/e7a54553-5428-447b-b787-5ca2eb7d941e?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=51a32432563e36961a386272a0b5e2edc87adec409d656947e7dd4381b7289b6"
+  },
+  "44e5066b-f513-438c-a2d3-45f78d50516e": {
+   "id": "44e5066b-f513-438c-a2d3-45f78d50516e",
+   "race_id": "f801a98b-5231-4ddb-ad7f-e3031d9f36e3",
+   "type": 8,
+   "key": "finish-photos/80dbe0a5-ef50-45f5-a29c-e66034f40cd9",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "314N.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/80dbe0a5-ef50-45f5-a29c-e66034f40cd9?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=cd9ad88bb8d0aaa8b8efb3cd6d0a5131fdfa2b6519da9f9741ef488a4eb7c235"
+  },
+  "a9d18904-85f7-40d4-bdcf-27e29018a6a6": {
+   "id": "a9d18904-85f7-40d4-bdcf-27e29018a6a6",
+   "race_id": "2204fb64-576d-4958-bafa-e19dcd2eabee",
+   "type": 8,
+   "key": "finish-photos/10413379-dcd9-4e14-adf7-1c775be33518",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "221U MY 4x.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/10413379-dcd9-4e14-adf7-1c775be33518?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=3822a99ccd9974b7eac691887a7d4b4b70c9127e9603b6b0e606881f45cac138"
+  },
+  "da8f2a5a-07db-469f-aa28-768ca7ea3c7e": {
+   "id": "da8f2a5a-07db-469f-aa28-768ca7ea3c7e",
+   "race_id": "39877050-dd29-4457-ac7d-950be67d96cd",
+   "type": 8,
+   "key": "finish-photos/b9c5fe8c-a147-4a87-b889-13f6da27382a",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "210J MY 2-.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/b9c5fe8c-a147-4a87-b889-13f6da27382a?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=07b2f5b0a440450978a25abb182135643fac48d5404cf48a48cafe3e7a4234da"
+  },
+  "c19bd6fd-abb7-42ee-b6b9-c3035e46c2aa": {
+   "id": "c19bd6fd-abb7-42ee-b6b9-c3035e46c2aa",
+   "race_id": "559c8fa7-d51d-4527-8d02-8162b4b7da8c",
+   "type": 8,
+   "key": "finish-photos/726c45d3-89cb-4d9b-acf9-9ca542546fea",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "215O WY 4+.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/726c45d3-89cb-4d9b-acf9-9ca542546fea?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=a809369392389df564508d637d03f1cd909a6a4f95c344c163edc6df05a517d9"
+  },
+  "73dcc5f8-f2d5-49de-b504-960f6258123e": {
+   "id": "73dcc5f8-f2d5-49de-b504-960f6258123e",
+   "race_id": "a35c8ef8-5b62-4ec8-a5d2-3a0da32665c1",
+   "type": 8,
+   "key": "finish-photos/ec233f96-0058-41e5-97f5-ca073a712f5c",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "214N MY 4+.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/ec233f96-0058-41e5-97f5-ca073a712f5c?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=1fb5aef1fd62a70861237e1e92fe63c3113349c28702423469287dbd8e28eddc"
+  },
+  "af469eeb-6d85-424c-b15d-1c6efb1dac52": {
+   "id": "af469eeb-6d85-424c-b15d-1c6efb1dac52",
+   "race_id": "dc16bd1d-b235-4e26-80ba-8bf26e5ea777",
+   "type": 8,
+   "key": "finish-photos/f615293d-5c10-4b18-9a62-825db7eb3498",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "225Y 2nd MY 4-.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/f615293d-5c10-4b18-9a62-825db7eb3498?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=56bcf2f2ed28128bd38eb3d72ba5441c20e0b2580e2e7d1ecc2b4181b9b2514f"
+  },
+  "f5467811-849a-440a-a7d7-c04bb1eacb4c": {
+   "id": "f5467811-849a-440a-a7d7-c04bb1eacb4c",
+   "race_id": "dc16bd1d-b235-4e26-80ba-8bf26e5ea777",
+   "type": 8,
+   "key": "finish-photos/68acdb65-d0de-4df5-9e31-343dd649c9d4",
+   "sort_order": 2,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "225Y 6th MY 4-.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/68acdb65-d0de-4df5-9e31-343dd649c9d4?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=5641f4a016a7fa193b8863db8caf29bb81f7c44718fb00d65e1e7802673e7ce3"
+  },
+  "525c9a6e-2917-4908-b73a-7990fd91cb99": {
+   "id": "525c9a6e-2917-4908-b73a-7990fd91cb99",
+   "race_id": "dca0fcab-f4eb-43c8-b620-77568c62bf3f",
+   "type": 8,
+   "key": "finish-photos/ca8a6b7a-8600-4e6b-a836-833e4c2bf851",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "205E MY 2-.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/ca8a6b7a-8600-4e6b-a836-833e4c2bf851?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=762bdf6a4f27f95ada6d5f0199ebcea8880933cfbf16d9355eb1d359cae3d0fc"
+  },
+  "a85fd8ca-6212-4b20-b27f-515b584dcdf9": {
+   "id": "a85fd8ca-6212-4b20-b27f-515b584dcdf9",
+   "race_id": "f4c3c77e-2f4d-4c64-a15c-4ef7b5b2c808",
+   "type": 8,
+   "key": "finish-photos/7b18dfd6-309a-4180-b3ce-a79d916e00de",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "227A WY 4-.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/7b18dfd6-309a-4180-b3ce-a79d916e00de?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=2d720a3618ed7df3b32cf59961bb762bf6f71eabf3e12dfa83d2254cc4d6f761"
+  },
+  "2dc1f38a-2dfc-4da1-a792-13eed00e4725": {
+   "id": "2dc1f38a-2dfc-4da1-a792-13eed00e4725",
+   "race_id": "0788038c-7c94-4461-b79b-70422937fa3b",
+   "type": 8,
+   "key": "finish-photos/1d8bafd0-b300-4d15-876a-24a0fcab4944",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "PNG",
+    "file_mime_type": "image/png",
+    "original_file_name": "454B.PNG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/1d8bafd0-b300-4d15-876a-24a0fcab4944?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=cc9ee0d4edcdad9a69922bc52f9255fd209d414f13558e2f9c8b13070ef36ae4"
+  },
+  "56d4e39d-3657-4f66-8c9b-1d14290a92ed": {
+   "id": "56d4e39d-3657-4f66-8c9b-1d14290a92ed",
+   "race_id": "09713bff-1608-4f9d-a169-9152a6289f96",
+   "type": 8,
+   "key": "finish-photos/d36d8578-8657-4b67-aff3-bc1ad6d7dce5",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "PNG",
+    "file_mime_type": "image/png",
+    "original_file_name": "449w.PNG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/d36d8578-8657-4b67-aff3-bc1ad6d7dce5?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=6c9621ce29347eaeb60a227009d76109150b61e241a6af2d159c2bd4d91ef5dc"
+  },
+  "6f9a5064-a0a2-4fff-b671-ad8d133b007e": {
+   "id": "6f9a5064-a0a2-4fff-b671-ad8d133b007e",
+   "race_id": "09b791bb-ec84-419d-9929-89c472a62c52",
+   "type": 8,
+   "key": "finish-photos/2599a6a0-7962-48bc-8421-5f9808afc0c3",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "PNG",
+    "file_mime_type": "image/png",
+    "original_file_name": "445s.PNG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/2599a6a0-7962-48bc-8421-5f9808afc0c3?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=583e61c920088622650770f25f468af5c598f9976b3b05031fd2b5a24a51821c"
+  },
+  "8e154e6c-51e9-4222-9343-9a8288e556e1": {
+   "id": "8e154e6c-51e9-4222-9343-9a8288e556e1",
+   "race_id": "0c9ae8ac-128c-4509-bbbf-ad3b5af9b95a",
+   "type": 8,
+   "key": "finish-photos/c99dfcea-7891-492b-ba12-0777c631b404",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "404D.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/c99dfcea-7891-492b-ba12-0777c631b404?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=25517897b367d2ec4d1e4e14a6c5e4849e6d35eac42c2d1d82efc6adebbad558"
+  },
+  "ab57cb64-5396-4895-8657-05ff6509273b": {
+   "id": "ab57cb64-5396-4895-8657-05ff6509273b",
+   "race_id": "1af46c0c-5749-435b-9728-4b1e11835156",
+   "type": 8,
+   "key": "finish-photos/4a11c920-e244-4ded-bc4c-0d1133e3f2fa",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "410J.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/4a11c920-e244-4ded-bc4c-0d1133e3f2fa?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=325720c8d3f3f26b8fafeb6e422ea7e6c90275e193e6ab40fff1ebddccb6b97c"
+  },
+  "51d57eb3-4c67-4d9c-92f4-e45d399ffc81": {
+   "id": "51d57eb3-4c67-4d9c-92f4-e45d399ffc81",
+   "race_id": "31e8ad73-43b4-4685-98c5-eac42ba453e3",
+   "type": 8,
+   "key": "finish-photos/1157b439-679f-47cb-bdf1-e5c86eb53080",
+   "sort_order": 2,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "407G 6th.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/1157b439-679f-47cb-bdf1-e5c86eb53080?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=aa8cb7e3436d11bd888916c2d0015248d3dfacb83e20d71135fde9bea8ccc9dc"
+  },
+  "aa768fe7-9ddb-42d8-965f-245ace0b1dbe": {
+   "id": "aa768fe7-9ddb-42d8-965f-245ace0b1dbe",
+   "race_id": "31e8ad73-43b4-4685-98c5-eac42ba453e3",
+   "type": 8,
+   "key": "finish-photos/07318c58-d265-43d9-bb26-2e3e7d5f8e01",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "407G 2nd.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/07318c58-d265-43d9-bb26-2e3e7d5f8e01?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=cd7ce0ac2be03cb9a9b83d92628b846de5eae7c2bc1ae57f7db675baea70c5e5"
+  },
+  "2493f87a-7dbe-488a-a497-f781510a1750": {
+   "id": "2493f87a-7dbe-488a-a497-f781510a1750",
+   "race_id": "38b9f9da-8e8f-44ff-83a8-6ef4e5d03443",
+   "type": 8,
+   "key": "finish-photos/d97ce0ba-0635-42ed-a2e3-5a19ce6bfb6e",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "PNG",
+    "file_mime_type": "image/png",
+    "original_file_name": "448v.PNG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/d97ce0ba-0635-42ed-a2e3-5a19ce6bfb6e?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=18f0ed531c611c8d9981a7be8197ffdb6a362a5d3b32be1ee38947af6525ec1b"
+  },
+  "bcf8bfa3-0e59-4ad7-8d0c-b8cec3d87b1d": {
+   "id": "bcf8bfa3-0e59-4ad7-8d0c-b8cec3d87b1d",
+   "race_id": "3f0ccfec-c506-4161-9b3c-26a42b603abd",
+   "type": 8,
+   "key": "finish-photos/d43a2ad5-626e-4d7a-aa3e-a81ac7df6b37",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "PNG",
+    "file_mime_type": "image/png",
+    "original_file_name": "455C.PNG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/d43a2ad5-626e-4d7a-aa3e-a81ac7df6b37?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=3a514358ac8d21f35dfd72185909590bbf953fab35ebafcb2d201703317e0195"
+  },
+  "d4a1941a-3af3-483d-9d4f-91439e875c96": {
+   "id": "d4a1941a-3af3-483d-9d4f-91439e875c96",
+   "race_id": "78eb925c-6fbb-4d71-b63c-8f6a6f241137",
+   "type": 8,
+   "key": "finish-photos/f3f8f55c-595e-4caf-a348-5c08f03be083",
+   "sort_order": 2,
+   "metadata": {
+    "file_ext": "PNG",
+    "file_mime_type": "image/png",
+    "original_file_name": "450x 6th.PNG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/f3f8f55c-595e-4caf-a348-5c08f03be083?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=0ac8a4ee6f97ceb0f4fd8c25f255044089ee2a725ab54d864dc874d036e73bcc"
+  },
+  "f5a9bfb6-76f6-4182-a217-c4ba0e462fb8": {
+   "id": "f5a9bfb6-76f6-4182-a217-c4ba0e462fb8",
+   "race_id": "78eb925c-6fbb-4d71-b63c-8f6a6f241137",
+   "type": 8,
+   "key": "finish-photos/06334325-dfbf-40c3-924f-96c4f014c2b1",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "PNG",
+    "file_mime_type": "image/png",
+    "original_file_name": "450x 1st.PNG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/06334325-dfbf-40c3-924f-96c4f014c2b1?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=9f7057797290b2b786f2cb4e71dd45353e40bebdb06a957d334b55f66b4dc91f"
+  },
+  "c51c3b44-b34b-4bae-8806-ddd02c469d1f": {
+   "id": "c51c3b44-b34b-4bae-8806-ddd02c469d1f",
+   "race_id": "87f7168d-8bad-43b2-9915-8ca535dca727",
+   "type": 8,
+   "key": "finish-photos/bd7e6f3c-6f16-44cc-94b3-389b2bd9172f",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "PNG",
+    "file_mime_type": "image/png",
+    "original_file_name": "434H.PNG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/bd7e6f3c-6f16-44cc-94b3-389b2bd9172f?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=a86616528658861987d9fa2f766ba6da417ae6370f2e388f16b0dcb30a714632"
+  },
+  "9ef1ddd2-0034-456d-adc4-58618f72626b": {
+   "id": "9ef1ddd2-0034-456d-adc4-58618f72626b",
+   "race_id": "8ed0cf54-a41f-4b77-9c4c-d5be315cb71e",
+   "type": 8,
+   "key": "finish-photos/471325ca-e4e6-4366-870a-4bf76fbad6c0",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "421U 1st.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/471325ca-e4e6-4366-870a-4bf76fbad6c0?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=cd87d3c0a9f102a54eac8487d6af8e398281d3a1e9cdc4cdb456a012822d689e"
+  },
+  "f6e86d6e-361d-4665-b602-740f3ea47fe1": {
+   "id": "f6e86d6e-361d-4665-b602-740f3ea47fe1",
+   "race_id": "8ed0cf54-a41f-4b77-9c4c-d5be315cb71e",
+   "type": 8,
+   "key": "finish-photos/6afbe01b-69c3-4ec5-afdf-5b9b4deaa309",
+   "sort_order": 2,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "421U 5th.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/6afbe01b-69c3-4ec5-afdf-5b9b4deaa309?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=40768b88dec50e139624176271f0934f9b212f789e1634828f95e692b39df9e0"
+  },
+  "e87149b6-159b-4cca-a7ee-b4bcc490e05d": {
+   "id": "e87149b6-159b-4cca-a7ee-b4bcc490e05d",
+   "race_id": "9300b927-44b3-4425-82f0-6d4d6fe24a54",
+   "type": 8,
+   "key": "finish-photos/d8e039a2-941d-4807-8a5e-883cefacc93b",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "433G L5 L2.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/d8e039a2-941d-4807-8a5e-883cefacc93b?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=82d7baf3329198c007476c34cbac559b7262a92fa7bbee52dd6426acd17b0ee1"
+  },
+  "bda462fd-82eb-4e9b-8920-abe2cc8a5bac": {
+   "id": "bda462fd-82eb-4e9b-8920-abe2cc8a5bac",
+   "race_id": "b83e07b2-12ee-4fcd-bb44-26261084ea5d",
+   "type": 8,
+   "key": "finish-photos/bfccbb87-9230-471f-a324-890d7b3dd521",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "412L.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/bfccbb87-9230-471f-a324-890d7b3dd521?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=3bd108c3c3f4e9e989847f7a0c5fbd3f76a93ebb6ca30691de54cf721b296031"
+  },
+  "71c6cb10-7ff7-4c03-b32e-9ac5a5014ba1": {
+   "id": "71c6cb10-7ff7-4c03-b32e-9ac5a5014ba1",
+   "race_id": "c4015299-f828-4125-b6d4-b75b9829fe08",
+   "type": 8,
+   "key": "finish-photos/96b66e26-991d-4380-b204-2419778f0d32",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "PNG",
+    "file_mime_type": "image/png",
+    "original_file_name": "451Y.PNG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/96b66e26-991d-4380-b204-2419778f0d32?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=9bd47f1baa100b7e128a6df565dadca4e518cde7fed14e35768771987b4862c9"
+  },
+  "c3c2087b-1d4b-47a4-a488-060d8e8c8cdf": {
+   "id": "c3c2087b-1d4b-47a4-a488-060d8e8c8cdf",
+   "race_id": "c9e20cdc-5892-474c-8ed3-d7f8ab91e4ad",
+   "type": 8,
+   "key": "finish-photos/535e92b1-946a-45b0-b3cc-f874fe8e5154",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "431E L5 L0.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/535e92b1-946a-45b0-b3cc-f874fe8e5154?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=6fcc2013e9f30b1561a1aad8968d108bf1d8f7481d8d26fdd61d4f18511433a8"
+  },
+  "7d82a88e-ab31-4b34-8092-17fa5c6b4f28": {
+   "id": "7d82a88e-ab31-4b34-8092-17fa5c6b4f28",
+   "race_id": "e55918ec-6862-4495-8105-44d314117995",
+   "type": 8,
+   "key": "finish-photos/b8e836e7-6140-4352-9564-6b0ea4cbcb2e",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "413M.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/b8e836e7-6140-4352-9564-6b0ea4cbcb2e?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=f066b4e6c8ca4114b5abb4ebfe43c89aceb0ed121c25accc9cfe495c667d097d"
+  },
+  "0b648709-47f7-492c-a659-59ea7358ae4d": {
+   "id": "0b648709-47f7-492c-a659-59ea7358ae4d",
+   "race_id": "f85682e1-5de5-4a30-a985-b830324944cd",
+   "type": 8,
+   "key": "finish-photos/da55fb2e-a4cb-402f-9254-0bbdcd1a85fe",
+   "sort_order": 1,
+   "metadata": {
+    "file_ext": "JPG",
+    "file_mime_type": "image/jpeg",
+    "original_file_name": "414N.JPG"
+   },
+   "signed_url": "https://timeteam-rs-private.s3.eu-west-1.amazonaws.com/private/finish-photos/da55fb2e-a4cb-402f-9254-0bbdcd1a85fe?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA52IENYAB7HPXE55I%2F20260723%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260723T222825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=0180bf990bb361b13dc5d5d60e48e292e8b908db371ac1cf0570eea15c349b13"
+  }
+ },
+ "race": {
+  "95efa4c6-cdab-430a-9fbf-4bb57e24be3c": {
+   "id": "95efa4c6-cdab-430a-9fbf-4bb57e24be3c",
+   "event_nr": "001",
+   "event_code": "M Y 1x",
+   "event_name": "Mens Youth 1x",
+   "round_type_code": "TT",
+   "round_type_name": "Time Trial",
+   "round_id": "c9d26885-e653-4c8e-ae9f-7d3803af9d4b",
+   "round_nr": null,
+   "start_time": "07:30",
+   "sequence": "101",
+   "embargo": false,
+   "status": 32,
+   "timetrial": true,
+   "crew_order": 0,
+   "nr_lanes_per_crew": null,
+   "regatta_day_id": "5a483129-a4a3-4392-8944-405dedb26377",
+   "timing_layout_id": "d23899dd-78bb-4321-b37b-e395a0a07fd4",
+   "venue_layout_id": "4a8fbe39-b11d-44a5-bb86-b75ee7f5e8cd",
+   "round_type_id": "32360000-0000-0000-0000-000000000000",
+   "string": "Thu, 7:30\u202fAM - Race 101 - [001] M Y 1x Time Trial",
+   "regatta_id": "763136aa-ad6f-480e-a7f8-4785b85c16e6",
+   "regatta_day": {
+    "id": "5a483129-a4a3-4392-8944-405dedb26377",
+    "day_date": "2026-06-11"
+   },
+   "start_datetime": "2026-06-11 07:30:00",
+   "rules": [
+    {
+     "code": "16 fastest",
+     "target_round_id": "b9c1ffe0-b108-4817-8561-a0ea2217d79d"
+    },
+    {
+     "code": "17 - 24",
+     "target_round_id": "c14adbcf-ee78-48b6-9749-dd476420fd88"
+    },
+    {
+     "code": "other",
+     "target_round_id": "e0a948b4-a2dd-4309-8608-22d90a6cfd2a"
+    }
+   ],
+   "timing_layout": {
+    "id": "d23899dd-78bb-4321-b37b-e395a0a07fd4",
+    "code": "1900m",
+    "name": "1900 meter",
+    "relay": false,
+    "type": 1,
+    "mode": 1,
+    "display": 0,
+    "reverse": false,
+    "granularity": 2,
+    "distance": 1900,
+    "timing_layout_locations": [
+     {
+      "id": "a4c5127f-f1e6-4402-ad67-a618012ff171",
+      "name": "start",
+      "distance": 0,
+      "timing_location_id": "28c6337d-7a32-4557-94ab-8f6c72ca450e"
+     },
+     {
+      "id": "25ff115d-aadf-4e66-9680-d571c69534c3",
+      "name": "finish",
+      "distance": 1900,
+      "timing_location_id": "08abf3aa-6a74-4490-adc9-e20e51f098b2"
+     }
+    ]
+   }
+  },
+  "95787ae3-6966-4106-8119-24448041d89e": {
+   "id": "95787ae3-6966-4106-8119-24448041d89e",
+   "event_nr": "002",
+   "event_code": "W Y 1x",
+   "event_name": "Womens Youth 1x",
+   "round_type_code": "TT",
+   "round_type_name": "Time Trial",
+   "round_id": "4387aeeb-b672-46ec-a7a9-e65948d13bb2",
+   "round_nr": null,
+   "start_time": "07:50",
+   "sequence": "102",
+   "embargo": false,
+   "status": 32,
+   "timetrial": true,
+   "crew_order": 0,
+   "nr_lanes_per_crew": null,
+   "regatta_day_id": "5a483129-a4a3-4392-8944-405dedb26377",
+   "timing_layout_id": "d23899dd-78bb-4321-b37b-e395a0a07fd4",
+   "venue_layout_id": "4a8fbe39-b11d-44a5-bb86-b75ee7f5e8cd",
+   "round_type_id": "32360000-0000-0000-0000-000000000000",
+   "string": "Thu, 7:50\u202fAM - Race 102 - [002] W Y 1x Time Trial",
+   "regatta_id": "763136aa-ad6f-480e-a7f8-4785b85c16e6",
+   "regatta_day": {
+    "id": "5a483129-a4a3-4392-8944-405dedb26377",
+    "day_date": "2026-06-11"
+   },
+   "start_datetime": "2026-06-11 07:50:00",
+   "rules": [
+    {
+     "code": "16 fastest",
+     "target_round_id": "1def2517-ec87-4f42-a793-fd2b535e0991"
+    },
+    {
+     "code": "17 - 24",
+     "target_round_id": "64b6fafb-ada6-4586-bec9-41376f5fa5f9"
+    },
+    {
+     "code": "other",
+     "target_round_id": "6c9da7fc-65c9-4f30-993a-40d597791d36"
+    }
+   ],
+   "timing_layout": {
+    "id": "d23899dd-78bb-4321-b37b-e395a0a07fd4",
+    "code": "1900m",
+    "name": "1900 meter",
+    "relay": false,
+    "type": 1,
+    "mode": 1,
+    "display": 0,
+    "reverse": false,
+    "granularity": 2,
+    "distance": 1900,
+    "timing_layout_locations": [
+     {
+      "id": "a4c5127f-f1e6-4402-ad67-a618012ff171",
+      "name": "start",
+      "distance": 0,
+      "timing_location_id": "28c6337d-7a32-4557-94ab-8f6c72ca450e"
+     },
+     {
+      "id": "25ff115d-aadf-4e66-9680-d571c69534c3",
+      "name": "finish",
+      "distance": 1900,
+      "timing_location_id": "08abf3aa-6a74-4490-adc9-e20e51f098b2"
+     }
+    ]
+   }
+  },
+  "780ff9a5-f03e-408d-887f-f917f79d1ab8": {
+   "id": "780ff9a5-f03e-408d-887f-f917f79d1ab8",
+   "event_nr": "003",
+   "event_code": "M Y 2-",
+   "event_name": "Mens Youth 2-",
+   "round_type_code": "TT",
+   "round_type_name": "Time Trial",
+   "round_id": "30f6e752-1c1d-4ef5-a6f8-5252e427f5fa",
+   "round_nr": null,
+   "start_time": "08:10",
+   "sequence": "103",
+   "embargo": false,
+   "status": 32,
+   "timetrial": true,
+   "crew_order": 0,
+   "nr_lanes_per_crew": null,
+   "regatta_day_id": "5a483129-a4a3-4392-8944-405dedb26377",
+   "timing_layout_id": "d23899dd-78bb-4321-b37b-e395a0a07fd4",
+   "venue_layout_id": "4a8fbe39-b11d-44a5-bb86-b75ee7f5e8cd",
+   "round_type_id": "32360000-0000-0000-0000-000000000000",
+   "string": "Thu, 8:10\u202fAM - Race 103 - [003] M Y 2- Time Trial",
+   "regatta_id": "763136aa-ad6f-480e-a7f8-4785b85c16e6",
+   "regatta_day": {
+    "id": "5a483129-a4a3-4392-8944-405dedb26377",
+    "day_date": "2026-06-11"
+   },
+   "start_datetime": "2026-06-11 08:10:00",
+   "rules": [
+    {
+     "code": "16 fastest",
+     "target_round_id": "c1b9b987-22ff-4449-805d-b9e9b7f05581"
+    },
+    {
+     "code": "17 - 24",
+     "target_round_id": "0af979fa-ca13-49f7-856a-492b19af08a2"
+    },
+    {
+     "code": "other",
+     "target_round_id": "187982b1-f99a-4f54-bf03-c04249b61bf4"
+    }
+   ],
+   "timing_layout": {
+    "id": "d23899dd-78bb-4321-b37b-e395a0a07fd4",
+    "code": "1900m",
+    "name": "1900 meter",
+    "relay": false,
+    "type": 1,
+    "mode": 1,
+    "display": 0,
+    "reverse": false,
+    "granularity": 2,
+    "distance": 1900,
+    "timing_layout_locations": [
+     {
+      "id": "a4c5127f-f1e6-4402-ad67-a618012ff171",
+      "name": "start",
+      "distance": 0,
+      "timing_location_id": "28c6337d-7a32-4557-94ab-8f6c72ca450e"
+     },
+     {
+      "id": "25ff115d-aadf-4e66-9680-d571c69534c3",
+      "name": "finish",
+      "distance": 1900,
+      "timing_location_id": "08abf3aa-6a74-4490-adc9-e20e51f098b2"
+     }
+    ]
+   }
+  }
+ },
+ "communication": [],
+ "communication_key": {}
+}
