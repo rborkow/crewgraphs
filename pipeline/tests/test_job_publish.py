@@ -8,6 +8,7 @@ from typing import Any
 import pytest
 from jsonschema import Draft202012Validator, FormatChecker
 
+from crewgraphs.jobs.efile_fetch import GT_LAKE_XML_URL
 from crewgraphs.jobs.publish import (
     PublishInvariantError,
     _coverage_state,
@@ -149,6 +150,8 @@ def source_rows() -> dict[str, list[dict[str, Any]]]:
                 "amended_return": False,
                 "retrieved_at": RETRIEVED,
                 "input_filing_ids": ["filing-june-2024"],
+                "source_metadata": {"tax_year": 2024},
+                "source_external_key": "object-filing-june-2024",
             }
         ],
         "people": [
@@ -223,6 +226,8 @@ def _filing(
         "tax_year": tax_year,
         "amended_return": amended,
         "retrieved_at": RETRIEVED,
+        "source_metadata": {"tax_year": tax_year},
+        "source_external_key": f"object-{filing_id}",
     }
 
 
@@ -396,6 +401,9 @@ def test_published_payload_and_source_refs_validate_against_real_contracts() -> 
     assert all(not list(profile_validator.iter_errors(payload)) for payload in payloads)
     june = next(payload for payload in payloads if payload["org_id"] == ORG_JUNE)
     assert june["snapshot"][0]["ref"]["period"]["label"] == "FY2024 (Jul 2024–Jun 2025)"
+    assert june["snapshot"][0]["ref"]["source"]["raw_url"] == GT_LAKE_XML_URL.format(
+        object_id="object-filing-june-2024"
+    )
     # People cover every filed year that reported officers, newest year first.
     assert [year["tax_year"] for year in june["people"]] == [2024, 2022]
     assert june["people"][0]["volunteer_count"] == 1
@@ -407,6 +415,7 @@ def test_published_payload_and_source_refs_validate_against_real_contracts() -> 
     assert june["people"][1]["ref"]["period"]["label"] == "FY2022 (Jul 2022–Jun 2023)"
     postcard = next(payload for payload in payloads if payload["org_id"] == ORG_POSTCARD)
     assert postcard["snapshot"][0]["key"] == "filing_presence"
+    assert postcard["snapshot"][0]["ref"]["source"]["raw_url"] is None
 
     refs = [json.loads(row[9]) for row in db.table_writes("read.org_financial_series")]
     assert refs
@@ -414,6 +423,24 @@ def test_published_payload_and_source_refs_validate_against_real_contracts() -> 
     metric_ref = next(ref for ref in refs if ref["metric"] is not None)
     assert metric_ref["metric"] == {"key": "operating_margin", "version": 1}
     assert metric_ref["unit"] == "USD"
+    assert metric_ref["source"]["raw_url"] == GT_LAKE_XML_URL.format(
+        object_id="object-filing-june-2024"
+    )
+
+
+def test_multi_input_metric_has_no_single_filing_raw_url() -> None:
+    source = source_rows()
+    source["metrics"][0]["input_filing_ids"] = [
+        "filing-june-2024",
+        "filing-june-2022",
+    ]
+    db = PublishFake(source)
+
+    publish(db, generated_at=GENERATED)
+
+    refs = [json.loads(row[9]) for row in db.table_writes("read.org_financial_series")]
+    metric_ref = next(ref for ref in refs if ref["metric"] is not None)
+    assert metric_ref["source"]["raw_url"] is None
 
 
 def test_people_payload_shows_only_the_newest_capture_per_person() -> None:

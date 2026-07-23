@@ -8,10 +8,12 @@ from collections.abc import Iterable, Mapping
 from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 from typing import Any
+from urllib.parse import urlparse
 
 from ..concept_map import load_concept_map
 from ..db import DatabaseGateway
 from ..runlog import IngestRun
+from .efile_fetch import GT_LAKE_XML_URL
 
 
 PROFILE_SCHEMA_VERSION = 1
@@ -205,7 +207,9 @@ def _load_source_rows(db: DatabaseGateway) -> dict[str, list[dict[str, Any]]]:
             """
             SELECT f.id AS filing_id, f.organization_id, f.source_record_id,
                    f.form_type, f.tax_period_begin, f.tax_period_end, f.tax_year,
-                   f.amended_return, sr.created_at AS retrieved_at
+                   f.amended_return, sr.created_at AS retrieved_at,
+                   sr.metadata AS source_metadata,
+                   sr.external_key AS source_external_key
             FROM core.filing AS f
             JOIN core.source_record AS sr ON sr.id = f.source_record_id
             WHERE f.is_authoritative = true
@@ -221,6 +225,8 @@ def _load_source_rows(db: DatabaseGateway) -> dict[str, list[dict[str, Any]]]:
                    ff.quality_state, f.organization_id, f.form_type,
                    f.tax_period_begin, f.tax_period_end, f.tax_year,
                    f.amended_return, sr.created_at AS retrieved_at,
+                   sr.metadata AS source_metadata,
+                   sr.external_key AS source_external_key,
                    cd.label AS concept_label, cd.unit
             FROM core.filing AS f
             JOIN core.financial_fact AS ff ON ff.filing_id = f.id
@@ -263,6 +269,8 @@ def _load_source_rows(db: DatabaseGateway) -> dict[str, list[dict[str, Any]]]:
                    f.id AS filing_id, f.form_type, f.tax_period_begin,
                    f.tax_period_end, f.amended_return,
                    sr.created_at AS retrieved_at,
+                   sr.metadata AS source_metadata,
+                   sr.external_key AS source_external_key,
                    ARRAY(
                        SELECT DISTINCT input_ff.filing_id::text
                        FROM unnest(mv.input_fact_ids) AS input(id)
@@ -297,7 +305,9 @@ def _load_source_rows(db: DatabaseGateway) -> dict[str, list[dict[str, Any]]]:
                    pr.role_flags, pr.created_at AS captured_at,
                    f.organization_id, f.form_type, f.tax_period_begin,
                    f.tax_period_end, f.tax_year, f.amended_return,
-                   sr.created_at AS retrieved_at
+                   sr.created_at AS retrieved_at,
+                   sr.metadata AS source_metadata,
+                   sr.external_key AS source_external_key
             FROM core.person_role AS pr
             JOIN core.filing AS f ON f.id = pr.filing_id
             JOIN core.source_record AS sr ON sr.id = f.source_record_id
@@ -926,6 +936,11 @@ def _metric_series(
         retrieved_at=metric["retrieved_at"],
         parser_version=parser_version,
         metric={"key": str(metric["metric_key"]), "version": int(metric["metric_version"])},
+        source_metadata=metric.get("source_metadata"),
+        source_external_key=metric.get("source_external_key"),
+        single_authoritative_filing=len(
+            {str(filing_id) for filing_id in _sequence(metric.get("input_filing_ids"))}
+        ) == 1,
     )
     return {
         "organization_id": str(metric["organization_id"]),
@@ -958,6 +973,8 @@ def _fact_ref(
         retrieved_at=fact["retrieved_at"],
         parser_version=parser_version,
         metric=None,
+        source_metadata=fact.get("source_metadata"),
+        source_external_key=fact.get("source_external_key"),
     )
 
 
@@ -1074,6 +1091,8 @@ def _people_year(
                     retrieved_at=filing["retrieved_at"],
                     parser_version=parser_version,
                     metric=None,
+                    source_metadata=filing.get("source_metadata"),
+                    source_external_key=filing.get("source_external_key"),
                 ),
             }
         )
@@ -1141,6 +1160,9 @@ def _source_ref(
     retrieved_at: object,
     parser_version: str,
     metric: dict[str, Any] | None,
+    source_metadata: object = None,
+    source_external_key: object = None,
+    single_authoritative_filing: bool = True,
 ) -> dict[str, Any]:
     end = _date(period_end)
     return {
@@ -1157,13 +1179,47 @@ def _source_ref(
             "form_type": form_type,
             "filing_id": filing_id,
             "source_path": source_path,
-            "raw_url": None,
+            "raw_url": _raw_url(
+                source_key,
+                source_metadata,
+                source_external_key,
+                single_authoritative_filing=single_authoritative_filing,
+            ),
             "is_amended": is_amended,
         },
         "retrieved_at": _iso_datetime(retrieved_at),
         "parser_version": parser_version,
         "metric": metric,
     }
+
+
+def _raw_url(
+    source_key: str,
+    source_metadata: object,
+    source_external_key: object,
+    *,
+    single_authoritative_filing: bool,
+) -> str | None:
+    if source_key != "irs_990_xml" or not single_authoritative_filing:
+        return None
+
+    if isinstance(source_metadata, Mapping):
+        candidate = source_metadata.get("url")
+        if isinstance(candidate, str):
+            candidate = candidate.strip()
+            parsed = urlparse(candidate)
+            if (
+                candidate
+                and not any(char.isspace() for char in candidate)
+                and parsed.scheme in {"http", "https"}
+                and parsed.netloc
+            ):
+                return candidate
+
+    external_key = _optional_string(source_external_key)
+    if not external_key or any(char.isspace() for char in external_key):
+        return None
+    return GT_LAKE_XML_URL.format(object_id=external_key)
 
 
 def _period_label(tax_year: int, period_begin: object, period_end: date) -> str:
