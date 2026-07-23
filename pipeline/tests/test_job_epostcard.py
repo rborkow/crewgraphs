@@ -56,6 +56,36 @@ def _zip_bytes() -> bytes:
     return destination.getvalue()
 
 
+def test_epostcard_survives_field_beyond_csv_default_limit() -> None:
+    # The 2026-07 IRS drop carried a free-text field beyond csv's 128KiB default
+    # cap, which quarantined the whole national file. Oversized fields must parse.
+    # Keep "ROWING" in the name so the row still passes the discovery filter;
+    # the padding pushes the field itself past the default cap.
+    fixture = FIXTURE.read_bytes()
+    oversized = fixture.replace(
+        b"HUSKY ROWING FOUNDATION", b"HUSKY ROWING FOUNDATION " + b"X" * 200_000, 1
+    )
+    destination = BytesIO()
+    with zipfile.ZipFile(destination, "w", zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("epostcard.txt", oversized)
+
+    def receive(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, content=destination.getvalue())
+
+    db, s3 = Recorder(), FakeS3()
+    store = RawStore(Settings("postgres://fake", "account", "key", "secret"), s3)
+    with httpx.Client(transport=httpx.MockTransport(receive)) as http:
+        run_id = epostcard_sync(db, store, http, watchlist_eins=set(), retrieved_date="2026-07-22")
+
+    assert run_id == "run-1"
+    staged = [params for query, params in db.calls if "INSERT INTO staging.epostcard_row" in query]
+    assert len(staged) == 1
+    name = json.loads(staged[0][3])["ORGANIZATION_NAME"]
+    assert name.startswith("HUSKY ROWING FOUNDATION")
+    assert len(name) > 131072
+    assert not any("INSERT INTO ops.quarantine" in query for query, _ in db.calls)
+
+
 def test_epostcard_stages_husky_and_writes_retrieval_date_key() -> None:
     archive = _zip_bytes()
 

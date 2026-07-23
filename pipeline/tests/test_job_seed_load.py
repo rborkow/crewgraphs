@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import csv
 import json
 from pathlib import Path
 from typing import Any
@@ -62,28 +63,37 @@ class CuratorDb:
         raise AssertionError(query)
 
 
+# The tests load the real curated cohort, so expectations track its row count
+# rather than freezing a batch size that grows with every promotion.
+def _cohort_size() -> int:
+    with COHORT.open(newline="", encoding="utf-8") as handle:
+        return sum(1 for _ in csv.DictReader(handle))
+
+
 def test_seed_load_creates_the_reviewed_cohort_and_audits_each_mutation() -> None:
     db = CuratorDb()
+    size = _cohort_size()
 
-    assert "created=12" in seed_load(db, csv_path=COHORT)
+    assert f"created={size}" in seed_load(db, csv_path=COHORT)
 
-    assert len(db.organizations) == 12
+    assert len(db.organizations) == size
     assert next(org for org in db.organizations.values() if org["display_name"].startswith("Olympic Athletes"))["status"] == "candidate"
     assert all(item["verification_state"] == "verified" for item in db.identifiers.values())
-    assert len(db.identifiers) == 12
+    assert len(db.identifiers) == size
     c4 = db.identifiers["363508216"]["organization_id"]
     c3 = db.identifiers["272334832"]["organization_id"]
     assert [(row["from_organization_id"], row["to_organization_id"], row["relationship_type"]) for row in db.relationships] == [(c4, c3, "has_charitable_arm")]
-    # 12 organizations + 12 display aliases + 12 EIN identifiers + 1 relationship.
-    assert len(db.audit_events) == 37
+    # One org + one display alias + one EIN identifier each, plus 1 relationship.
+    assert len(db.audit_events) == size * 3 + 1
 
 
 def test_seed_load_is_a_no_write_rerun() -> None:
     db = CuratorDb()
+    size = _cohort_size()
     seed_load(db, csv_path=COHORT)
     first_audits = len(db.audit_events)
 
     assert seed_load(db, csv_path=COHORT).endswith("writes=0")
     assert len(db.audit_events) == first_audits
-    assert len(db.organizations) == 12
-    assert len(db.aliases) == 12
+    assert len(db.organizations) == size
+    assert len(db.aliases) == size

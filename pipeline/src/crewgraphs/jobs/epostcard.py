@@ -179,6 +179,10 @@ def _stage_archive(
 
 
 def _postcard_rows(archive: zipfile.ZipFile) -> Iterator[list[str]]:
+    # The IRS drop carries free-text fields (officer/org names, addresses) that
+    # can exceed csv's 128KiB default field cap; a single oversized field must
+    # not quarantine the whole national file.
+    csv.field_size_limit(max(csv.field_size_limit(), 10_000_000))
     for info in archive.infolist():
         if info.is_dir():
             continue
