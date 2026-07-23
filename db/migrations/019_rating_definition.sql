@@ -84,7 +84,7 @@ CREATE INDEX program_rating_program_idx
 CREATE INDEX program_rating_eligible_idx
   ON core.program_rating (metric_key, metric_version, computation_version, eligibility_met);
 
--- !!! INTEGRATOR: reconcile with sibling migration 018 (event_classification) — 019 up must extend 018s body; 019 down must restore 018s body. This branch's down still restores 015 and MUST be reconciled by the merge lead.
+-- Reconciled at merge (2026-07-23): up body = 018's body + program_rating; down restores 018's body exactly.
 -- INTEGRATION CAVEAT: migrations 016 and 017 only invoke this routine, so 015
 -- owns the latest body in this branch.  Migration 018 is being built in a
 -- sibling branch.  If 018 adds grant-managed tables, the integrator must merge
@@ -105,8 +105,8 @@ BEGIN
       EXECUTE 'REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLE core.organization, core.external_identifier, core.organization_alias, core.organization_relationship FROM pipeline_rw';
     END IF;
     IF to_regclass('core.regatta') IS NOT NULL THEN
-      EXECUTE 'REVOKE UPDATE, DELETE, TRUNCATE ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person, core.regatta_source_link, core.program_rating FROM pipeline_rw';
-      EXECUTE 'GRANT SELECT, INSERT ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person, core.regatta_source_link, core.program_rating TO pipeline_rw';
+      EXECUTE 'REVOKE UPDATE, DELETE, TRUNCATE ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person, core.regatta_source_link, core.event_classification, core.program_rating FROM pipeline_rw';
+      EXECUTE 'GRANT SELECT, INSERT ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person, core.regatta_source_link, core.event_classification, core.program_rating TO pipeline_rw';
       EXECUTE 'REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLE core.person_suppression FROM pipeline_rw';
       EXECUTE 'GRANT SELECT ON TABLE core.person_suppression TO pipeline_rw';
     END IF;
@@ -161,8 +161,8 @@ BEGIN
       EXECUTE 'REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLE core.organization, core.external_identifier, core.organization_alias, core.organization_relationship FROM pipeline_rw';
     END IF;
     IF to_regclass('core.regatta') IS NOT NULL THEN
-      EXECUTE 'REVOKE UPDATE, DELETE, TRUNCATE ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person, core.regatta_source_link FROM pipeline_rw';
-      EXECUTE 'GRANT SELECT, INSERT ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person, core.regatta_source_link TO pipeline_rw';
+      EXECUTE 'REVOKE UPDATE, DELETE, TRUNCATE ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person, core.regatta_source_link, core.event_classification FROM pipeline_rw';
+      EXECUTE 'GRANT SELECT, INSERT ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person, core.regatta_source_link, core.event_classification TO pipeline_rw';
       EXECUTE 'REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLE core.person_suppression FROM pipeline_rw';
       EXECUTE 'GRANT SELECT ON TABLE core.person_suppression TO pipeline_rw';
     END IF;

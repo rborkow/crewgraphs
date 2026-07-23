@@ -44,15 +44,15 @@
 - [x] Dual review of the publish diff: opus PII lens (3 redaction bypasses found: unguarded `crew_label`, U13 regex false negatives, unicode-asymmetric suppression) + terra technical lens (multi-org alias-join blocker, entry-key collision, `assembly_errors` KeyError) — all findings landed in one sol fix round; identity branch reviewed by opus (frequency-gate revision overcount + non-durable rejects, fixed). 159 pipeline + 88 web tests green; migrations 015–017 each verified up/rollback/reapply on ephemeral PG16 with grant probes.
 - [ ] Full chain on cohort against the live DB: curate first links, dispatch results-backfill, verify a profile renders results + rollback/GC `[lead/owner]` — needs secrets.
 
-## Wave 3 — ratings (3a may start parallel to Wave 2)
+## Wave 3 — ratings — MERGED 2026-07-23 (publication R3-gated)
 
-- [ ] **3a event-classify** — mapping candidates `[luna]`, curation `[lead]/[owner]`: provider event codes → canonical boat_class/age_bracket/gender (concept_map pattern; unmapped → review queue, never guessed); coverage stats.
-- [ ] **3b derive-ratings** `[sol]`: Plackett-Luce-family strength per org × boat_class × age_bracket per season → `core.metric_value` under new `metric_definition` (`rating_rof` v1, eligibility: ≥N ranked fields across ≥M regattas); `read.org_rating_series` publish above gates only.
-- [ ] **R3**: adversarial review of eligibility gates `[sol]` + backtest report (held-out later-season finish-order prediction, rank correlation) checked into `docs/superpowers/research/` before the display flag flips `[lead]`.
+- [x] **3a event-classify** (terra, a15fe97): migration 018 + versioned event map (em-2026.07.2) + job with deduped unmapped review queue. R3 gauntlet review (opus, empirical) caught a silent gender inversion from flight-letter tokens, inverted masters (X)/(X+) semantics, and missing collegiate detection — all fixed; novice-alone stays unmapped (never-guess).
+- [x] **3b derive-ratings** (sol, c6542bf): pure-Python Plackett-Luce MM (Gamma(1.1,0.1) MAP, closed-form-verified), core.program_rating + metric_definition rating_rof v1 (status draft). Cross-model math review (terra) confirmed the update rule; data-semantics findings fixed (OOC exclusion, complete-adjusted-or-raw-only ordering, Scratch vocabulary, race-safe review dedupe, self-competition flagging). Ratings compute into core only — NO read publication or display until R3.
+- [ ] **R3 backtest** `[sol build, lead verdict]`: needs a live corpus — held-out later-season PL log loss + winner/top-k accuracy vs uniform and win-rate baselines, Spearman/Kendall future-finish correlation, sigma-proxy calibration; report into docs/superpowers/research/ before any read publication or display flag.
 
 ## Anytime
 
-- [ ] Phase 7 CrewTimer spike doc under `spike/` `[luna]` (Firebase REST readability, id-space enumeration, unpark criteria).
+- [x] Phase 7 CrewTimer spike doc (lead): `spike/crewtimer-spike.md` — Firebase REST probe steps, id-space enumeration, unpark criteria (public REST read confirmed + gap report shows material cohort overlap).
 - [ ] Courtesy emails to info@time-team.nl and HereNow once attribution is live `[owner]`.
 - [ ] Sub-phase 2b (legacy Time-Team PHP scraper) — decide from `results-gap-report` numbers.
 

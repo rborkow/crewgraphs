@@ -262,8 +262,8 @@ BEGIN
       EXECUTE 'REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLE core.organization, core.external_identifier, core.organization_alias, core.organization_relationship FROM pipeline_rw';
     END IF;
     IF to_regclass('core.regatta') IS NOT NULL THEN
-      EXECUTE 'REVOKE UPDATE, DELETE, TRUNCATE ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person, core.regatta_source_link FROM pipeline_rw';
-      EXECUTE 'GRANT SELECT, INSERT ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person, core.regatta_source_link TO pipeline_rw';
+      EXECUTE 'REVOKE UPDATE, DELETE, TRUNCATE ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person, core.regatta_source_link, core.event_classification, core.program_rating FROM pipeline_rw';
+      EXECUTE 'GRANT SELECT, INSERT ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person, core.regatta_source_link, core.event_classification, core.program_rating TO pipeline_rw';
       EXECUTE 'REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLE core.person_suppression FROM pipeline_rw';
       EXECUTE 'GRANT SELECT ON TABLE core.person_suppression TO pipeline_rw';
     END IF;
@@ -457,6 +457,32 @@ CREATE TABLE core.epostcard_observation (
 --
 
 COMMENT ON TABLE core.epostcard_observation IS '990-N presence only; it never supplies financial facts.';
+
+
+--
+-- Name: event_classification; Type: TABLE; Schema: core; Owner: -
+--
+
+CREATE TABLE core.event_classification (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    event_id uuid NOT NULL,
+    mapping_version text NOT NULL,
+    boat_class text NOT NULL,
+    age_bracket text NOT NULL,
+    gender text NOT NULL,
+    mapping_key text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT event_classification_age_bracket_check CHECK ((age_bracket = ANY (ARRAY['u13'::text, 'u15'::text, 'u16'::text, 'u17'::text, 'u19_youth'::text, 'collegiate'::text, 'open'::text, 'masters_a'::text, 'masters_b'::text, 'masters_c'::text, 'masters_d'::text, 'masters_e'::text, 'masters_f'::text, 'masters_g'::text, 'masters_h'::text, 'masters_i'::text, 'masters_j'::text, 'masters_k'::text, 'masters_unspecified'::text, 'other'::text]))),
+    CONSTRAINT event_classification_boat_class_check CHECK ((boat_class = ANY (ARRAY['1x'::text, '2x'::text, '2-'::text, '2+'::text, '4x'::text, '4-'::text, '4+'::text, '8+'::text, 'other'::text]))),
+    CONSTRAINT event_classification_gender_check CHECK ((gender = ANY (ARRAY['men'::text, 'women'::text, 'mixed'::text, 'open'::text, 'unspecified'::text])))
+);
+
+
+--
+-- Name: TABLE event_classification; Type: COMMENT; Schema: core; Owner: -
+--
+
+COMMENT ON TABLE core.event_classification IS 'Insert-only canonical event mapping; latest mapping_version wins in reads.';
 
 
 --
@@ -665,6 +691,58 @@ CREATE TABLE core.person_suppression (
 --
 
 COMMENT ON TABLE core.person_suppression IS 'Curator-only takedown list; publish redacts matching names (optionally scoped to a source/club). NULL scope = global.';
+
+
+--
+-- Name: program_rating; Type: TABLE; Schema: core; Owner: -
+--
+
+CREATE TABLE core.program_rating (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    organization_id uuid NOT NULL,
+    season integer NOT NULL,
+    boat_class text NOT NULL,
+    age_bracket text NOT NULL,
+    gender text NOT NULL,
+    metric_key text NOT NULL,
+    metric_version integer NOT NULL,
+    rating numeric NOT NULL,
+    rating_sigma numeric NOT NULL,
+    ranked_fields integer NOT NULL,
+    distinct_regattas integer NOT NULL,
+    field_sizes jsonb NOT NULL,
+    computation_version text NOT NULL,
+    eligibility_met boolean NOT NULL,
+    input_summary jsonb NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT program_rating_distinct_regattas_check CHECK (((distinct_regattas > 0) AND (distinct_regattas <= ranked_fields))),
+    CONSTRAINT program_rating_field_sizes_check CHECK ((jsonb_typeof(field_sizes) = 'array'::text)),
+    CONSTRAINT program_rating_input_summary_check CHECK ((jsonb_typeof(input_summary) = 'object'::text)),
+    CONSTRAINT program_rating_ranked_fields_check CHECK ((ranked_fields > 0)),
+    CONSTRAINT program_rating_rating_sigma_check CHECK ((rating_sigma >= (0)::numeric)),
+    CONSTRAINT program_rating_season_check CHECK (((season >= 1800) AND (season <= 9999)))
+);
+
+
+--
+-- Name: TABLE program_rating; Type: COMMENT; Schema: core; Owner: -
+--
+
+COMMENT ON TABLE core.program_rating IS 'Insert-only seasonal program ratings. New computation_version rows supersede analytically without rewriting prior outputs; no row is publishable unless eligibility_met and the metric definition is active.';
+
+
+--
+-- Name: COLUMN program_rating.rating_sigma; Type: COMMENT; Schema: core; Owner: -
+--
+
+COMMENT ON COLUMN core.program_rating.rating_sigma IS 'Uncalibrated 1/sqrt(ranked-field appearances) proxy pending the R3 backtest; not a confidence interval.';
+
+
+--
+-- Name: COLUMN program_rating.input_summary; Type: COMMENT; Schema: core; Owner: -
+--
+
+COMMENT ON COLUMN core.program_rating.input_summary IS 'Deterministic, aggregate-only model inputs and settings. Person names are prohibited by job construction.';
 
 
 --
@@ -1389,6 +1467,22 @@ ALTER TABLE ONLY core.epostcard_observation
 
 
 --
+-- Name: event_classification event_classification_event_mapping_version_uniq; Type: CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.event_classification
+    ADD CONSTRAINT event_classification_event_mapping_version_uniq UNIQUE (event_id, mapping_version);
+
+
+--
+-- Name: event_classification event_classification_pkey; Type: CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.event_classification
+    ADD CONSTRAINT event_classification_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: external_identifier external_identifier_pkey; Type: CONSTRAINT; Schema: core; Owner: -
 --
 
@@ -1514,6 +1608,22 @@ ALTER TABLE ONLY core.person_role
 
 ALTER TABLE ONLY core.person_suppression
     ADD CONSTRAINT person_suppression_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: program_rating program_rating_identity_uniq; Type: CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.program_rating
+    ADD CONSTRAINT program_rating_identity_uniq UNIQUE (organization_id, season, boat_class, age_bracket, gender, metric_key, metric_version, computation_version);
+
+
+--
+-- Name: program_rating program_rating_pkey; Type: CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.program_rating
+    ADD CONSTRAINT program_rating_pkey PRIMARY KEY (id);
 
 
 --
@@ -1957,6 +2067,13 @@ CREATE INDEX epostcard_observation_source_record_id_idx ON core.epostcard_observ
 
 
 --
+-- Name: event_classification_event_id_idx; Type: INDEX; Schema: core; Owner: -
+--
+
+CREATE INDEX event_classification_event_id_idx ON core.event_classification USING btree (event_id);
+
+
+--
 -- Name: external_identifier_organization_id_idx; Type: INDEX; Schema: core; Owner: -
 --
 
@@ -2087,6 +2204,34 @@ CREATE INDEX person_role_filing_id_idx ON core.person_role USING btree (filing_i
 --
 
 CREATE INDEX person_suppression_name_idx ON core.person_suppression USING btree (person_name_normalized);
+
+
+--
+-- Name: program_rating_eligible_idx; Type: INDEX; Schema: core; Owner: -
+--
+
+CREATE INDEX program_rating_eligible_idx ON core.program_rating USING btree (metric_key, metric_version, computation_version, eligibility_met);
+
+
+--
+-- Name: program_rating_metric_definition_idx; Type: INDEX; Schema: core; Owner: -
+--
+
+CREATE INDEX program_rating_metric_definition_idx ON core.program_rating USING btree (metric_key, metric_version);
+
+
+--
+-- Name: program_rating_organization_season_idx; Type: INDEX; Schema: core; Owner: -
+--
+
+CREATE INDEX program_rating_organization_season_idx ON core.program_rating USING btree (organization_id, season);
+
+
+--
+-- Name: program_rating_program_idx; Type: INDEX; Schema: core; Owner: -
+--
+
+CREATE INDEX program_rating_program_idx ON core.program_rating USING btree (season, boat_class, age_bracket, gender);
 
 
 --
@@ -2535,6 +2680,14 @@ ALTER TABLE ONLY core.epostcard_observation
 
 
 --
+-- Name: event_classification event_classification_event_id_fkey; Type: FK CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.event_classification
+    ADD CONSTRAINT event_classification_event_id_fkey FOREIGN KEY (event_id) REFERENCES core.regatta_event(id);
+
+
+--
 -- Name: external_identifier external_identifier_organization_fk; Type: FK CONSTRAINT; Schema: core; Owner: -
 --
 
@@ -2644,6 +2797,22 @@ ALTER TABLE ONLY core.person_role
 
 ALTER TABLE ONLY core.person_suppression
     ADD CONSTRAINT person_suppression_provider_club_fk FOREIGN KEY (provider_club_id) REFERENCES core.provider_club(id);
+
+
+--
+-- Name: program_rating program_rating_metric_definition_fk; Type: FK CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.program_rating
+    ADD CONSTRAINT program_rating_metric_definition_fk FOREIGN KEY (metric_key, metric_version) REFERENCES core.metric_definition(metric_key, version);
+
+
+--
+-- Name: program_rating program_rating_organization_fk; Type: FK CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.program_rating
+    ADD CONSTRAINT program_rating_organization_fk FOREIGN KEY (organization_id) REFERENCES core.organization(id);
 
 
 --
@@ -3067,4 +3236,6 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('014'),
     ('015'),
     ('016'),
-    ('017');
+    ('017'),
+    ('018'),
+    ('019');

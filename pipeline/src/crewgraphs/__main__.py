@@ -17,6 +17,8 @@ _csv = split_csv
 
 # Results adapters register their commands module-locally (frozen-file rule
 # during the Wave-1 fan-out); __main__ stays the single integration point.
+from .jobs import derive_ratings as _derive_ratings
+from .jobs import event_classify as _event_classify
 from .jobs import herenow as _herenow
 from .jobs import regattatiming as _regattatiming
 from .jobs import resolve_clubs as _resolve_clubs
@@ -29,6 +31,8 @@ for _register in (
     _row2k.register,
     _regattatiming.register,
     _resolve_clubs.register,
+    _event_classify.register,
+    _derive_ratings.register,
 ):
     _register(app)
 
