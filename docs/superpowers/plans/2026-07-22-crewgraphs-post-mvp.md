@@ -46,11 +46,11 @@ Ordered roughly by product value; independent tracks can run in parallel.
 
 **Batch-2 prerequisites (before promoting the Tier-2 pool):** derive the EIN watchlist from the DB (the 70-EIN dispatch input is already unwieldy), resolve provisional `org_type` on the 58 batch-1 promotions.
 
-### Track B — Trust (the reference-site posture) — CODE COMPLETE 2026-07-23 (owner activation pending)
+### Track B — Trust (the reference-site posture) — COMPLETE & LIVE 2026-07-23
 - [x] **Methods page** `[lead]`: shipped (`be224ca`) — /methods (sources & ODbL/PP/NODC attribution from read.source_registry_public, 24-concept table drift-guarded against the pipeline YAML, missing-vs-zero, quality states, TaxYr alignment, amendments, people rule) + /methods/[metricKey] per-metric pages from read.metric_catalog. Fixed the standing header/footer 404.
 - [x] **`raw_url` in SourceRefs** `[luna]`: shipped (`a240bd0`) — XML-backed refs link the GT-lake object; 990-N/BMF/multi-input-metric refs stay null. Takes effect on next publish dispatch.
 - [x] **Corrections flow + admin UI** `[sol]`: shipped (`b514f35`) — migration 014 grants (web_ro INSERT-only on app.correction_submission; admin_ro read role), POST /api/corrections + /corrections/new (honeypot, snapshot-scoped slug resolution), read-only /admin{,/review,/corrections} gated on Cf-Access-Jwt-Assertion presence + ADMIN_DATABASE_URL. Status mutations stay in the audited curation CLI (follow-up: `curation corrections resolve` subcommand; in-app Access JWT validation).
-- [ ] **Owner activation** `[owner]`: create `admin_ro` role in Neon → apply migration 014 (`dbmate up` from repo root, .env sourced) → `wrangler secret put ADMIN_DATABASE_URL` (direct Neon URL as admin_ro, not Hyperdrive) → CF Access policy on `/admin/*` (SETUP step 8, the last one) → deploy web → dispatch irs-backfill (publish picks up raw_url).
+- [x] **Owner activation** `[owner]` done 2026-07-23: admin_ro + migration 014 + ADMIN_DATABASE_URL + CF Access on /admin/* (SETUP now fully complete) + deploy + publish dispatch. Verified live: snapshot ee506961 carries raw_url on 9,147/9,209 series rows (62 nulls = revenue_cagr, multi-filing window, null by design); profile drawers link GT-lake objects (spot-checked 200). Ops lesson recorded: `gh workflow run` executes origin/main — push before dispatching (first activation run published from stale code).
 
 ### Track C — Platform hygiene
 - [ ] **Widen `read.org_directory`** `[terra]`: directory entries are assembled from payload headers at request time; move city/state/org_type/program_mix into published columns.
