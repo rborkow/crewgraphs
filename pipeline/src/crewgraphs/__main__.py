@@ -118,6 +118,33 @@ def publish_cmd(
         gateway.close()
 
 
+@app.command(name="publish-gate")
+def publish_gate_cmd(
+    since: str = typer.Option(..., help="ISO 8601 timestamp at which this pipeline chain started"),
+) -> None:
+    """Block publishing when this pipeline chain produced quarantines."""
+    from .jobs.publish_gate import PublishGateFailure, publish_gate
+
+    settings = Settings.from_env()
+    gateway = PostgresGateway(settings.database_url)
+    try:
+        try:
+            publish_gate(gateway, since=since)
+        except PublishGateFailure as error:
+            typer.echo(f"Publish gate blocked by {len(error.rows)} quarantine(s):")
+            for row in error.rows:
+                typer.echo(
+                    "- "
+                    f"job_name={row['job_name']} "
+                    f"reason={row['reason']} "
+                    f"external_key={row['external_key']}"
+                )
+            raise typer.Exit(code=1)
+        typer.echo(f"Publish gate clear: no quarantines since {since}.")
+    finally:
+        gateway.close()
+
+
 @app.command(name="rollback")
 def rollback_cmd() -> None:
     """Repoint the published snapshot to the previous eligible snapshot."""

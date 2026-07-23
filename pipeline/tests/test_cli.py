@@ -18,6 +18,7 @@ def test_help_lists_every_stub_subcommand() -> None:
         "derive",
         "cross-check",
         "publish",
+        "publish-gate",
         "rollback",
         "backfill",
         "curation",

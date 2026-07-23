@@ -1,11 +1,11 @@
 name: IRS backfill
 
 # Runs the acquisition chain for the cohort: BMF -> 990-N -> index -> fetch
-# -> parse -> ProPublica -> cross-check -> report. Manual dispatch; the
-# scheduled monthly workflow lands once resolve/derive/publish complete
-# the chain.
+# -> parse -> ProPublica -> cross-check -> resolve -> derive -> publish -> report.
 
 on:
+  schedule:
+    - cron: "0 9 5 * *"
   workflow_dispatch:
     inputs:
       states:
@@ -36,13 +36,16 @@ jobs:
       R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
       R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
       GIT_SHA: ${{ github.sha }}
-      STATES: ${{ inputs.states }}
-      YEARS: ${{ inputs.years }}
-      EINS: ${{ inputs.eins }}
+      STATES: ${{ inputs.states || 'pa,dc,ma,ny,ct,ca,il,tx,nh,wa' }}
+      YEARS: ${{ inputs.years || '2020,2021,2022,2023,2024,2025' }}
+      EINS: ${{ inputs.eins || '237397498,232744491,530127820,042863756,113632924,331055179,237448092,363508216,272334832,742219650,030388282,811495108' }}
+      REPARSE: ${{ inputs.reparse && '--reparse' || '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
       - run: uv sync
+      - name: Capture chain start
+        run: echo "CHAIN_STARTED_AT=$(date --utc +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
       - name: BMF sync
         run: uv run python -m crewgraphs bmf-sync --states "$STATES" --eins "$EINS"
       - name: 990-N sync
@@ -52,7 +55,7 @@ jobs:
       - name: E-file fetch (GT lake)
         run: uv run python -m crewgraphs efile-fetch
       - name: E-file parse
-        run: uv run python -m crewgraphs efile-parse ${{ inputs.reparse && '--reparse' || '' }}
+        run: uv run python -m crewgraphs efile-parse $REPARSE
       - name: ProPublica bootstrap
         run: uv run python -m crewgraphs propublica-bootstrap --eins "$EINS"
       - name: Cross-check
@@ -61,6 +64,8 @@ jobs:
         run: uv run python -m crewgraphs resolve
       - name: Derive
         run: uv run python -m crewgraphs derive
+      - name: Publish gate
+        run: uv run python -m crewgraphs publish-gate --since "$CHAIN_STARTED_AT"
       - name: Publish
         run: uv run python -m crewgraphs publish
       - name: Run report
