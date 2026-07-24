@@ -52,7 +52,19 @@ if TYPE_CHECKING:
 
 
 SOURCE = "herenow"
-PARSER_VERSION = "herenow-2026.07.2"
+PARSER_VERSION = "herenow-2026.07.3"
+
+
+def _is_db_error(exc: Exception) -> bool:
+    """A database integrity/data error for one race is quarantineable, not fatal.
+
+    Lazy import keeps fake-db tests free of the psycopg dependency path.
+    """
+    try:
+        import psycopg
+    except ImportError:  # pragma: no cover - psycopg is a hard runtime dep
+        return False
+    return isinstance(exc, psycopg.Error)
 DEFAULT_BASE_URL = "https://newwebrole2023.azurewebsites.net"
 API_PATH = "/breeze/BreezeApi"
 CATALOG_SELECT = "Id,Name,StartDate,EndDate,Sport,IsListed,IsPublished,IsTest"
@@ -150,10 +162,17 @@ def herenow_load(db: DatabaseGateway, *, race_ids: Iterable[str | int] | None = 
             if race_id is None:
                 continue
             run.add_stat("races_selected")
+            # One transaction per race tree: a mid-tree failure must roll the
+            # whole race back rather than stranding a partial latest revision
+            # that the checksum no-op would then preserve forever (bitten by
+            # the first production backfill, 2026-07-24).
+            db.execute("BEGIN")
             try:
                 _load_race(db, run, race_id, row["base_payload"], row["flights_payload"], row.get("source_record_id"))
+                db.execute("COMMIT")
             except Exception as exc:
-                if not isinstance(exc, (ValueError, TypeError, KeyError, QuarantineableError)):
+                db.execute("ROLLBACK")
+                if not isinstance(exc, (ValueError, TypeError, KeyError, QuarantineableError)) and not _is_db_error(exc):
                     raise
                 _quarantine(db, run, str(race_id), exc, None, None, {"phase": "load"})
     return run.id or ""
@@ -292,7 +311,13 @@ def _insert_entry_tree(db: DatabaseGateway, run: IngestRun, event_id: str, fligh
     club_id = _provider_club(db, club_key, club_name, _club_raw(entry), source_record_id)
     if club_id:
         run.add_stat("clubs_observed")
-    key = _text(_get(entry, "Id", "ID", "EntryId"), _text(_get(result, "EntryId", "EntryNumber", "Bow"), "unknown"))
+    # Entry.Id is absent on some historical races; the result row's own ID is
+    # always present and unique, unlike EntryNumber/Bow which collide within
+    # an event (production backfill failure, 2026-07-24).
+    key = _text(
+        _get(entry, "Id", "ID", "EntryId"),
+        _text(_get(result, "EntryId", "ID"), _text(_get(result, "EntryNumber", "Bow"), "unknown")),
+    )
     bib = _none_text(_get(result, "EntryNumber", "Bow", "Bib"))
     entry_id = _returning_id(db, """
         INSERT INTO core.regatta_entry
