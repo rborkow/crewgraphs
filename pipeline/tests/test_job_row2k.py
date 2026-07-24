@@ -252,7 +252,7 @@ def test_gap_report_sql_key_patterns_match_provider_key() -> None:
 
 def test_year_range_parser_and_registry_schema_have_no_result_content_columns() -> None:
     assert parse_years("1997-1998,2026") == [1997, 1998, 2026]
-    migration = (ROOT / "db/migrations/015_row2k_registry.sql").read_text()
+    migration = (ROOT / "db/migrations/016_row2k_registry.sql").read_text()
     table = migration.split("CREATE TABLE core.regatta_source_link (", 1)[1].split(");", 1)[0]
     columns = {
         line.strip().split()[0]

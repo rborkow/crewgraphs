@@ -247,10 +247,10 @@ def _grants_body(sql: str) -> str:
     return sql[start:end]
 
 
-def test_event_classification_migration_down_restores_015_grants_body() -> None:
+def test_event_classification_migration_down_restores_016_grants_body() -> None:
     root = Path(__file__).resolve().parents[2]
-    previous = (root / "db/migrations/015_row2k_registry.sql").read_text(encoding="utf-8").split("-- migrate:down")[0]
-    migration_down = (root / "db/migrations/018_event_classification.sql").read_text(encoding="utf-8").split("-- migrate:down", 1)[1]
+    previous = (root / "db/migrations/016_row2k_registry.sql").read_text(encoding="utf-8").split("-- migrate:down")[0]
+    migration_down = (root / "db/migrations/019_event_classification.sql").read_text(encoding="utf-8").split("-- migrate:down", 1)[1]
 
     assert _grants_body(migration_down) == _grants_body(previous)
 

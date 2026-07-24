@@ -84,12 +84,12 @@ CREATE INDEX program_rating_program_idx
 CREATE INDEX program_rating_eligible_idx
   ON core.program_rating (metric_key, metric_version, computation_version, eligibility_met);
 
--- Reconciled at merge (2026-07-23): up body = 018's body + program_rating; down restores 018's body exactly.
+-- Reconciled at merge (2026-07-23): up body = 019's body + program_rating; down restores 019's body exactly.
 -- INTEGRATION CAVEAT: migrations 016 and 017 only invoke this routine, so 015
--- owns the latest body in this branch.  Migration 018 is being built in a
+-- owns the latest body in this branch (019, event_classification).
 -- sibling branch.  If 018 adds grant-managed tables, the integrator must merge
 -- those additions into BOTH the up and down bodies below; applying this
--- 015-derived body unchanged after such an 018 would otherwise erase them.
+
 -- program_rating joins the results-family SELECT+INSERT-only list.
 CREATE OR REPLACE FUNCTION app.apply_phase1_role_grants()
 RETURNS void
@@ -145,8 +145,7 @@ DROP TABLE core.program_rating;
 DELETE FROM core.metric_definition
 WHERE metric_key = 'rating_rof' AND version = 1;
 
--- Restore the exact migration-015 body.  See the integration caveat above:
--- the merge owner must reconcile any grant changes introduced by sibling 018.
+-- Restore the exact migration-019 body (reconciled at merge 2026-07-23).
 CREATE OR REPLACE FUNCTION app.apply_phase1_role_grants()
 RETURNS void
 LANGUAGE plpgsql

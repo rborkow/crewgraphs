@@ -35,7 +35,7 @@ SAMPLE_SOURCE_REF = {
         "form_type": "990",
         "filing_id": "3f4c8a1e-0000-4000-8000-000000000001",
         "source_path": "/Return/ReturnData/IRS990/CYTotalRevenueAmt",
-        "raw_url": "https://example.test/filing.xml",
+        "raw_url": "https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/XmlFiles/202121129349301317_public.xml",
         "is_amended": False,
     },
     "retrieved_at": "2026-07-21T12:00:00Z",

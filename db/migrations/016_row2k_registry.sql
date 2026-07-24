@@ -1,27 +1,47 @@
 -- migrate:up
 
-CREATE TABLE core.event_classification (
+-- row2k is a discovery registry only. Its results-page policy permits copying
+-- by schools/clubs of their own results; everyone else links and credits row2k.
+CREATE TABLE staging.row2k_index_page (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  event_id uuid NOT NULL REFERENCES core.regatta_event(id),
-  mapping_version text NOT NULL,
-  boat_class text NOT NULL CHECK (boat_class IN ('1x', '2x', '2-', '2+', '4x', '4-', '4+', '8+', 'other')),
-  age_bracket text NOT NULL CHECK (age_bracket IN (
-    'u13', 'u15', 'u16', 'u17', 'u19_youth', 'collegiate', 'open',
-    'masters_a', 'masters_b', 'masters_c', 'masters_d', 'masters_e',
-    'masters_f', 'masters_g', 'masters_h', 'masters_i', 'masters_j',
-    'masters_k', 'masters_unspecified', 'other'
-  )),
-  gender text NOT NULL CHECK (gender IN ('men', 'women', 'mixed', 'open', 'unspecified')),
-  mapping_key text NOT NULL,
+  ingest_run_id uuid,
+  source_record_id uuid,
+  year integer NOT NULL,
+  category text,
+  retrieved_at timestamptz NOT NULL DEFAULT now(),
   created_at timestamptz NOT NULL DEFAULT now(),
-  CONSTRAINT event_classification_event_mapping_version_uniq UNIQUE (event_id, mapping_version)
+  CONSTRAINT row2k_index_page_ingest_run_fk
+    FOREIGN KEY (ingest_run_id) REFERENCES ops.ingest_run(id),
+  CONSTRAINT row2k_index_page_source_record_fk
+    FOREIGN KEY (source_record_id) REFERENCES core.source_record(id)
 );
-CREATE INDEX event_classification_event_id_idx ON core.event_classification (event_id);
-COMMENT ON TABLE core.event_classification IS
-  'Insert-only canonical event mapping; latest mapping_version wins in reads.';
+CREATE INDEX row2k_index_page_ingest_run_id_idx
+  ON staging.row2k_index_page (ingest_run_id);
 
--- 015 owns the latest grants-function body. Append this table to its
--- insert-only results family; 016 and 017 only invoke the function.
+CREATE TABLE core.regatta_source_link (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  regatta_name text NOT NULL,
+  event_date date,
+  category text,
+  location text,
+  outbound_url text NOT NULL,
+  outbound_host text NOT NULL,
+  provider core.source_type,
+  credit_url text NOT NULL,
+  source_record_id uuid,
+  retrieved_at timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  CONSTRAINT regatta_source_link_source_record_fk
+    FOREIGN KEY (source_record_id) REFERENCES core.source_record(id),
+  CONSTRAINT regatta_source_link_event_date_outbound_url_uniq
+    UNIQUE NULLS NOT DISTINCT (event_date, outbound_url)
+);
+COMMENT ON TABLE core.regatta_source_link IS
+  'row2k discovery facts and outbound links only; never result content, per row2k link-don''t-copy policy.';
+
+-- Replace the grants routine with the 014 body and append the row2k registry
+-- to the results family. staging.row2k_index_page is covered by the existing
+-- blanket staging grant.
 CREATE OR REPLACE FUNCTION app.apply_phase1_role_grants()
 RETURNS void
 LANGUAGE plpgsql
@@ -36,8 +56,8 @@ BEGIN
       EXECUTE 'REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLE core.organization, core.external_identifier, core.organization_alias, core.organization_relationship FROM pipeline_rw';
     END IF;
     IF to_regclass('core.regatta') IS NOT NULL THEN
-      EXECUTE 'REVOKE UPDATE, DELETE, TRUNCATE ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person, core.regatta_source_link, core.event_classification FROM pipeline_rw';
-      EXECUTE 'GRANT SELECT, INSERT ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person, core.regatta_source_link, core.event_classification TO pipeline_rw';
+      EXECUTE 'REVOKE UPDATE, DELETE, TRUNCATE ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person, core.regatta_source_link FROM pipeline_rw';
+      EXECUTE 'GRANT SELECT, INSERT ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person, core.regatta_source_link TO pipeline_rw';
       EXECUTE 'REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLE core.person_suppression FROM pipeline_rw';
       EXECUTE 'GRANT SELECT ON TABLE core.person_suppression TO pipeline_rw';
     END IF;
@@ -72,10 +92,11 @@ $$;
 
 -- migrate:down
 
-DROP TABLE core.event_classification;
+DROP TABLE core.regatta_source_link;
+DROP TABLE staging.row2k_index_page;
 
--- Restore the exact grants routine body from 015. Rollback/reapply must leave
--- the function state that migration 017 inherited before this migration.
+-- Restore the exact grants routine body from 014. Rollback/reapply in CI must
+-- leave the same function that migration 015 installed.
 CREATE OR REPLACE FUNCTION app.apply_phase1_role_grants()
 RETURNS void
 LANGUAGE plpgsql
@@ -90,8 +111,8 @@ BEGIN
       EXECUTE 'REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLE core.organization, core.external_identifier, core.organization_alias, core.organization_relationship FROM pipeline_rw';
     END IF;
     IF to_regclass('core.regatta') IS NOT NULL THEN
-      EXECUTE 'REVOKE UPDATE, DELETE, TRUNCATE ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person, core.regatta_source_link FROM pipeline_rw';
-      EXECUTE 'GRANT SELECT, INSERT ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person, core.regatta_source_link TO pipeline_rw';
+      EXECUTE 'REVOKE UPDATE, DELETE, TRUNCATE ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person FROM pipeline_rw';
+      EXECUTE 'GRANT SELECT, INSERT ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person TO pipeline_rw';
       EXECUTE 'REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLE core.person_suppression FROM pipeline_rw';
       EXECUTE 'GRANT SELECT ON TABLE core.person_suppression TO pipeline_rw';
     END IF;

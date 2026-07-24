@@ -3238,4 +3238,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('016'),
     ('017'),
     ('018'),
-    ('019');
+    ('019'),
+    ('020');

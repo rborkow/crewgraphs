@@ -39,15 +39,18 @@ The MVP loop is closed and in production: **crewgraphs.com serves real IRS data 
 
 Ordered roughly by product value; independent tracks can run in parallel.
 
-### Track A — Reach (make the reference useful to more of the sport)
-- [ ] **Cohort expansion** `[lead triage, terra]`: promote vetted BMF discovery candidates through resolve; grow beyond the 11-org seed. Gate: identity review per org (racing identity ≠ filer in ~40% of cases).
-- [ ] **Monthly cron** `[terra]`: scheduled run of the full chain (workflow is dispatch-only today); alerting on quarantine/invariant failures.
-- [ ] **Compare page** `[lead defines, sol]`: side-by-side orgs on the published series + peer cohorts; spec section exists.
+### Track A — Reach (make the reference useful to more of the sport) — COMPLETE 2026-07-23
+- [x] **Cohort expansion batch 1** `[lead triage, terra]`: 69 orgs published (was 11). 675-candidate triage; the ranked Tier-2 pool of 268 clean rowing orgs for batch 2 lives in `docs/superpowers/research/2026-07-22-cohort-triage.md`.
+- [x] **Monthly cron** `[terra]`: 5th of the month 09:00 UTC + publish gate (quarantined chains never publish; filer arithmetic errors downgrade to under_review).
+- [x] **Compare page** `[sol]`: 2–4 orgs aligned on TaxYr, provenanced cells, CSV export.
 
-### Track B — Trust (the reference-site posture)
-- [ ] **Methods page** `[lead]`: how concepts map to 990 lines, the missing-vs-zero rule, amendment policy, source attribution (ODbL share-alike note for GT lake).
-- [ ] **`raw_url` in SourceRefs** `[luna]`: link each fact to its publicly addressable filing object; currently null.
-- [ ] **Corrections flow + admin UI** `[sol]`, then **CF Access policy on `/admin/*`** `[owner]` — the one remaining SETUP item.
+**Batch-2 prerequisites (before promoting the Tier-2 pool):** derive the EIN watchlist from the DB (the 70-EIN dispatch input is already unwieldy), resolve provisional `org_type` on the 58 batch-1 promotions.
+
+### Track B — Trust (the reference-site posture) — COMPLETE & LIVE 2026-07-23
+- [x] **Methods page** `[lead]`: shipped (`be224ca`) — /methods (sources & ODbL/PP/NODC attribution from read.source_registry_public, 24-concept table drift-guarded against the pipeline YAML, missing-vs-zero, quality states, TaxYr alignment, amendments, people rule) + /methods/[metricKey] per-metric pages from read.metric_catalog. Fixed the standing header/footer 404.
+- [x] **`raw_url` in SourceRefs** `[luna]`: shipped (`a240bd0`) — XML-backed refs link the GT-lake object; 990-N/BMF/multi-input-metric refs stay null. Takes effect on next publish dispatch.
+- [x] **Corrections flow + admin UI** `[sol]`: shipped (`b514f35`) — migration 014 grants (web_ro INSERT-only on app.correction_submission; admin_ro read role), POST /api/corrections + /corrections/new (honeypot, snapshot-scoped slug resolution), read-only /admin{,/review,/corrections} gated on Cf-Access-Jwt-Assertion presence + ADMIN_DATABASE_URL. Status mutations stay in the audited curation CLI (follow-up: `curation corrections resolve` subcommand; in-app Access JWT validation).
+- [x] **Owner activation** `[owner]` done 2026-07-23: admin_ro + migration 014 + ADMIN_DATABASE_URL + CF Access on /admin/* (SETUP now fully complete) + deploy + publish dispatch. Verified live: snapshot ee506961 carries raw_url on 9,147/9,209 series rows (62 nulls = revenue_cagr, multi-filing window, null by design); profile drawers link GT-lake objects (spot-checked 200). Ops lesson recorded: `gh workflow run` executes origin/main — push before dispatching (first activation run published from stale code).
 
 ### Track C — Platform hygiene
 - [ ] **Widen `read.org_directory`** `[terra]`: directory entries are assembled from payload headers at request time; move city/state/org_type/program_mix into published columns.
