@@ -18,7 +18,7 @@ import json
 import re
 import time
 from datetime import date, datetime, timezone
-from typing import TYPE_CHECKING, Any, Iterable, Mapping
+from typing import TYPE_CHECKING, Any, Iterable, Iterator, Mapping
 from urllib.parse import urlencode
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
@@ -36,10 +36,20 @@ if TYPE_CHECKING:
 
 
 SOURCE = "time_team"
-PARSER_VERSION = "timeteam-2026.07.1"
+PARSER_VERSION = "timeteam-2026.07.2"
+_INSERT_BATCH_SIZE = 5_000
 INDEX_URL = "https://usrowing.regatta.time-team.com/"
 API_BASE_URL = "https://api.usrowing.regatta.time-team.com/api/1"
 KNOWN_STATUS_INTS = frozenset(range(0, 13))
+
+
+def _is_db_error(exc: Exception) -> bool:
+    """Return whether a database data/integrity error is quarantineable."""
+    try:
+        import psycopg
+    except ImportError:  # pragma: no cover - psycopg is a hard runtime dep
+        return False
+    return isinstance(exc, psycopg.Error)
 
 
 def timeteam_regatta_index(
@@ -238,7 +248,21 @@ def timeteam_load(
         ):
             run.add_stat(stat, 0)
         for target_slug, target_year in targets:
-            _load_one(db, run, target_slug, target_year)
+            # A regatta revision is all-or-nothing.  Otherwise a failed tree
+            # can strand a partial latest revision that its checksum would
+            # subsequently treat as a no-op.
+            db.execute("BEGIN")
+            try:
+                _load_one(db, run, target_slug, target_year)
+                db.execute("COMMIT")
+            except Exception as exc:
+                db.execute("ROLLBACK")
+                if not isinstance(exc, (ValueError, TypeError, KeyError, QuarantineableError)) and not _is_db_error(exc):
+                    raise
+                _quarantine(
+                    run, db, None, f"{target_slug}/{target_year}", "timeteam_load_error", None,
+                    {"phase": "load", "error": str(exc)},
+                )
     return run.id or ""
 
 
@@ -290,7 +314,7 @@ def _load_one(db: DatabaseGateway, run: IngestRun, slug: str, year: int) -> None
     external_key = f"{slug}/{year}"
     existing = db.execute(
         """
-        SELECT revision, payload_checksum
+        SELECT revision, payload_checksum, parser_version
         FROM core.regatta
         WHERE source = %s AND external_key = %s
         ORDER BY revision DESC
@@ -298,13 +322,23 @@ def _load_one(db: DatabaseGateway, run: IngestRun, slug: str, year: int) -> None
         """,
         (SOURCE, external_key),
     )
-    if existing and existing[0].get("payload_checksum") == checksum:
+    # A parser bump deliberately reloads an unchanged payload into a fresh
+    # immutable revision under the corrected interpretation.
+    if (
+        existing
+        and existing[0].get("payload_checksum") == checksum
+        and existing[0].get("parser_version") == PARSER_VERSION
+    ):
         return
     revision = int(existing[0]["revision"]) + 1 if existing else 1
     regatta = _first_value(schedule.get("regatta"))
     if not regatta:
         _quarantine(run, db, None, external_key, "timeteam_regatta_missing", None, {})
         return
+    tree = _regatta_tree(
+        run, db, race_docs, race_objects, scheduled_ids,
+        staged[0].get("source_record_id"), _regatta_timezone(regatta),
+    )
     regatta_id = _insert_regatta(
         db,
         source_record_id=staged[0].get("source_record_id"),
@@ -313,16 +347,89 @@ def _load_one(db: DatabaseGateway, run: IngestRun, slug: str, year: int) -> None
         regatta=regatta,
         checksum=checksum,
     )
-    tz_name = _regatta_timezone(regatta)
-    for race_uuid in scheduled_ids:
-        race = race_objects[race_uuid]
-        event = _first_value(race_docs[race_uuid].get("event"))
-        event_id = _insert_event(db, regatta_id, race_uuid, race, event, tz_name)
-        for row in _round_crews(race_docs[race_uuid]):
-            entry_id = _insert_entry(db, run, event_id, row, staged[0].get("source_record_id"), race_uuid)
-            if entry_id is None:
-                continue
-            _insert_result(db, run, entry_id, row)
+    event_rows = [
+        (regatta_id, item["event_key"], item["event_name"], item["event_code"], item["boat_class"],
+         item["age_class"], item["gender"], item["round"], item["scheduled_at"], item["progression"], item["event_raw"])
+        for item in tree
+    ]
+    event_ids = _insert_many_returning(
+        db,
+        """INSERT INTO core.regatta_event
+            (regatta_id, external_key, name, event_code, boat_class_raw, age_class_raw,
+             gender_raw, round, scheduled_at, progression, raw)
+        VALUES {values} RETURNING id, external_key""",
+        event_rows,
+        ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s::jsonb", "%s::jsonb"),
+    )
+    event_by_key = {str(row["external_key"]): str(row["id"]) for row in event_ids}
+
+    entries = [entry for item in tree for entry in item["entries"]]
+    clubs: dict[str, tuple[Any, ...]] = {}
+    for item in entries:
+        if item["club_key"]:
+            clubs.setdefault(item["club_key"], item["club_row"])
+    inserted_clubs = _insert_many_returning(
+        db,
+        """INSERT INTO core.provider_club
+            (source, external_key, display_name, code, federation, raw, source_record_id)
+        VALUES {values} ON CONFLICT (source, external_key) DO NOTHING
+        RETURNING external_key""",
+        list(clubs.values()),
+        ("%s", "%s", "%s", "%s", "%s", "%s::jsonb", "%s"),
+    )
+    club_ids = {
+        str(row["external_key"]): str(row["id"])
+        for row in db.execute(
+            "SELECT id, external_key FROM core.provider_club WHERE source = %s AND external_key = ANY(%s)",
+            (SOURCE, list(clubs)),
+        )
+    } if clubs else {}
+
+    entry_rows = [
+        (event_by_key[item["event_key"]], item["entry_key"], item["bib"], item["lane"], item["club_name"],
+         club_ids.get(item["club_key"]), item["crew_label"], item["entry_raw"])
+        for item in entries
+    ]
+    entry_ids = _insert_many_returning(
+        db,
+        """INSERT INTO core.regatta_entry
+            (event_id, external_key, bib, lane, club_source_name, provider_club_id, crew_label, raw)
+        VALUES {values} RETURNING id, event_id, external_key""",
+        entry_rows,
+        ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s::jsonb"),
+    )
+    entry_by_key = {(str(row["event_id"]), str(row["external_key"])): str(row["id"]) for row in entry_ids}
+
+    result_rows: list[tuple[Any, ...]] = []
+    person_rows: list[tuple[Any, ...]] = []
+    for item in entries:
+        entry_id = entry_by_key[(event_by_key[item["event_key"]], item["entry_key"])]
+        result_rows.append((
+            entry_id, item["status"], item["position"], item["adjusted_position"], item["time_ms"],
+            item["adjusted_time_ms"], item["delta_ms"], item["penalty"], item["correction"], item["splits"],
+        ))
+        if item["stroke"]:
+            person_rows.append((entry_id, item["stroke"], item["person_raw"]))
+    _insert_many(
+        db,
+        """INSERT INTO core.regatta_result
+            (entry_id, status, position, adjusted_position, time_ms, adjusted_time_ms,
+             handicap_ms, delta_ms, penalty, correction, splits)
+        VALUES {values}""",
+        result_rows,
+        ("%s", "%s", "%s", "%s", "%s", "%s", "NULL", "%s", "%s::jsonb", "%s::jsonb", "%s::jsonb"),
+    )
+    _insert_many(
+        db,
+        """INSERT INTO core.result_person (entry_id, role, seat, person_name, raw)
+        VALUES {values}""",
+        (person_rows),
+        ("%s", "'stroke'", "NULL", "%s", "%s::jsonb"),
+    )
+    run.add_stat("crews_loaded", len(entries))
+    run.add_stat("results_loaded", len(result_rows))
+    run.add_stat("persons_loaded", len(person_rows))
+    run.add_stat("clubs_observed", len(inserted_clubs))
 
 
 def _insert_regatta(
@@ -356,140 +463,128 @@ def _insert_regatta(
     return rows[0]["id"]
 
 
-def _insert_event(
-    db: DatabaseGateway,
-    regatta_id: object,
-    race_uuid: str,
-    race: Mapping[str, Any],
-    event: Mapping[str, Any],
-    timezone_name: str,
-) -> object:
-    event_name = _text(race, "event_name", "name") or _text(event, "name", "event_name") or race_uuid
-    round_name = _text(race, "round_type_name", "round_name") or _text(event, "round_type_name")
-    name = event_name if not round_name or round_name.casefold() in event_name.casefold() else f"{event_name} — {round_name}"
-    rows = db.execute(
-        """
-        INSERT INTO core.regatta_event
-            (regatta_id, external_key, name, event_code, boat_class_raw, age_class_raw,
-             gender_raw, round, scheduled_at, progression, raw)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s::jsonb)
-        RETURNING id
-        """,
-        (
-            regatta_id, race_uuid, name, _text(race, "event_code", "code") or _text(event, "code"),
-            _text(race, "boat_class", "boat_class_name") or _text(event, "boattype"),
-            _text(race, "age_class", "age_class_name") or _text(event, "age_class"),
-            _text(race, "gender", "gender_name") or _text(event, "sex"), round_name,
-            _scheduled_at(_text(race, "start_datetime", "scheduled_at", "start_time"), timezone_name),
-            json.dumps(race.get("rules") or []), json.dumps(race, sort_keys=True),
-        ),
-    )
-    if not rows:
-        raise RuntimeError("core.regatta_event insert did not return an id")
-    return rows[0]["id"]
-
-
-def _insert_entry(
-    db: DatabaseGateway,
+def _regatta_tree(
     run: IngestRun,
-    event_id: object,
-    row: Mapping[str, Any],
+    db: DatabaseGateway,
+    race_docs: Mapping[str, Mapping[str, Any]],
+    race_objects: Mapping[str, Mapping[str, Any]],
+    scheduled_ids: Iterable[str],
     source_record_id: object,
+    timezone_name: str,
+) -> list[dict[str, Any]]:
+    """Materialize a complete regatta tree before inserting any child rows."""
+    tree: list[dict[str, Any]] = []
+    for race_uuid in scheduled_ids:
+        race = race_objects[race_uuid]
+        event = _first_value(race_docs[race_uuid].get("event"))
+        event_name = _text(race, "event_name", "name") or _text(event, "name", "event_name") or race_uuid
+        round_name = _text(race, "round_type_name", "round_name") or _text(event, "round_type_name")
+        name = event_name if not round_name or round_name.casefold() in event_name.casefold() else f"{event_name} — {round_name}"
+        entries = [
+            item for row in _round_crews(race_docs[race_uuid])
+            if (item := _tree_entry(run, db, row, race_uuid, source_record_id)) is not None
+        ]
+        tree.append({
+            "event_key": race_uuid,
+            "event_name": name,
+            "event_code": _text(race, "event_code", "code") or _text(event, "code"),
+            "boat_class": _text(race, "boat_class", "boat_class_name") or _text(event, "boattype"),
+            "age_class": _text(race, "age_class", "age_class_name") or _text(event, "age_class"),
+            "gender": _text(race, "gender", "gender_name") or _text(event, "sex"),
+            "round": round_name,
+            "scheduled_at": _scheduled_at(_text(race, "start_datetime", "scheduled_at", "start_time"), timezone_name),
+            "progression": json.dumps(race.get("rules") or []),
+            "event_raw": json.dumps(race, sort_keys=True),
+            "entries": entries,
+        })
+    return tree
+
+
+def _tree_entry(
+    run: IngestRun,
+    db: DatabaseGateway,
+    row: Mapping[str, Any],
     race_uuid: str,
-) -> object | None:
+    source_record_id: object,
+) -> dict[str, Any] | None:
     entry = _as_mapping(row.get("entry"))
     crew_id = _text(row, "crew_id", "race_crew_id", "id")
     if not crew_id:
         _quarantine(run, db, None, race_uuid, "timeteam_crew_missing_uuid", None, {"race_uuid": race_uuid})
         return None
     club = _as_mapping(entry.get("club"))
-    provider_club_id: object | None = None
+    club_key: str | None = None
+    club_row: tuple[Any, ...] | None = None
     if club:
         club_key = _text(club, "id", "uuid")
         if not club_key:
-            _quarantine(run, db, None, crew_id, "timeteam_club_missing_uuid", None, {"race_uuid": race_uuid, "club": dict(club)})
+            _quarantine(
+                run, db, None, crew_id, "timeteam_club_missing_uuid", None,
+                {"race_uuid": race_uuid, "club": dict(club)},
+            )
         else:
-            provider_club_id, inserted = _insert_provider_club(db, club_key, club, source_record_id)
-            if inserted:
-                run.add_stat("clubs_observed")
-    entry_name = _text(entry, "name", "shortname") or _text(club, "name") or "Unknown club"
-    rows = db.execute(
-        """
-        INSERT INTO core.regatta_entry
-            (event_id, external_key, bib, lane, club_source_name, provider_club_id, crew_label, raw)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s::jsonb)
-        RETURNING id
-        """,
-        (
-            event_id, crew_id, _value_as_text(row.get("bib")), _int_or_none(row.get("lane")),
-            entry_name, provider_club_id, _crew_label(entry), json.dumps(_entry_raw(row), sort_keys=True),
-        ),
-    )
-    if not rows:
-        raise RuntimeError("core.regatta_entry insert did not return an id")
-    run.add_stat("crews_loaded")
-    stroke = _text(entry, "stroke_fullname")
-    if stroke:
-        db.execute(
-            """
-            INSERT INTO core.result_person (entry_id, role, seat, person_name, raw)
-            VALUES (%s, 'stroke', NULL, %s, %s::jsonb)
-            """,
-            (rows[0]["id"], stroke, json.dumps({"stroke_fullname": stroke})),
-        )
-        run.add_stat("persons_loaded")
-    return rows[0]["id"]
-
-
-def _insert_provider_club(
-    db: DatabaseGateway, club_key: str, club: Mapping[str, Any], source_record_id: object
-) -> tuple[object, bool]:
-    rows = db.execute(
-        """
-        INSERT INTO core.provider_club
-            (source, external_key, display_name, code, federation, raw, source_record_id)
-        VALUES (%s, %s, %s, %s, %s, %s::jsonb, %s)
-        ON CONFLICT (source, external_key) DO NOTHING
-        RETURNING id
-        """,
-        (SOURCE, club_key, _text(club, "name", "shortname") or club_key, _text(club, "code"),
-         _text(club, "federation"), json.dumps(club, sort_keys=True), source_record_id),
-    )
-    if rows:
-        return rows[0]["id"], True
-    rows = db.execute(
-        "SELECT id FROM core.provider_club WHERE source = %s AND external_key = %s",
-        (SOURCE, club_key),
-    )
-    if not rows:
-        raise RuntimeError("provider club conflict did not expose its existing id")
-    return rows[0]["id"], False
-
-
-def _insert_result(db: DatabaseGateway, run: IngestRun, entry_id: object, row: Mapping[str, Any]) -> None:
+            club_row = (
+                SOURCE, club_key, _text(club, "name", "shortname") or club_key, _text(club, "code"),
+                _text(club, "federation"), json.dumps(club, sort_keys=True), source_record_id,
+            )
     status = row.get("status")
     if isinstance(status, int) and not isinstance(status, bool) and status not in KNOWN_STATUS_INTS:
         run.add_stat("statuses_unknown")
         run.warn(f"unknown Time-Team status {status}")
     times = _as_list(row.get("times"))
     finish = _finish_total(times)
-    db.execute(
-        """
-        INSERT INTO core.regatta_result
-            (entry_id, status, position, adjusted_position, time_ms, adjusted_time_ms,
-             handicap_ms, delta_ms, penalty, correction, splits)
-        VALUES (%s, %s, %s, %s, %s, %s, NULL, %s, %s::jsonb, %s::jsonb, %s::jsonb)
-        """,
-        (
-            entry_id, _value_as_text(status) or "", _int_or_none(finish.get("pos")),
-            _int_or_none(row.get("adjusted_pos")), parse_time_ms(finish.get("result")),
-            parse_time_ms(row.get("adjusted_result")), parse_time_ms(row.get("adjusted_plus")),
-            json.dumps(row.get("penalty")) if row.get("penalty") is not None else None,
-            json.dumps(row.get("correction")) if row.get("correction") is not None else None,
-            json.dumps(times, sort_keys=True),
-        ),
-    )
-    run.add_stat("results_loaded")
+    stroke = _text(entry, "stroke_fullname")
+    return {
+        "event_key": race_uuid,
+        "entry_key": crew_id,
+        "bib": _value_as_text(row.get("bib")),
+        "lane": _int_or_none(row.get("lane")),
+        "club_name": _text(entry, "name", "shortname") or _text(club, "name") or "Unknown club",
+        "club_key": club_key,
+        "club_row": club_row,
+        "crew_label": _crew_label(entry),
+        "entry_raw": json.dumps(_entry_raw(row), sort_keys=True),
+        "status": _value_as_text(status) or "",
+        "position": _int_or_none(finish.get("pos")),
+        "adjusted_position": _int_or_none(row.get("adjusted_pos")),
+        "time_ms": parse_time_ms(finish.get("result")),
+        "adjusted_time_ms": parse_time_ms(row.get("adjusted_result")),
+        "delta_ms": parse_time_ms(row.get("adjusted_plus")),
+        "penalty": json.dumps(row.get("penalty")) if row.get("penalty") is not None else None,
+        "correction": json.dumps(row.get("correction")) if row.get("correction") is not None else None,
+        "splits": json.dumps(times, sort_keys=True),
+        "stroke": stroke,
+        "person_raw": json.dumps({"stroke_fullname": stroke}) if stroke else None,
+    }
+
+
+def _insert_many(
+    db: DatabaseGateway,
+    template: str,
+    rows: list[tuple[Any, ...]],
+    placeholders: tuple[str, ...],
+) -> None:
+    for chunk in _chunks(rows):
+        values = ", ".join(["(" + ", ".join(placeholders) + ")"] * len(chunk))
+        db.execute(template.format(values=values), tuple(value for row in chunk for value in row))
+
+
+def _insert_many_returning(
+    db: DatabaseGateway,
+    template: str,
+    rows: list[tuple[Any, ...]],
+    placeholders: tuple[str, ...],
+) -> list[dict[str, Any]]:
+    returned: list[dict[str, Any]] = []
+    for chunk in _chunks(rows):
+        values = ", ".join(["(" + ", ".join(placeholders) + ")"] * len(chunk))
+        returned.extend(db.execute(template.format(values=values), tuple(value for row in chunk for value in row)))
+    return returned
+
+
+def _chunks(rows: list[tuple[Any, ...]]) -> Iterator[list[tuple[Any, ...]]]:
+    for start in range(0, len(rows), _INSERT_BATCH_SIZE):
+        yield rows[start:start + _INSERT_BATCH_SIZE]
 
 
 def parse_time_ms(value: object) -> int | None:
