@@ -48,6 +48,9 @@ class FakeDb:
         self.latest: dict[str, Any] | None = None
         self.regattas = 0
         self.final_stats: dict[str, Any] = {}
+        self.clubs: dict[str, str] = {}
+        self.events = 0
+        self.entries = 0
 
     def execute(self, query: str, params: object = None) -> list[dict[str, Any]]:
         values = tuple(params or ())
@@ -68,14 +71,29 @@ class FakeDb:
             self.regattas += 1
             self.latest = {"id": f"regatta-{self.regattas}", "revision": self.regattas, "payload_checksum": values[-3], "parser_version": values[-1]}
             return [{"id": self.latest["id"]}]
-        if "INSERT INTO core.regatta_event" in query:
-            return [{"id": "event-1"}]
-        if "INSERT INTO core.regatta_entry" in query:
-            return [{"id": "entry-1"}]
-        if "INSERT INTO core.provider_club" in query:
-            return [{"id": "club-1"}]
+        if query.lstrip().startswith("INSERT INTO core.regatta_event"):
+            rows = []
+            for offset in range(0, len(values), 10):
+                self.events += 1
+                rows.append({"id": f"event-{self.events}", "external_key": values[offset + 1]})
+            return rows
+        if query.lstrip().startswith("INSERT INTO core.regatta_entry"):
+            rows = []
+            for offset in range(0, len(values), 8):
+                self.entries += 1
+                rows.append({"id": f"entry-{self.entries}", "event_id": values[offset], "external_key": values[offset + 1]})
+            return rows
+        if query.lstrip().startswith("INSERT INTO core.provider_club"):
+            for offset in range(0, len(values), 5):
+                self.clubs.setdefault(str(values[offset + 1]), f"club-{len(self.clubs) + 1}")
+            return []
         if "SELECT id FROM core.provider_club" in query:
             return [{"id": "club-1"}]
+        if "SELECT id, external_key FROM core.provider_club" in query:
+            return [
+                {"id": self.clubs.setdefault(str(key), f"club-{len(self.clubs) + 1}"), "external_key": key}
+                for key in values[1]
+            ]
         if "SELECT race_id, raw_row FROM staging.herenow_catalog_row" in query:
             return self.staged
         if "INSERT INTO ops.quarantine" in query:
@@ -200,6 +218,47 @@ def test_masters_mapping_and_persons_are_written_to_result_person() -> None:
     assert club[1][1] == "name:greaterhouston"
     event = next(call for call in db.calls if "INSERT INTO core.regatta_event" in call[0])
     assert event[1][4:8] == (None, None, None, None)
+
+
+def test_load_batches_each_race_tree_into_bounded_statement_count() -> None:
+    base, flights = _payloads()
+    db = FakeDb(staged=[{"race_id": 21464, "base_payload": base, "flights_payload": flights, "source_record_id": "source-1"}])
+    herenow_load(db)
+    statements = [query for query, _ in db.calls]
+    race_statements = statements[statements.index("BEGIN"):statements.index("COMMIT") + 1]
+    assert len(race_statements) <= 12
+    assert sum(query.lstrip().startswith("INSERT INTO core.regatta_event") for query in race_statements) == 1
+    assert sum(query.lstrip().startswith("INSERT INTO core.regatta_entry") for query in race_statements) == 1
+    assert sum(query.lstrip().startswith("INSERT INTO core.regatta_result") for query in race_statements) == 1
+
+
+def test_load_dedupes_repeated_entry_id_and_keeps_timed_result() -> None:
+    base = {"Name": "Duplicate test", "StartDate": "2026-07-19", "EndDate": "2026-07-19"}
+    flights = [{
+        "ID": 1,
+        "Name": "Men's 1x Final",
+        "EntryResults": [
+            {"ID": 10, "Status": "DNS", "Entry": {"Id": 99, "AffiliationName": "First Club"}},
+            {
+                "ID": 11,
+                "Status": "Official",
+                "StartTime1": "2026-07-19T11:00:00Z",
+                "FinishTime1": "2026-07-19T11:03:25.800Z",
+                "Entry": {"Id": 99, "AffiliationName": "Timed Club"},
+            },
+        ],
+    }]
+    db = FakeDb(staged=[{"race_id": 99, "base_payload": base, "flights_payload": flights, "source_record_id": "source-1"}])
+    herenow_load(db)
+    result = next(call for call in db.calls if call[0].lstrip().startswith("INSERT INTO core.regatta_result"))
+    entry = next(call for call in db.calls if call[0].lstrip().startswith("INSERT INTO core.regatta_entry"))
+    assert result[1][1] == "Official"
+    assert result[1][4] == 205800
+    assert entry[1][4] == "Timed Club"
+    assert db.final_stats["entries_loaded"] == 1
+    assert db.final_stats["entries_deduped"] == 1
+    assert db.final_stats["warnings"] == ["race 99: deduped 1 repeated entries"]
+    assert not db.quarantines
 
 
 def test_results_time_parser_edge_cases() -> None:
