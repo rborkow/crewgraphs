@@ -1,0 +1,318 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "payload_schema_version": {
+      "type": "number",
+      "const": 1
+    },
+    "org_id": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "seasons": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "season": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "regattas": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "regatta_key": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "date": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "date",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "venue": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "source_key": {
+                  "type": "string"
+                },
+                "provider_url": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "events": {
+                  "minItems": 1,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "event_key": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "boat_class": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "round": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "entries": {
+                        "minItems": 1,
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "crew_label": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "club_display_name": {
+                              "type": "string"
+                            },
+                            "status": {
+                              "type": "string"
+                            },
+                            "crew": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "role": {
+                                    "type": "string",
+                                    "enum": [
+                                      "stroke",
+                                      "cox",
+                                      "bow",
+                                      "rower",
+                                      "coach"
+                                    ]
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "role",
+                                  "name"
+                                ]
+                              }
+                            },
+                            "results": {
+                              "minItems": 1,
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "metric_key": {
+                                    "type": "string",
+                                    "enum": [
+                                      "finish_time",
+                                      "adjusted_time",
+                                      "handicap",
+                                      "place",
+                                      "adjusted_place",
+                                      "margin"
+                                    ]
+                                  },
+                                  "ref": {
+                                    "type": "object",
+                                    "properties": {
+                                      "value": {
+                                        "anyOf": [
+                                          {
+                                            "type": "number"
+                                          },
+                                          {
+                                            "type": "null"
+                                          }
+                                        ]
+                                      },
+                                      "unit": {
+                                        "type": "string",
+                                        "enum": [
+                                          "seconds",
+                                          "rank",
+                                          "margin_seconds",
+                                          "handicap_seconds",
+                                          "count"
+                                        ]
+                                      },
+                                      "season": {
+                                        "type": "integer",
+                                        "minimum": -9007199254740991,
+                                        "maximum": 9007199254740991
+                                      },
+                                      "quality_state": {
+                                        "type": "string",
+                                        "enum": [
+                                          "verified",
+                                          "derived",
+                                          "partial",
+                                          "unavailable",
+                                          "under_review"
+                                        ]
+                                      },
+                                      "source": {
+                                        "type": "object",
+                                        "properties": {
+                                          "source_key": {
+                                            "type": "string"
+                                          },
+                                          "regatta_external_key": {
+                                            "type": "string"
+                                          },
+                                          "event_external_key": {
+                                            "type": "string"
+                                          },
+                                          "provider_url": {
+                                            "anyOf": [
+                                              {
+                                                "type": "string",
+                                                "format": "uri"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "required": [
+                                          "source_key",
+                                          "regatta_external_key",
+                                          "event_external_key",
+                                          "provider_url"
+                                        ]
+                                      },
+                                      "retrieved_at": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                                      },
+                                      "parser_version": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "value",
+                                      "unit",
+                                      "season",
+                                      "quality_state",
+                                      "source",
+                                      "retrieved_at",
+                                      "parser_version"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "metric_key",
+                                  "ref"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "crew_label",
+                            "club_display_name",
+                            "status",
+                            "crew",
+                            "results"
+                          ]
+                        }
+                      }
+                    },
+                    "required": [
+                      "event_key",
+                      "name",
+                      "boat_class",
+                      "round",
+                      "entries"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "regatta_key",
+                "name",
+                "date",
+                "venue",
+                "source_key",
+                "provider_url",
+                "events"
+              ]
+            }
+          }
+        },
+        "required": [
+          "season",
+          "regattas"
+        ]
+      }
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+    }
+  },
+  "required": [
+    "payload_schema_version",
+    "org_id",
+    "slug",
+    "seasons",
+    "generated_at"
+  ]
+}

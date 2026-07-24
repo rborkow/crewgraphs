@@ -1,7 +1,7 @@
 \restrict dbmate
 
--- Dumped from database version 18.4 (2773af8)
--- Dumped by pg_dump version 18.4
+-- Dumped from database version 18.4 (Debian 18.4-1.pgdg13+1)
+-- Dumped by pg_dump version 18.4 (Debian 18.4-1.pgdg13+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -88,7 +88,8 @@ CREATE TYPE core.identifier_namespace AS ENUM (
     'propublica_ein',
     'website_domain',
     'usrowing',
-    'regattacentral_org'
+    'regattacentral_org',
+    'time_team_club'
 );
 
 
@@ -172,7 +173,12 @@ CREATE TYPE core.source_type AS ENUM (
     'irs_990_xml',
     'irs_990n',
     'propublica',
-    'givingtuesday'
+    'givingtuesday',
+    'herenow',
+    'time_team',
+    'row2k',
+    'regattatiming',
+    'crewtimer'
 );
 
 
@@ -255,6 +261,12 @@ BEGIN
       EXECUTE 'GRANT SELECT, INSERT ON TABLE core.financial_fact, core.filing, core.source_record, core.ein_observation, core.epostcard_observation, core.person_role, core.metric_value TO pipeline_rw';
       EXECUTE 'REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLE core.organization, core.external_identifier, core.organization_alias, core.organization_relationship FROM pipeline_rw';
     END IF;
+    IF to_regclass('core.regatta') IS NOT NULL THEN
+      EXECUTE 'REVOKE UPDATE, DELETE, TRUNCATE ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person, core.regatta_source_link, core.event_classification, core.program_rating FROM pipeline_rw';
+      EXECUTE 'GRANT SELECT, INSERT ON TABLE core.regatta, core.regatta_event, core.regatta_entry, core.regatta_result, core.provider_club, core.result_person, core.regatta_source_link, core.event_classification, core.program_rating TO pipeline_rw';
+      EXECUTE 'REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLE core.person_suppression FROM pipeline_rw';
+      EXECUTE 'GRANT SELECT ON TABLE core.person_suppression TO pipeline_rw';
+    END IF;
   END IF;
 
   IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'curator') THEN
@@ -265,6 +277,9 @@ BEGIN
   IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'web_ro') THEN
     EXECUTE 'GRANT USAGE ON SCHEMA read TO web_ro';
     EXECUTE 'GRANT SELECT ON ALL TABLES IN SCHEMA read TO web_ro';
+    IF to_regclass('core.result_person') IS NOT NULL THEN
+      EXECUTE 'REVOKE ALL ON TABLE core.result_person, core.person_suppression FROM web_ro';
+    END IF;
   END IF;
 END;
 $$;
@@ -442,6 +457,32 @@ CREATE TABLE core.epostcard_observation (
 --
 
 COMMENT ON TABLE core.epostcard_observation IS '990-N presence only; it never supplies financial facts.';
+
+
+--
+-- Name: event_classification; Type: TABLE; Schema: core; Owner: -
+--
+
+CREATE TABLE core.event_classification (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    event_id uuid NOT NULL,
+    mapping_version text NOT NULL,
+    boat_class text NOT NULL,
+    age_bracket text NOT NULL,
+    gender text NOT NULL,
+    mapping_key text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT event_classification_age_bracket_check CHECK ((age_bracket = ANY (ARRAY['u13'::text, 'u15'::text, 'u16'::text, 'u17'::text, 'u19_youth'::text, 'collegiate'::text, 'open'::text, 'masters_a'::text, 'masters_b'::text, 'masters_c'::text, 'masters_d'::text, 'masters_e'::text, 'masters_f'::text, 'masters_g'::text, 'masters_h'::text, 'masters_i'::text, 'masters_j'::text, 'masters_k'::text, 'masters_unspecified'::text, 'other'::text]))),
+    CONSTRAINT event_classification_boat_class_check CHECK ((boat_class = ANY (ARRAY['1x'::text, '2x'::text, '2-'::text, '2+'::text, '4x'::text, '4-'::text, '4+'::text, '8+'::text, 'other'::text]))),
+    CONSTRAINT event_classification_gender_check CHECK ((gender = ANY (ARRAY['men'::text, 'women'::text, 'mixed'::text, 'open'::text, 'unspecified'::text])))
+);
+
+
+--
+-- Name: TABLE event_classification; Type: COMMENT; Schema: core; Owner: -
+--
+
+COMMENT ON TABLE core.event_classification IS 'Insert-only canonical event mapping; latest mapping_version wins in reads.';
 
 
 --
@@ -632,6 +673,266 @@ COMMENT ON TABLE core.person_role IS 'Filing-scoped roles only; no cross-organiz
 
 
 --
+-- Name: person_suppression; Type: TABLE; Schema: core; Owner: -
+--
+
+CREATE TABLE core.person_suppression (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    person_name_normalized text NOT NULL,
+    source core.source_type,
+    provider_club_id uuid,
+    reason text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: TABLE person_suppression; Type: COMMENT; Schema: core; Owner: -
+--
+
+COMMENT ON TABLE core.person_suppression IS 'Curator-only takedown list; publish redacts matching names (optionally scoped to a source/club). NULL scope = global.';
+
+
+--
+-- Name: program_rating; Type: TABLE; Schema: core; Owner: -
+--
+
+CREATE TABLE core.program_rating (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    organization_id uuid NOT NULL,
+    season integer NOT NULL,
+    boat_class text NOT NULL,
+    age_bracket text NOT NULL,
+    gender text NOT NULL,
+    metric_key text NOT NULL,
+    metric_version integer NOT NULL,
+    rating numeric NOT NULL,
+    rating_sigma numeric NOT NULL,
+    ranked_fields integer NOT NULL,
+    distinct_regattas integer NOT NULL,
+    field_sizes jsonb NOT NULL,
+    computation_version text NOT NULL,
+    eligibility_met boolean NOT NULL,
+    input_summary jsonb NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT program_rating_distinct_regattas_check CHECK (((distinct_regattas > 0) AND (distinct_regattas <= ranked_fields))),
+    CONSTRAINT program_rating_field_sizes_check CHECK ((jsonb_typeof(field_sizes) = 'array'::text)),
+    CONSTRAINT program_rating_input_summary_check CHECK ((jsonb_typeof(input_summary) = 'object'::text)),
+    CONSTRAINT program_rating_ranked_fields_check CHECK ((ranked_fields > 0)),
+    CONSTRAINT program_rating_rating_sigma_check CHECK ((rating_sigma >= (0)::numeric)),
+    CONSTRAINT program_rating_season_check CHECK (((season >= 1800) AND (season <= 9999)))
+);
+
+
+--
+-- Name: TABLE program_rating; Type: COMMENT; Schema: core; Owner: -
+--
+
+COMMENT ON TABLE core.program_rating IS 'Insert-only seasonal program ratings. New computation_version rows supersede analytically without rewriting prior outputs; no row is publishable unless eligibility_met and the metric definition is active.';
+
+
+--
+-- Name: COLUMN program_rating.rating_sigma; Type: COMMENT; Schema: core; Owner: -
+--
+
+COMMENT ON COLUMN core.program_rating.rating_sigma IS 'Uncalibrated 1/sqrt(ranked-field appearances) proxy pending the R3 backtest; not a confidence interval.';
+
+
+--
+-- Name: COLUMN program_rating.input_summary; Type: COMMENT; Schema: core; Owner: -
+--
+
+COMMENT ON COLUMN core.program_rating.input_summary IS 'Deterministic, aggregate-only model inputs and settings. Person names are prohibited by job construction.';
+
+
+--
+-- Name: provider_club; Type: TABLE; Schema: core; Owner: -
+--
+
+CREATE TABLE core.provider_club (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    source core.source_type NOT NULL,
+    external_key text NOT NULL,
+    display_name text NOT NULL,
+    code text,
+    federation text,
+    raw jsonb DEFAULT '{}'::jsonb NOT NULL,
+    source_record_id uuid,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: TABLE provider_club; Type: COMMENT; Schema: core; Owner: -
+--
+
+COMMENT ON TABLE core.provider_club IS 'Provider-side club observation. The org link lives only in curator-owned core.external_identifier (namespace time_team_club) or organization_alias.';
+
+
+--
+-- Name: regatta; Type: TABLE; Schema: core; Owner: -
+--
+
+CREATE TABLE core.regatta (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    source core.source_type NOT NULL,
+    external_key text NOT NULL,
+    revision integer DEFAULT 1 NOT NULL,
+    name text NOT NULL,
+    start_date date,
+    end_date date,
+    venue text,
+    city text,
+    state text,
+    category text,
+    raw jsonb DEFAULT '{}'::jsonb NOT NULL,
+    payload_checksum text NOT NULL,
+    source_record_id uuid,
+    parser_version text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT regatta_date_range_check CHECK (((end_date IS NULL) OR (start_date IS NULL) OR (end_date >= start_date)))
+);
+
+
+--
+-- Name: TABLE regatta; Type: COMMENT; Schema: core; Owner: -
+--
+
+COMMENT ON TABLE core.regatta IS 'One provider regatta payload capture; payload_checksum makes an unchanged re-load a no-op instead of a new revision.';
+
+
+--
+-- Name: regatta_entry; Type: TABLE; Schema: core; Owner: -
+--
+
+CREATE TABLE core.regatta_entry (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    event_id uuid NOT NULL,
+    external_key text NOT NULL,
+    bib text,
+    lane integer,
+    club_source_name text NOT NULL,
+    provider_club_id uuid,
+    crew_label text,
+    raw jsonb DEFAULT '{}'::jsonb NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: TABLE regatta_entry; Type: COMMENT; Schema: core; Owner: -
+--
+
+COMMENT ON TABLE core.regatta_entry IS 'club_source_name keeps the provider string verbatim even once provider_club resolves. Person names live only in core.result_person.';
+
+
+--
+-- Name: regatta_event; Type: TABLE; Schema: core; Owner: -
+--
+
+CREATE TABLE core.regatta_event (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    regatta_id uuid NOT NULL,
+    external_key text NOT NULL,
+    name text NOT NULL,
+    event_code text,
+    boat_class_raw text,
+    age_class_raw text,
+    gender_raw text,
+    round text,
+    scheduled_at timestamp with time zone,
+    progression jsonb DEFAULT '[]'::jsonb NOT NULL,
+    raw jsonb DEFAULT '{}'::jsonb NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: TABLE regatta_event; Type: COMMENT; Schema: core; Owner: -
+--
+
+COMMENT ON TABLE core.regatta_event IS 'Provider-raw classification only; canonical boat class / age bracket / gender land in the versioned event_classification table (Wave 3).';
+
+
+--
+-- Name: regatta_result; Type: TABLE; Schema: core; Owner: -
+--
+
+CREATE TABLE core.regatta_result (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    entry_id uuid NOT NULL,
+    status text NOT NULL,
+    "position" integer,
+    adjusted_position integer,
+    time_ms bigint,
+    adjusted_time_ms bigint,
+    handicap_ms bigint,
+    delta_ms bigint,
+    penalty jsonb,
+    correction jsonb,
+    splits jsonb DEFAULT '[]'::jsonb NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT regatta_result_time_sanity_check CHECK (((time_ms IS NULL) OR (time_ms > 0)))
+);
+
+
+--
+-- Name: TABLE regatta_result; Type: COMMENT; Schema: core; Owner: -
+--
+
+COMMENT ON TABLE core.regatta_result IS 'status keeps the provider vocabulary raw (DNS/DNF/DSQ/withdrawn/relegated/OOC…); normalization is a publish concern.';
+
+
+--
+-- Name: regatta_source_link; Type: TABLE; Schema: core; Owner: -
+--
+
+CREATE TABLE core.regatta_source_link (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    regatta_name text NOT NULL,
+    event_date date,
+    category text,
+    location text,
+    outbound_url text NOT NULL,
+    outbound_host text NOT NULL,
+    provider core.source_type,
+    credit_url text NOT NULL,
+    source_record_id uuid,
+    retrieved_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: TABLE regatta_source_link; Type: COMMENT; Schema: core; Owner: -
+--
+
+COMMENT ON TABLE core.regatta_source_link IS 'row2k discovery facts and outbound links only; never result content, per row2k link-don''t-copy policy.';
+
+
+--
+-- Name: result_person; Type: TABLE; Schema: core; Owner: -
+--
+
+CREATE TABLE core.result_person (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    entry_id uuid NOT NULL,
+    role text NOT NULL,
+    seat integer,
+    person_name text NOT NULL,
+    raw jsonb DEFAULT '{}'::jsonb NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: TABLE result_person; Type: COMMENT; Schema: core; Owner: -
+--
+
+COMMENT ON TABLE core.result_person IS 'The only person-level store for results (PII policy 2026-07-23). FK points at the entry so this table is purgeable without touching results.';
+
+
+--
 -- Name: source_record; Type: TABLE; Schema: core; Owner: -
 --
 
@@ -819,6 +1120,45 @@ COMMENT ON TABLE read.org_profile IS 'Versioned public profile payload.';
 
 
 --
+-- Name: org_regatta_result; Type: TABLE; Schema: read; Owner: -
+--
+
+CREATE TABLE read.org_regatta_result (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    snapshot_id uuid NOT NULL,
+    organization_id uuid NOT NULL,
+    season integer NOT NULL,
+    regatta_key text NOT NULL,
+    regatta_name text NOT NULL,
+    regatta_date date,
+    venue text,
+    source_key text NOT NULL,
+    event_key text NOT NULL,
+    entry_external_key text NOT NULL,
+    event_name text NOT NULL,
+    boat_class text,
+    round text,
+    crew_label text,
+    crew jsonb DEFAULT '[]'::jsonb NOT NULL,
+    metric_key text NOT NULL,
+    value numeric,
+    unit text NOT NULL,
+    status text NOT NULL,
+    quality_state text NOT NULL,
+    source_ref jsonb NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT org_regatta_result_metric_key_check CHECK ((metric_key = ANY (ARRAY['finish_time'::text, 'adjusted_time'::text, 'handicap'::text, 'place'::text, 'adjusted_place'::text, 'margin'::text])))
+);
+
+
+--
+-- Name: TABLE org_regatta_result; Type: COMMENT; Schema: read; Owner: -
+--
+
+COMMENT ON TABLE read.org_regatta_result IS 'Snapshot-scoped long-form regatta results. crew contains only post-suppression race-context names.';
+
+
+--
 -- Name: org_slug_history; Type: TABLE; Schema: read; Owner: -
 --
 
@@ -953,6 +1293,38 @@ CREATE TABLE staging.filing_extract (
 
 
 --
+-- Name: herenow_catalog_row; Type: TABLE; Schema: staging; Owner: -
+--
+
+CREATE TABLE staging.herenow_catalog_row (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    ingest_run_id uuid,
+    source_record_id uuid,
+    race_id bigint NOT NULL,
+    raw_row jsonb NOT NULL,
+    retrieved_at timestamp with time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: herenow_race_payload; Type: TABLE; Schema: staging; Owner: -
+--
+
+CREATE TABLE staging.herenow_race_payload (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    ingest_run_id uuid,
+    source_record_id uuid,
+    race_id bigint NOT NULL,
+    kind text NOT NULL,
+    raw_payload jsonb NOT NULL,
+    retrieved_at timestamp with time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT herenow_race_payload_kind_check CHECK ((kind = ANY (ARRAY['base'::text, 'flights'::text])))
+);
+
+
+--
 -- Name: propublica_org; Type: TABLE; Schema: staging; Owner: -
 --
 
@@ -964,6 +1336,78 @@ CREATE TABLE staging.propublica_org (
     raw_payload jsonb NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL
 );
+
+
+--
+-- Name: regattatiming_page; Type: TABLE; Schema: staging; Owner: -
+--
+
+CREATE TABLE staging.regattatiming_page (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    ingest_run_id uuid,
+    source_record_id uuid NOT NULL,
+    race_id integer NOT NULL,
+    page_kind text NOT NULL,
+    title text,
+    retrieved_at timestamp with time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT regattatiming_page_page_kind_check CHECK ((page_kind = ANY (ARRAY['summary'::text, 'static'::text])))
+);
+
+
+--
+-- Name: row2k_index_page; Type: TABLE; Schema: staging; Owner: -
+--
+
+CREATE TABLE staging.row2k_index_page (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    ingest_run_id uuid,
+    source_record_id uuid,
+    year integer NOT NULL,
+    category text,
+    retrieved_at timestamp with time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: time_team_race; Type: TABLE; Schema: staging; Owner: -
+--
+
+CREATE TABLE staging.time_team_race (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    ingest_run_id uuid,
+    source_record_id uuid,
+    slug text NOT NULL,
+    year integer NOT NULL,
+    race_uuid uuid NOT NULL,
+    raw_payload jsonb NOT NULL,
+    retrieved_at timestamp with time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: time_team_regatta; Type: TABLE; Schema: staging; Owner: -
+--
+
+CREATE TABLE staging.time_team_regatta (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    ingest_run_id uuid,
+    source_record_id uuid,
+    slug text NOT NULL,
+    year integer NOT NULL,
+    raw_payload jsonb,
+    retrieved_at timestamp with time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: TABLE time_team_regatta; Type: COMMENT; Schema: staging; Owner: -
+--
+
+COMMENT ON TABLE staging.time_team_regatta IS 'raw_payload is NULL between index discovery and race-sync fetching the schedule doc.';
 
 
 --
@@ -1020,6 +1464,22 @@ ALTER TABLE ONLY core.epostcard_observation
 
 ALTER TABLE ONLY core.epostcard_observation
     ADD CONSTRAINT epostcard_observation_uniq UNIQUE (ein, tax_year, source_record_id);
+
+
+--
+-- Name: event_classification event_classification_event_mapping_version_uniq; Type: CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.event_classification
+    ADD CONSTRAINT event_classification_event_mapping_version_uniq UNIQUE (event_id, mapping_version);
+
+
+--
+-- Name: event_classification event_classification_pkey; Type: CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.event_classification
+    ADD CONSTRAINT event_classification_pkey PRIMARY KEY (id);
 
 
 --
@@ -1143,6 +1603,134 @@ ALTER TABLE ONLY core.person_role
 
 
 --
+-- Name: person_suppression person_suppression_pkey; Type: CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.person_suppression
+    ADD CONSTRAINT person_suppression_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: program_rating program_rating_identity_uniq; Type: CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.program_rating
+    ADD CONSTRAINT program_rating_identity_uniq UNIQUE (organization_id, season, boat_class, age_bracket, gender, metric_key, metric_version, computation_version);
+
+
+--
+-- Name: program_rating program_rating_pkey; Type: CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.program_rating
+    ADD CONSTRAINT program_rating_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: provider_club provider_club_pkey; Type: CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.provider_club
+    ADD CONSTRAINT provider_club_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: provider_club provider_club_source_external_key_uniq; Type: CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.provider_club
+    ADD CONSTRAINT provider_club_source_external_key_uniq UNIQUE (source, external_key);
+
+
+--
+-- Name: regatta_entry regatta_entry_event_external_key_uniq; Type: CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.regatta_entry
+    ADD CONSTRAINT regatta_entry_event_external_key_uniq UNIQUE (event_id, external_key);
+
+
+--
+-- Name: regatta_entry regatta_entry_pkey; Type: CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.regatta_entry
+    ADD CONSTRAINT regatta_entry_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: regatta_event regatta_event_pkey; Type: CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.regatta_event
+    ADD CONSTRAINT regatta_event_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: regatta_event regatta_event_regatta_external_key_uniq; Type: CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.regatta_event
+    ADD CONSTRAINT regatta_event_regatta_external_key_uniq UNIQUE (regatta_id, external_key);
+
+
+--
+-- Name: regatta regatta_pkey; Type: CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.regatta
+    ADD CONSTRAINT regatta_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: regatta_result regatta_result_entry_uniq; Type: CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.regatta_result
+    ADD CONSTRAINT regatta_result_entry_uniq UNIQUE (entry_id);
+
+
+--
+-- Name: regatta_result regatta_result_pkey; Type: CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.regatta_result
+    ADD CONSTRAINT regatta_result_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: regatta regatta_source_external_revision_uniq; Type: CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.regatta
+    ADD CONSTRAINT regatta_source_external_revision_uniq UNIQUE (source, external_key, revision);
+
+
+--
+-- Name: regatta_source_link regatta_source_link_event_date_outbound_url_uniq; Type: CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.regatta_source_link
+    ADD CONSTRAINT regatta_source_link_event_date_outbound_url_uniq UNIQUE NULLS NOT DISTINCT (event_date, outbound_url);
+
+
+--
+-- Name: regatta_source_link regatta_source_link_pkey; Type: CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.regatta_source_link
+    ADD CONSTRAINT regatta_source_link_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: result_person result_person_pkey; Type: CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.result_person
+    ADD CONSTRAINT result_person_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: review_task review_task_pkey; Type: CONSTRAINT; Schema: core; Owner: -
 --
 
@@ -1263,6 +1851,14 @@ ALTER TABLE ONLY read.org_profile
 
 
 --
+-- Name: org_regatta_result org_regatta_result_pkey; Type: CONSTRAINT; Schema: read; Owner: -
+--
+
+ALTER TABLE ONLY read.org_regatta_result
+    ADD CONSTRAINT org_regatta_result_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: org_slug_history org_slug_history_pkey; Type: CONSTRAINT; Schema: read; Owner: -
 --
 
@@ -1319,11 +1915,99 @@ ALTER TABLE ONLY staging.filing_extract
 
 
 --
+-- Name: herenow_catalog_row herenow_catalog_row_pkey; Type: CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.herenow_catalog_row
+    ADD CONSTRAINT herenow_catalog_row_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: herenow_catalog_row herenow_catalog_row_race_id_uniq; Type: CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.herenow_catalog_row
+    ADD CONSTRAINT herenow_catalog_row_race_id_uniq UNIQUE (race_id);
+
+
+--
+-- Name: herenow_race_payload herenow_race_payload_pkey; Type: CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.herenow_race_payload
+    ADD CONSTRAINT herenow_race_payload_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: herenow_race_payload herenow_race_payload_race_kind_uniq; Type: CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.herenow_race_payload
+    ADD CONSTRAINT herenow_race_payload_race_kind_uniq UNIQUE (race_id, kind);
+
+
+--
 -- Name: propublica_org propublica_org_pkey; Type: CONSTRAINT; Schema: staging; Owner: -
 --
 
 ALTER TABLE ONLY staging.propublica_org
     ADD CONSTRAINT propublica_org_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: regattatiming_page regattatiming_page_pkey; Type: CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.regattatiming_page
+    ADD CONSTRAINT regattatiming_page_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: regattatiming_page regattatiming_page_race_id_key; Type: CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.regattatiming_page
+    ADD CONSTRAINT regattatiming_page_race_id_key UNIQUE (race_id);
+
+
+--
+-- Name: row2k_index_page row2k_index_page_pkey; Type: CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.row2k_index_page
+    ADD CONSTRAINT row2k_index_page_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: time_team_race time_team_race_pkey; Type: CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.time_team_race
+    ADD CONSTRAINT time_team_race_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: time_team_race time_team_race_race_uuid_uniq; Type: CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.time_team_race
+    ADD CONSTRAINT time_team_race_race_uuid_uniq UNIQUE (race_uuid);
+
+
+--
+-- Name: time_team_regatta time_team_regatta_pkey; Type: CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.time_team_regatta
+    ADD CONSTRAINT time_team_regatta_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: time_team_regatta time_team_regatta_slug_year_uniq; Type: CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.time_team_regatta
+    ADD CONSTRAINT time_team_regatta_slug_year_uniq UNIQUE (slug, year);
 
 
 --
@@ -1380,6 +2064,13 @@ CREATE INDEX epostcard_observation_ein_tax_year_idx ON core.epostcard_observatio
 --
 
 CREATE INDEX epostcard_observation_source_record_id_idx ON core.epostcard_observation USING btree (source_record_id);
+
+
+--
+-- Name: event_classification_event_id_idx; Type: INDEX; Schema: core; Owner: -
+--
+
+CREATE INDEX event_classification_event_id_idx ON core.event_classification USING btree (event_id);
 
 
 --
@@ -1506,6 +2197,90 @@ CREATE INDEX organization_relationship_to_organization_id_idx ON core.organizati
 --
 
 CREATE INDEX person_role_filing_id_idx ON core.person_role USING btree (filing_id);
+
+
+--
+-- Name: person_suppression_name_idx; Type: INDEX; Schema: core; Owner: -
+--
+
+CREATE INDEX person_suppression_name_idx ON core.person_suppression USING btree (person_name_normalized);
+
+
+--
+-- Name: program_rating_eligible_idx; Type: INDEX; Schema: core; Owner: -
+--
+
+CREATE INDEX program_rating_eligible_idx ON core.program_rating USING btree (metric_key, metric_version, computation_version, eligibility_met);
+
+
+--
+-- Name: program_rating_metric_definition_idx; Type: INDEX; Schema: core; Owner: -
+--
+
+CREATE INDEX program_rating_metric_definition_idx ON core.program_rating USING btree (metric_key, metric_version);
+
+
+--
+-- Name: program_rating_organization_season_idx; Type: INDEX; Schema: core; Owner: -
+--
+
+CREATE INDEX program_rating_organization_season_idx ON core.program_rating USING btree (organization_id, season);
+
+
+--
+-- Name: program_rating_program_idx; Type: INDEX; Schema: core; Owner: -
+--
+
+CREATE INDEX program_rating_program_idx ON core.program_rating USING btree (season, boat_class, age_bracket, gender);
+
+
+--
+-- Name: provider_club_display_name_idx; Type: INDEX; Schema: core; Owner: -
+--
+
+CREATE INDEX provider_club_display_name_idx ON core.provider_club USING btree (lower(display_name));
+
+
+--
+-- Name: regatta_entry_event_id_idx; Type: INDEX; Schema: core; Owner: -
+--
+
+CREATE INDEX regatta_entry_event_id_idx ON core.regatta_entry USING btree (event_id);
+
+
+--
+-- Name: regatta_entry_provider_club_id_idx; Type: INDEX; Schema: core; Owner: -
+--
+
+CREATE INDEX regatta_entry_provider_club_id_idx ON core.regatta_entry USING btree (provider_club_id);
+
+
+--
+-- Name: regatta_event_regatta_id_idx; Type: INDEX; Schema: core; Owner: -
+--
+
+CREATE INDEX regatta_event_regatta_id_idx ON core.regatta_event USING btree (regatta_id);
+
+
+--
+-- Name: regatta_source_external_key_idx; Type: INDEX; Schema: core; Owner: -
+--
+
+CREATE INDEX regatta_source_external_key_idx ON core.regatta USING btree (source, external_key);
+
+
+--
+-- Name: regatta_start_date_idx; Type: INDEX; Schema: core; Owner: -
+--
+
+CREATE INDEX regatta_start_date_idx ON core.regatta USING btree (start_date);
+
+
+--
+-- Name: result_person_entry_id_idx; Type: INDEX; Schema: core; Owner: -
+--
+
+CREATE INDEX result_person_entry_id_idx ON core.result_person USING btree (entry_id);
 
 
 --
@@ -1642,6 +2417,27 @@ CREATE INDEX org_profile_organization_id_idx ON read.org_profile USING btree (or
 
 
 --
+-- Name: org_regatta_result_snapshot_metric_uniq; Type: INDEX; Schema: read; Owner: -
+--
+
+CREATE UNIQUE INDEX org_regatta_result_snapshot_metric_uniq ON read.org_regatta_result USING btree (snapshot_id, organization_id, regatta_key, event_key, entry_external_key, COALESCE(crew_label, ''::text), metric_key);
+
+
+--
+-- Name: org_regatta_result_snapshot_organization_idx; Type: INDEX; Schema: read; Owner: -
+--
+
+CREATE INDEX org_regatta_result_snapshot_organization_idx ON read.org_regatta_result USING btree (snapshot_id, organization_id);
+
+
+--
+-- Name: org_regatta_result_snapshot_organization_season_idx; Type: INDEX; Schema: read; Owner: -
+--
+
+CREATE INDEX org_regatta_result_snapshot_organization_season_idx ON read.org_regatta_result USING btree (snapshot_id, organization_id, season);
+
+
+--
 -- Name: org_slug_history_current_org_uniq; Type: INDEX; Schema: read; Owner: -
 --
 
@@ -1775,6 +2571,20 @@ CREATE INDEX filing_extract_source_record_id_idx ON staging.filing_extract USING
 
 
 --
+-- Name: herenow_catalog_row_ingest_run_id_idx; Type: INDEX; Schema: staging; Owner: -
+--
+
+CREATE INDEX herenow_catalog_row_ingest_run_id_idx ON staging.herenow_catalog_row USING btree (ingest_run_id);
+
+
+--
+-- Name: herenow_race_payload_ingest_run_id_idx; Type: INDEX; Schema: staging; Owner: -
+--
+
+CREATE INDEX herenow_race_payload_ingest_run_id_idx ON staging.herenow_race_payload USING btree (ingest_run_id);
+
+
+--
 -- Name: propublica_org_ein_idx; Type: INDEX; Schema: staging; Owner: -
 --
 
@@ -1800,6 +2610,41 @@ CREATE INDEX propublica_org_ingest_run_id_idx ON staging.propublica_org USING bt
 --
 
 CREATE INDEX propublica_org_source_record_id_idx ON staging.propublica_org USING btree (source_record_id);
+
+
+--
+-- Name: regattatiming_page_ingest_run_id_idx; Type: INDEX; Schema: staging; Owner: -
+--
+
+CREATE INDEX regattatiming_page_ingest_run_id_idx ON staging.regattatiming_page USING btree (ingest_run_id);
+
+
+--
+-- Name: row2k_index_page_ingest_run_id_idx; Type: INDEX; Schema: staging; Owner: -
+--
+
+CREATE INDEX row2k_index_page_ingest_run_id_idx ON staging.row2k_index_page USING btree (ingest_run_id);
+
+
+--
+-- Name: time_team_race_ingest_run_id_idx; Type: INDEX; Schema: staging; Owner: -
+--
+
+CREATE INDEX time_team_race_ingest_run_id_idx ON staging.time_team_race USING btree (ingest_run_id);
+
+
+--
+-- Name: time_team_race_slug_year_idx; Type: INDEX; Schema: staging; Owner: -
+--
+
+CREATE INDEX time_team_race_slug_year_idx ON staging.time_team_race USING btree (slug, year);
+
+
+--
+-- Name: time_team_regatta_ingest_run_id_idx; Type: INDEX; Schema: staging; Owner: -
+--
+
+CREATE INDEX time_team_regatta_ingest_run_id_idx ON staging.time_team_regatta USING btree (ingest_run_id);
 
 
 --
@@ -1832,6 +2677,14 @@ ALTER TABLE ONLY core.ein_observation
 
 ALTER TABLE ONLY core.epostcard_observation
     ADD CONSTRAINT epostcard_observation_source_record_fk FOREIGN KEY (source_record_id) REFERENCES core.source_record(id);
+
+
+--
+-- Name: event_classification event_classification_event_id_fkey; Type: FK CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.event_classification
+    ADD CONSTRAINT event_classification_event_id_fkey FOREIGN KEY (event_id) REFERENCES core.regatta_event(id);
 
 
 --
@@ -1939,6 +2792,94 @@ ALTER TABLE ONLY core.person_role
 
 
 --
+-- Name: person_suppression person_suppression_provider_club_fk; Type: FK CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.person_suppression
+    ADD CONSTRAINT person_suppression_provider_club_fk FOREIGN KEY (provider_club_id) REFERENCES core.provider_club(id);
+
+
+--
+-- Name: program_rating program_rating_metric_definition_fk; Type: FK CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.program_rating
+    ADD CONSTRAINT program_rating_metric_definition_fk FOREIGN KEY (metric_key, metric_version) REFERENCES core.metric_definition(metric_key, version);
+
+
+--
+-- Name: program_rating program_rating_organization_fk; Type: FK CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.program_rating
+    ADD CONSTRAINT program_rating_organization_fk FOREIGN KEY (organization_id) REFERENCES core.organization(id);
+
+
+--
+-- Name: provider_club provider_club_source_record_fk; Type: FK CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.provider_club
+    ADD CONSTRAINT provider_club_source_record_fk FOREIGN KEY (source_record_id) REFERENCES core.source_record(id);
+
+
+--
+-- Name: regatta_entry regatta_entry_event_fk; Type: FK CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.regatta_entry
+    ADD CONSTRAINT regatta_entry_event_fk FOREIGN KEY (event_id) REFERENCES core.regatta_event(id);
+
+
+--
+-- Name: regatta_entry regatta_entry_provider_club_fk; Type: FK CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.regatta_entry
+    ADD CONSTRAINT regatta_entry_provider_club_fk FOREIGN KEY (provider_club_id) REFERENCES core.provider_club(id);
+
+
+--
+-- Name: regatta_event regatta_event_regatta_fk; Type: FK CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.regatta_event
+    ADD CONSTRAINT regatta_event_regatta_fk FOREIGN KEY (regatta_id) REFERENCES core.regatta(id);
+
+
+--
+-- Name: regatta_result regatta_result_entry_fk; Type: FK CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.regatta_result
+    ADD CONSTRAINT regatta_result_entry_fk FOREIGN KEY (entry_id) REFERENCES core.regatta_entry(id);
+
+
+--
+-- Name: regatta_source_link regatta_source_link_source_record_fk; Type: FK CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.regatta_source_link
+    ADD CONSTRAINT regatta_source_link_source_record_fk FOREIGN KEY (source_record_id) REFERENCES core.source_record(id);
+
+
+--
+-- Name: regatta regatta_source_record_fk; Type: FK CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.regatta
+    ADD CONSTRAINT regatta_source_record_fk FOREIGN KEY (source_record_id) REFERENCES core.source_record(id);
+
+
+--
+-- Name: result_person result_person_entry_fk; Type: FK CONSTRAINT; Schema: core; Owner: -
+--
+
+ALTER TABLE ONLY core.result_person
+    ADD CONSTRAINT result_person_entry_fk FOREIGN KEY (entry_id) REFERENCES core.regatta_entry(id);
+
+
+--
 -- Name: publish_snapshot publish_snapshot_ingest_run_fk; Type: FK CONSTRAINT; Schema: ops; Owner: -
 --
 
@@ -2043,6 +2984,22 @@ ALTER TABLE ONLY read.org_profile
 
 
 --
+-- Name: org_regatta_result org_regatta_result_organization_id_fkey; Type: FK CONSTRAINT; Schema: read; Owner: -
+--
+
+ALTER TABLE ONLY read.org_regatta_result
+    ADD CONSTRAINT org_regatta_result_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES core.organization(id);
+
+
+--
+-- Name: org_regatta_result org_regatta_result_snapshot_id_fkey; Type: FK CONSTRAINT; Schema: read; Owner: -
+--
+
+ALTER TABLE ONLY read.org_regatta_result
+    ADD CONSTRAINT org_regatta_result_snapshot_id_fkey FOREIGN KEY (snapshot_id) REFERENCES ops.publish_snapshot(id);
+
+
+--
 -- Name: org_slug_history org_slug_history_org_fk; Type: FK CONSTRAINT; Schema: read; Owner: -
 --
 
@@ -2139,6 +3096,38 @@ ALTER TABLE ONLY staging.filing_extract
 
 
 --
+-- Name: herenow_catalog_row herenow_catalog_row_ingest_run_fk; Type: FK CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.herenow_catalog_row
+    ADD CONSTRAINT herenow_catalog_row_ingest_run_fk FOREIGN KEY (ingest_run_id) REFERENCES ops.ingest_run(id);
+
+
+--
+-- Name: herenow_catalog_row herenow_catalog_row_source_record_fk; Type: FK CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.herenow_catalog_row
+    ADD CONSTRAINT herenow_catalog_row_source_record_fk FOREIGN KEY (source_record_id) REFERENCES core.source_record(id);
+
+
+--
+-- Name: herenow_race_payload herenow_race_payload_ingest_run_fk; Type: FK CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.herenow_race_payload
+    ADD CONSTRAINT herenow_race_payload_ingest_run_fk FOREIGN KEY (ingest_run_id) REFERENCES ops.ingest_run(id);
+
+
+--
+-- Name: herenow_race_payload herenow_race_payload_source_record_fk; Type: FK CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.herenow_race_payload
+    ADD CONSTRAINT herenow_race_payload_source_record_fk FOREIGN KEY (source_record_id) REFERENCES core.source_record(id);
+
+
+--
 -- Name: propublica_org propublica_org_ingest_run_fk; Type: FK CONSTRAINT; Schema: staging; Owner: -
 --
 
@@ -2155,10 +3144,75 @@ ALTER TABLE ONLY staging.propublica_org
 
 
 --
+-- Name: regattatiming_page regattatiming_page_ingest_run_id_fkey; Type: FK CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.regattatiming_page
+    ADD CONSTRAINT regattatiming_page_ingest_run_id_fkey FOREIGN KEY (ingest_run_id) REFERENCES ops.ingest_run(id);
+
+
+--
+-- Name: regattatiming_page regattatiming_page_source_record_id_fkey; Type: FK CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.regattatiming_page
+    ADD CONSTRAINT regattatiming_page_source_record_id_fkey FOREIGN KEY (source_record_id) REFERENCES core.source_record(id);
+
+
+--
+-- Name: row2k_index_page row2k_index_page_ingest_run_fk; Type: FK CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.row2k_index_page
+    ADD CONSTRAINT row2k_index_page_ingest_run_fk FOREIGN KEY (ingest_run_id) REFERENCES ops.ingest_run(id);
+
+
+--
+-- Name: row2k_index_page row2k_index_page_source_record_fk; Type: FK CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.row2k_index_page
+    ADD CONSTRAINT row2k_index_page_source_record_fk FOREIGN KEY (source_record_id) REFERENCES core.source_record(id);
+
+
+--
+-- Name: time_team_race time_team_race_ingest_run_fk; Type: FK CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.time_team_race
+    ADD CONSTRAINT time_team_race_ingest_run_fk FOREIGN KEY (ingest_run_id) REFERENCES ops.ingest_run(id);
+
+
+--
+-- Name: time_team_race time_team_race_source_record_fk; Type: FK CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.time_team_race
+    ADD CONSTRAINT time_team_race_source_record_fk FOREIGN KEY (source_record_id) REFERENCES core.source_record(id);
+
+
+--
+-- Name: time_team_regatta time_team_regatta_ingest_run_fk; Type: FK CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.time_team_regatta
+    ADD CONSTRAINT time_team_regatta_ingest_run_fk FOREIGN KEY (ingest_run_id) REFERENCES ops.ingest_run(id);
+
+
+--
+-- Name: time_team_regatta time_team_regatta_source_record_fk; Type: FK CONSTRAINT; Schema: staging; Owner: -
+--
+
+ALTER TABLE ONLY staging.time_team_regatta
+    ADD CONSTRAINT time_team_regatta_source_record_fk FOREIGN KEY (source_record_id) REFERENCES core.source_record(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
 \unrestrict dbmate
+
 
 
 --
@@ -2178,4 +3232,11 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('010'),
     ('011'),
     ('012'),
-    ('013');
+    ('013'),
+    ('014'),
+    ('015'),
+    ('016'),
+    ('017'),
+    ('018'),
+    ('019'),
+    ('020');

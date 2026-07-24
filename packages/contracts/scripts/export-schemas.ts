@@ -4,6 +4,8 @@ import { z } from "zod";
 import {
   directoryBlobSchema,
   orgProfilePayloadSchema,
+  orgRegattaPayloadSchema,
+  resultRefSchema,
   sourceRefSchema
 } from "../src/index";
 
@@ -13,7 +15,9 @@ mkdirSync(outputDirectory, { recursive: true });
 const schemaExports: Array<[string, z.ZodType]> = [
   ["source-ref.v1.schema.json", sourceRefSchema],
   ["org-profile-payload.v1.schema.json", orgProfilePayloadSchema],
-  ["directory-blob.v1.schema.json", directoryBlobSchema]
+  ["directory-blob.v1.schema.json", directoryBlobSchema],
+  ["result-ref.v1.schema.json", resultRefSchema],
+  ["org-regatta-payload.v1.schema.json", orgRegattaPayloadSchema]
 ];
 
 for (const [filename, schema] of schemaExports) {

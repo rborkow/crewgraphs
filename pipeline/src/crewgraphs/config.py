@@ -21,6 +21,9 @@ class Settings:
     r2_secret_access_key: str
     r2_bucket: str = "crewgraphs-raw"
     git_sha: str | None = None
+    # Optional S3-endpoint override for local smokes/tests (e.g. MinIO);
+    # unset means the real R2 endpoint derived from the account id.
+    r2_endpoint_url: str | None = None
 
     @classmethod
     def from_env(cls, env: Mapping[str, str] | None = None) -> "Settings":
@@ -44,4 +47,5 @@ class Settings:
             r2_secret_access_key=values["R2_SECRET_ACCESS_KEY"],
             r2_bucket=values.get("R2_BUCKET") or "crewgraphs-raw",
             git_sha=values.get("GIT_SHA") or None,
+            r2_endpoint_url=values.get("R2_ENDPOINT_URL") or None,
         )

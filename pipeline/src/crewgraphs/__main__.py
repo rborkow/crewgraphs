@@ -1,43 +1,40 @@
 from __future__ import annotations
 
-import contextlib
 from datetime import date
-from typing import Any, Iterator
 
 import typer
 
 from .config import Settings
 from .db import DatabaseGateway, PostgresGateway
-from .raw_store import RawStore
 from .runlog import IngestRun
+from .runtime import USER_AGENT, job_context, split_csv
 from .summary import emit_summary, render_summary
 
 app = typer.Typer(help="CrewGraphs ingestion pipeline.")
 
-USER_AGENT = "CrewGraphs/0.1 (public IRS data pipeline; crewgraphs.com/methods)"
+_job_context = job_context
+_csv = split_csv
 
+# Results adapters register their commands module-locally (frozen-file rule
+# during the Wave-1 fan-out); __main__ stays the single integration point.
+from .jobs import derive_ratings as _derive_ratings
+from .jobs import event_classify as _event_classify
+from .jobs import herenow as _herenow
+from .jobs import regattatiming as _regattatiming
+from .jobs import resolve_clubs as _resolve_clubs
+from .jobs import row2k as _row2k
+from .jobs import timeteam as _timeteam
 
-@contextlib.contextmanager
-def _job_context() -> Iterator[tuple[DatabaseGateway, RawStore, Any]]:
-    import httpx
-
-    settings = Settings.from_env()
-    gateway = PostgresGateway(settings.database_url)
-    store = RawStore(settings)
-    http = httpx.Client(
-        timeout=httpx.Timeout(300.0, connect=30.0),
-        follow_redirects=True,
-        headers={"User-Agent": USER_AGENT},
-    )
-    try:
-        yield gateway, store, http
-    finally:
-        http.close()
-        gateway.close()
-
-
-def _csv(value: str) -> list[str]:
-    return [item.strip() for item in value.split(",") if item.strip()]
+for _register in (
+    _herenow.register,
+    _timeteam.register,
+    _row2k.register,
+    _regattatiming.register,
+    _resolve_clubs.register,
+    _event_classify.register,
+    _derive_ratings.register,
+):
+    _register(app)
 
 
 def not_implemented() -> None:

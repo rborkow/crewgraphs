@@ -1,0 +1,64 @@
+# Ordered, explicit mappings. Gender is resolved structurally by the loader:
+# provider gender_raw first, then full words, then compact M/W/B/G forms only
+# where the letter is attached to an age or boat token.
+version: 2026.07.2
+rules:
+  - key: masters_exact_letter
+    match:
+      text: '(?s)(?=.*\bmasters?\b)(?=.*(?P<boat>1x|2x|2-|2\+|4x|4-|4\+|8\+))(?=.*\(\s*(?P<master>[a-k])\s*\))'
+    emit:
+      boat_class: {group: boat}
+      age_bracket: {group: master, aliases: {a: masters_a, b: masters_b, c: masters_c, d: masters_d, e: masters_e, f: masters_f, g: masters_g, h: masters_h, i: masters_i, j: masters_j, k: masters_k}}
+      gender: {group: gender}
+  - key: masters_open_ended
+    match:
+      text: '(?s)(?=.*\bmasters?\b)(?=.*(?P<boat>1x|2x|2-|2\+|4x|4-|4\+|8\+))(?=.*\(\s*[a-k]\s*\+\s*\))'
+    emit: {boat_class: {group: boat}, age_bracket: masters_unspecified, gender: {group: gender}}
+  - key: masters_letter_range
+    match:
+      text: '(?s)(?=.*\bmasters?\b)(?=.*(?P<boat>1x|2x|2-|2\+|4x|4-|4\+|8\+))(?=.*\(\s*[a-k]\s*[-–]\s*[a-m]\s*\+?\s*\))'
+    emit: {boat_class: {group: boat}, age_bracket: masters_unspecified, gender: {group: gender}}
+  - key: masters_unspecified
+    match:
+      text: '(?s)(?=.*\bmasters?\b)(?=.*(?P<boat>1x|2x|2-|2\+|4x|4-|4\+|8\+))'
+    emit: {boat_class: {group: boat}, age_bracket: masters_unspecified, gender: {group: gender}}
+  - key: u13
+    match:
+      text: '(?s)(?=.*\b(?:u[ -]?13|under[ -]?13|j13|junior\s+13)\b)(?=.*(?P<boat>1x|2x|2-|2\+|4x|4-|4\+|8\+))'
+    emit: {boat_class: {group: boat}, age_bracket: u13, gender: {group: gender}}
+  - key: u15
+    match:
+      text: '(?s)(?=.*\b(?:u[ -]?15|under[ -]?15|j15|junior\s+15)\b)(?=.*(?P<boat>1x|2x|2-|2\+|4x|4-|4\+|8\+))'
+    emit: {boat_class: {group: boat}, age_bracket: u15, gender: {group: gender}}
+  - key: u16
+    match:
+      text: '(?s)(?=.*\b(?:u[ -]?16|under[ -]?16|j16|junior\s+16)\b)(?=.*(?P<boat>1x|2x|2-|2\+|4x|4-|4\+|8\+))'
+    emit: {boat_class: {group: boat}, age_bracket: u16, gender: {group: gender}}
+  - key: u17
+    match:
+      text: '(?s)(?=.*\b(?:u[ -]?17|under[ -]?17|j17|junior\s+17)\b)(?=.*(?P<boat>1x|2x|2-|2\+|4x|4-|4\+|8\+))'
+    emit: {boat_class: {group: boat}, age_bracket: u17, gender: {group: gender}}
+  - key: u19
+    match:
+      text: '(?s)(?=.*\b(?:u[ -]?19|under[ -]?19|j19|junior\s+19)\b)(?=.*(?P<boat>1x|2x|2-|2\+|4x|4-|4\+|8\+))'
+    emit: {boat_class: {group: boat}, age_bracket: u19_youth, gender: {group: gender}}
+  - key: junior_youth
+    match:
+      text: '(?s)(?=.*\b(?:juniors?|jr\.?)\b)(?=.*(?P<boat>1x|2x|2-|2\+|4x|4-|4\+|8\+))'
+    emit: {boat_class: {group: boat}, age_bracket: u19_youth, gender: {group: gender}}
+  - key: youth
+    match:
+      text: '(?s)(?=.*\b(?:y|youth)\b)(?=.*(?P<boat>1x|2x|2-|2\+|4x|4-|4\+|8\+))'
+    emit: {boat_class: {group: boat}, age_bracket: u19_youth, gender: {group: gender}}
+  - key: collegiate_literal
+    match:
+      text: '(?s)(?=.*\bcollegiate\b)(?=.*(?P<boat>1x|2x|2-|2\+|4x|4-|4\+|8\+))'
+    emit: {boat_class: {group: boat}, age_bracket: collegiate, gender: {group: gender}}
+  - key: collegiate_modifiers
+    match:
+      text: '(?s)(?=.*\b(?:ltwt|lightweight|varsity|jv|2v)\b)(?=.*(?P<boat>1x|2x|2-|2\+|4x|4-|4\+|8\+))'
+    emit: {boat_class: {group: boat}, age_bracket: collegiate, gender: {group: gender}}
+  - key: open
+    match:
+      text: '(?s)(?=.*\bopen\b)(?=.*(?P<boat>1x|2x|2-|2\+|4x|4-|4\+|8\+))'
+    emit: {boat_class: {group: boat}, age_bracket: open, gender: {group: gender}}
