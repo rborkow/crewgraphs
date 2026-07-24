@@ -289,3 +289,39 @@ def test_club_like_display_names_never_become_persons() -> None:
 
     assert _is_club_like("Community B", "Community")
     assert not _is_club_like("Douthitt, N.", "Community")
+
+
+def test_entry_keys_stay_unique_without_entry_ids() -> None:
+    """Prod backfill regression (2026-07-24): entries lacking Entry.Id must key
+    on the result row's own unique ID, never EntryNumber/Bow (which collide)."""
+    from crewgraphs.jobs.herenow import _get, _text
+
+    results = [
+        {"ID": 686068, "EntryNumber": 1, "Entry": {}},
+        {"ID": 686069, "EntryNumber": 1, "Entry": {}},
+    ]
+    keys = [
+        _text(
+            _get(r["Entry"], "Id", "ID", "EntryId"),
+            _text(_get(r, "EntryId", "ID"), _text(_get(r, "EntryNumber", "Bow"), "unknown")),
+        )
+        for r in results
+    ]
+    assert keys == ["686068", "686069"]
+    assert len(set(keys)) == 2
+
+
+def test_load_failure_rolls_back_race_and_quarantines() -> None:
+    """A failure mid-tree must ROLLBACK the race and continue, not abort."""
+    base, flights = _payloads()
+    db = FakeDb(staged=[{"race_id": 21464, "base_payload": base, "flights_payload": flights, "source_record_id": "source-1"}])
+    original = db.execute
+    def failing(query, params=None):
+        if "INSERT INTO core.regatta_entry" in query:
+            raise KeyError("boom mid-tree")
+        return original(query, params)
+    db.execute = failing
+    herenow_load(db)
+    statements = [q for q, _ in db.calls]
+    assert "BEGIN" in statements and "ROLLBACK" in statements
+    assert any("INSERT INTO ops.quarantine" in q for q in statements)
