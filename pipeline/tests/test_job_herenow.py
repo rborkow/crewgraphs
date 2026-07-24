@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
+from datetime import date, datetime
 from pathlib import Path
 from typing import Any
 
@@ -22,6 +23,20 @@ from crewgraphs.raw_store import RawStore
 
 
 FIXTURES = Path(__file__).parent / "fixtures" / "herenow"
+
+
+def _db_params(query: str, params: object = None) -> tuple[Any, ...]:
+    """Reject values psycopg cannot adapt in the test database boundary."""
+    prefix = " ".join(query.split())[:120]
+    assert not isinstance(params, dict), f"unsupported DB parameter {params!r}; query: {prefix}"
+    values = tuple(params or ())
+    scalar_types = (str, int, float, bool, date, datetime)
+    for value in values:
+        valid = value is None or isinstance(value, scalar_types)
+        if isinstance(value, list):
+            valid = all(item is None or isinstance(item, scalar_types) for item in value)
+        assert valid, f"unsupported DB parameter {value!r}; query: {prefix}"
+    return values
 
 
 class FakeS3:
@@ -53,7 +68,7 @@ class FakeDb:
         self.entries = 0
 
     def execute(self, query: str, params: object = None) -> list[dict[str, Any]]:
-        values = tuple(params or ())
+        values = _db_params(query, params)
         self.calls.append((query, values))
         if "INSERT INTO ops.ingest_run" in query:
             return [{"id": "run-1"}]
@@ -276,7 +291,7 @@ def test_competitor_raw_is_allowlisted_and_unspaced_singles_are_detected() -> No
         {"Competitors": [{"Name": "Ava Rower", "Role": "bow", "Seat": 1, "DateOfBirth": "2011-01-01", "Grade": "8", "Email": "ava@example.test"}]},
         {"Name": "LM1x Final"},
     )
-    assert people == [{"name": "Ava Rower", "role": "bow", "seat": 1, "raw": {"Role": "bow", "Seat": 1}}]
+    assert people == [{"name": "Ava Rower", "role": "bow", "seat": 1, "raw": '{"Role": "bow", "Seat": 1}'}]
     assert _people({"Name": "Ava Rower (Riverside)"}, {"Name": "LM1x Final"})[0]["name"] == "Ava Rower"
 
 

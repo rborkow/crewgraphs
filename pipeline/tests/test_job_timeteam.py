@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
+from datetime import date, datetime, timedelta, timezone
 from io import BytesIO
 from pathlib import Path
 from typing import Any
@@ -13,6 +14,7 @@ from crewgraphs.jobs.timeteam import (
     _regatta_pairs_from_html,
     parse_time_ms,
     timeteam_load,
+    timeteam_regatta_index,
     timeteam_race_sync,
 )
 from crewgraphs.raw_store import RawStore
@@ -22,6 +24,20 @@ FIXTURES = Path(__file__).parent / "fixtures/timeteam"
 RACE_ID = "95efa4c6-cdab-430a-9fbf-4bb57e24be3c"
 CREW_ID = "5933eec6-9b37-4572-90dd-42d1dfa5a0da"
 EIGHT_RACE_ID = "9ba5af37-18fb-48b3-ae71-473d3b26c6d7"
+
+
+def _db_params(query: str, params: object = None) -> tuple[Any, ...]:
+    """Reject values psycopg cannot adapt in the test database boundary."""
+    prefix = " ".join(query.split())[:120]
+    assert not isinstance(params, dict), f"unsupported DB parameter {params!r}; query: {prefix}"
+    values = tuple(params or ())
+    scalar_types = (str, int, float, bool, date, datetime)
+    for value in values:
+        valid = value is None or isinstance(value, scalar_types)
+        if isinstance(value, list):
+            valid = all(item is None or isinstance(item, scalar_types) for item in value)
+        assert valid, f"unsupported DB parameter {value!r}; query: {prefix}"
+    return values
 
 
 class FakeS3:
@@ -54,7 +70,7 @@ class SyncDb:
         self.final_stats: dict[str, Any] = {}
 
     def execute(self, query: str, params: object = None) -> list[dict[str, Any]]:
-        values = tuple(params or ())
+        values = _db_params(query, params)
         if "INSERT INTO ops.ingest_run" in query:
             return [{"id": "run-1"}]
         if "INSERT INTO core.source_record" in query:
@@ -76,7 +92,7 @@ class SyncStateDb(SyncDb):
         self.stage_writes = 0
 
     def execute(self, query: str, params: object = None) -> list[dict[str, Any]]:
-        values = tuple(params or ())
+        values = _db_params(query, params)
         stripped = query.lstrip()
         if stripped.startswith("SELECT") and "FROM staging.time_team_regatta" in query:
             row = self.regattas.get((str(values[0]), int(values[1])))
@@ -120,7 +136,7 @@ class LoadDb:
         return f"{prefix}-{self._next}"
 
     def execute(self, query: str, params: object = None) -> list[dict[str, Any]]:
-        values = tuple(params or ())
+        values = _db_params(query, params)
         self.calls.append((query, values))
         if "INSERT INTO ops.ingest_run" in query:
             return [{"id": "run-1"}]
@@ -198,6 +214,26 @@ def test_index_server_rendered_anchors_extract_only_selected_year() -> None:
     assert ("usrowing-northeast-youth", 2024) in pairs
     assert ("usrowing-northwest-masters", 2024) in pairs
     assert ("usrowing-indoor", 2024) not in pairs  # /view/... is not a regatta API route.
+
+
+def test_index_raw_html_key_uses_utc_instant() -> None:
+    db, s3 = SyncDb(), FakeS3()
+    contents = iter([(FIXTURES / "index-2024-real.html").read_bytes(), b"<html><body>changed</body></html>"])
+    with httpx.Client(transport=httpx.MockTransport(lambda _: httpx.Response(200, content=next(contents)))) as http:
+        timeteam_regatta_index(
+            db, _store(s3), http, years=[2024],
+            retrieved_at=datetime(2026, 7, 24, 12, 34, 56, 789000, tzinfo=timezone(timedelta(hours=-4))),
+        )
+        timeteam_regatta_index(
+            db, _store(s3), http, years=[2024],
+            retrieved_at=datetime(2026, 7, 24, 16, 34, 57, tzinfo=timezone.utc),
+        )
+
+    assert set(s3.objects) == {
+        "raw/timeteam/usrowing/index/2024/2026-07-24T16:34:56.789Z.html",
+        "raw/timeteam/usrowing/index/2024/2026-07-24T16:34:57.000Z.html",
+    }
+    assert db.quarantines == []
 
 
 def test_load_maps_results_clubs_people_splits_and_revision() -> None:
