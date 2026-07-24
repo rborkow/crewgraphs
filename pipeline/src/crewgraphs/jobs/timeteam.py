@@ -59,6 +59,7 @@ def timeteam_regatta_index(
     *,
     years: Iterable[int],
     slugs: Iterable[str] | None = None,
+    retrieved_at: datetime | None = None,
     retrieved_date: str | None = None,
 ) -> str:
     """Discover available ``(slug, year)`` pairs from server-rendered cards.
@@ -71,7 +72,10 @@ def timeteam_regatta_index(
     """
     requested_years = sorted(set(int(year) for year in years))
     requested_slugs = set(slugs or ())
-    capture_date = retrieved_date or date.today().isoformat()
+    if retrieved_at is None and retrieved_date is not None:
+        retrieved_at = datetime.fromisoformat(f"{retrieved_date}T00:00:00+00:00")
+    stamp = (retrieved_at or datetime.now(timezone.utc)).astimezone(timezone.utc)
+    capture_instant = _iso_millis(stamp)
     with IngestRun(
         db,
         job_name="timeteam_regatta_index",
@@ -89,14 +93,14 @@ def timeteam_regatta_index(
                 response = http.get(url)
                 response.raise_for_status()
                 content = response.content
-                raw_key = f"raw/timeteam/usrowing/index/{year}/{capture_date}.html"
+                raw_key = f"raw/timeteam/usrowing/index/{year}/{capture_instant}.html"
                 raw_object = store.put_raw(raw_key, content, "text/html")
                 source_record_id = register_source_record(
                     db,
                     source=SOURCE,
                     external_key=f"index/{year}",
                     raw_object=raw_object,
-                    metadata={"url": url, "retrieved_date": capture_date, "year": year},
+                    metadata={"url": url, "retrieved_at": stamp.isoformat(), "year": year},
                 )
                 pairs = _regatta_pairs_from_html(content, year)
                 if requested_slugs:
@@ -612,6 +616,10 @@ def parse_time_ms(value: object) -> int | None:
 
 def _index_url(year: int) -> str:
     return f"{INDEX_URL}?{urlencode({'year': year})}"
+
+
+def _iso_millis(value: datetime) -> str:
+    return value.astimezone(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
 
 
 def _race_url(slug: str, year: int, race_uuid: str | None = None) -> str:

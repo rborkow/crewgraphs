@@ -572,7 +572,7 @@ def _people(entry: dict[str, Any], flight: dict[str, Any]) -> list[dict[str, Any
                 key: item for key, item in person.items()
                 if key in _PERSON_RAW_ALLOWED and isinstance(item, (str, int, float, bool))
             }
-            rows.append({"name": name, "role": _text(_get(person, "Role", "Position"), "competitor"), "seat": _as_int(_get(person, "Seat", "SeatNumber")), "raw": raw})
+            rows.append({"name": name, "role": _text(_get(person, "Role", "Position"), "competitor"), "seat": _as_int(_get(person, "Seat", "SeatNumber")), "raw": json.dumps(raw)})
     if rows:
         return rows
     display = _none_text(_get(entry, "Name"))
@@ -585,7 +585,7 @@ def _people(entry: dict[str, Any], flight: dict[str, Any]) -> list[dict[str, Any
     # ("Community (Community B)"); a club-like candidate is not a person.
     if not name or _is_club_like(name, _none_text(_get(entry, "AffiliationName"))):
         return []
-    return [{"name": name, "role": "competitor" if _SINGLE_RE.search(_text(_get(flight, "Name"), "")) else "stroke", "seat": None, "raw": {"derived_from": "Entry.Name display"}}]
+    return [{"name": name, "role": "competitor" if _SINGLE_RE.search(_text(_get(flight, "Name"), "")) else "stroke", "seat": None, "raw": json.dumps({"derived_from": "Entry.Name display"})}]
 
 
 def _is_club_like(candidate: str, affiliation: str | None) -> bool:
