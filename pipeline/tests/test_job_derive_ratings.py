@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib
 import json
 import math
+import re
 from decimal import Decimal
 from typing import Any
 
@@ -505,6 +506,11 @@ def test_register_exposes_filters_and_dry_run_without_root_cli_changes() -> None
     result = CliRunner().invoke(app, ["derive-ratings", "--help"])
 
     assert result.exit_code == 0
-    assert "--season" in result.output
-    assert "--computation-version" in result.output
-    assert "--dry-run" in result.output
+    # Rich wraps help output in an ANSI-styled box whose width varies by
+    # environment (CI wraps differently than a local terminal), so strip
+    # escape codes and whitespace before asserting on option names.
+    plain = re.sub(r"\x1b\[[0-9;]*m", "", result.output)
+    plain = re.sub(r"\s+", "", plain)
+    assert "--season" in plain
+    assert "--computation-version" in plain
+    assert "--dry-run" in plain
