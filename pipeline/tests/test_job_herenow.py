@@ -62,11 +62,11 @@ class FakeDb:
             return [{"id": "source-1"}]
         if "SELECT b.race_id" in query:
             return self.staged
-        if "SELECT id, revision, payload_checksum FROM core.regatta" in query:
+        if "SELECT id, revision, payload_checksum, parser_version FROM core.regatta" in query:
             return [self.latest] if self.latest else []
         if "INSERT INTO core.regatta\n" in query:
             self.regattas += 1
-            self.latest = {"id": f"regatta-{self.regattas}", "revision": self.regattas, "payload_checksum": values[-3]}
+            self.latest = {"id": f"regatta-{self.regattas}", "revision": self.regattas, "payload_checksum": values[-3], "parser_version": values[-1]}
             return [{"id": self.latest["id"]}]
         if "INSERT INTO core.regatta_event" in query:
             return [{"id": "event-1"}]
@@ -265,3 +265,27 @@ def test_backfill_quarantines_breeze_error_and_non_list_flights(flights_response
     assert calls == 2
     assert db.final_stats["quarantines"] == 1
     assert reason in db.quarantines[0][1]
+
+
+def test_club_like_display_names_never_become_persons() -> None:
+    """Smoke regression (branch 2026-07-23): stroke-less crew entries carry the
+    club in both display halves ('Community (Community B)'); club-like strings
+    must not be emitted as result_person rows."""
+    from crewgraphs.jobs.herenow import _is_club_like, _people as _derive_persons
+
+    flight = {"Name": "Men's Masters 2x TT"}
+    for display, affiliation in [
+        ("Community (Community B)", "Community"),
+        ("Community B (Community)", "Community"),
+        ("CortlandtCommunityRowing (CortlandtCommunityRowing)", "CortlandtCommunityRowing"),
+    ]:
+        entry = {"Name": display, "AffiliationName": affiliation, "Competitors": []}
+        assert _derive_persons(entry, flight) == [], display
+
+    # A real stroke parenthetical still yields a person.
+    entry = {"Name": "Community (Douthitt, N.)", "AffiliationName": "Community", "Competitors": []}
+    persons = _derive_persons(entry, flight)
+    assert [p["name"] for p in persons] == ["Douthitt, N."]
+
+    assert _is_club_like("Community B", "Community")
+    assert not _is_club_like("Douthitt, N.", "Community")

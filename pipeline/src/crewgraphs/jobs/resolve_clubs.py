@@ -496,8 +496,8 @@ def _close_tasks(
         """
         UPDATE core.review_task
         SET status = %s,
-            details = CASE WHEN task_type = 'club_link' AND %s IS NOT NULL
-                THEN details || jsonb_build_object('rejected_organization_id', %s)
+            details = CASE WHEN task_type = 'club_link' AND %s::text IS NOT NULL
+                THEN details || jsonb_build_object('rejected_organization_id', %s::text)
                 ELSE details END
         WHERE entity_type = 'provider_club' AND entity_id = %s
           AND task_type IN ('club_link', 'inclusion') AND status = 'open'

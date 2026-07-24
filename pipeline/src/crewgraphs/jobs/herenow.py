@@ -52,7 +52,7 @@ if TYPE_CHECKING:
 
 
 SOURCE = "herenow"
-PARSER_VERSION = "herenow-2026.07.1"
+PARSER_VERSION = "herenow-2026.07.2"
 DEFAULT_BASE_URL = "https://newwebrole2023.azurewebsites.net"
 API_PATH = "/breeze/BreezeApi"
 CATALOG_SELECT = "Id,Name,StartDate,EndDate,Sport,IsListed,IsPublished,IsTest"
@@ -234,10 +234,17 @@ def _fetch_race(db: DatabaseGateway, store: RawStore, http: "httpx.Client", run:
 def _load_race(db: DatabaseGateway, run: IngestRun, race_id: int, base: object, flights_payload: object, source_record_id: object) -> None:
     checksum = _payload_checksum(base, flights_payload)
     prior = db.execute("""
-        SELECT id, revision, payload_checksum FROM core.regatta
+        SELECT id, revision, payload_checksum, parser_version FROM core.regatta
         WHERE source = %s AND external_key = %s ORDER BY revision DESC LIMIT 1
         """, (SOURCE, str(race_id)))
-    if prior and prior[0].get("payload_checksum") == checksum:
+    # No-op only when both the payload AND the parser are unchanged: a parser
+    # bump is the reparse path (house pattern) — identical payloads re-load
+    # into a fresh revision under the new interpretation.
+    if (
+        prior
+        and prior[0].get("payload_checksum") == checksum
+        and prior[0].get("parser_version") == PARSER_VERSION
+    ):
         run.add_stat("races_unchanged")
         return
     base_dict = _as_dict(base)
@@ -462,7 +469,25 @@ def _people(entry: dict[str, Any], flight: dict[str, Any]) -> list[dict[str, Any
         return []
     # Singles put the person before the club; crew events put the stroke after club.
     name = match.group(1).strip() if _SINGLE_RE.search(_text(_get(flight, "Name"), "")) else match.group(2).strip()
-    return [{"name": name, "role": "competitor" if _SINGLE_RE.search(_text(_get(flight, "Name"), "")) else "stroke", "seat": None, "raw": {"derived_from": "Entry.Name display"}}] if name else []
+    # Stroke-less crew entries carry club-ish strings in BOTH display halves
+    # ("Community (Community B)"); a club-like candidate is not a person.
+    if not name or _is_club_like(name, _none_text(_get(entry, "AffiliationName"))):
+        return []
+    return [{"name": name, "role": "competitor" if _SINGLE_RE.search(_text(_get(flight, "Name"), "")) else "stroke", "seat": None, "raw": {"derived_from": "Entry.Name display"}}]
+
+
+def _is_club_like(candidate: str, affiliation: str | None) -> bool:
+    """True when a display-derived name is the club (or club + crew letter)."""
+    if not affiliation:
+        return False
+    norm = lambda value: re.sub(r"[^a-z0-9]+", "", value.casefold())  # noqa: E731
+    cand, club = norm(candidate), norm(affiliation)
+    if not cand or not club:
+        return False
+    if cand == club:
+        return True
+    # "Community B" vs "Community": club plus a short crew designator.
+    return cand.startswith(club) and len(cand) - len(club) <= 2
 
 
 def _crew_label(entry: dict[str, Any], flight: dict[str, Any], club_name: str) -> str:

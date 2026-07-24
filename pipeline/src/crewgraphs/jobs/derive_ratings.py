@@ -70,7 +70,11 @@ class RankedField:
     boat_class: str
     age_bracket: str
     gender: str
-    mapping_version: int
+    # Mapping versions are strings like "2026.07.2" (the event-map file
+    # version), not integers. NOTE: latest-version selection uses SQL
+    # max(text), which orders correctly only while patch numbers stay
+    # single-digit — bump to zero-padded patches before a ".10" release.
+    mapping_version: str
     mapping_key: str
     ranking: tuple[str, ...]
     used_adjusted_time: bool
@@ -574,7 +578,7 @@ def _ranked_fields(
                 boat_class=str(first["boat_class"]),
                 age_bracket=str(first["age_bracket"]),
                 gender=str(first["gender"]),
-                mapping_version=int(first["mapping_version"]),
+                mapping_version=str(first["mapping_version"]),
                 mapping_key=str(first["mapping_key"]),
                 ranking=ranking,
                 used_adjusted_time=used_adjusted_time,
