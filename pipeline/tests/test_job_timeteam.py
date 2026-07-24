@@ -108,9 +108,11 @@ class LoadDb:
         self.entries: list[tuple[Any, ...]] = []
         self.results: list[tuple[Any, ...]] = []
         self.provider_clubs: list[tuple[Any, ...]] = []
+        self.club_ids: dict[str, str] = {}
         self.people: list[tuple[Any, ...]] = []
         self.quarantines: list[tuple[Any, ...]] = []
         self.final_stats: dict[str, Any] = {}
+        self.calls: list[tuple[str, tuple[Any, ...]]] = []
         self._next = 0
 
     def _id(self, prefix: str) -> str:
@@ -119,6 +121,7 @@ class LoadDb:
 
     def execute(self, query: str, params: object = None) -> list[dict[str, Any]]:
         values = tuple(params or ())
+        self.calls.append((query, values))
         if "INSERT INTO ops.ingest_run" in query:
             return [{"id": "run-1"}]
         if "FROM staging.time_team_regatta" in query:
@@ -129,21 +132,42 @@ class LoadDb:
             return [self.core] if self.core else []
         if "INSERT INTO core.regatta\n" in query:
             self.regattas.append(values)
-            self.core = {"revision": values[2], "payload_checksum": values[11]}
+            self.core = {"revision": values[2], "payload_checksum": values[11], "parser_version": values[13]}
             return [{"id": self._id("regatta")}]
         if "INSERT INTO core.regatta_event" in query:
             self.events.append(values)
-            return [{"id": self._id("event")}]
+            return [
+                {"id": self._id("event"), "external_key": values[offset + 1]}
+                for offset in range(0, len(values), 11)
+            ]
         if "INSERT INTO core.provider_club" in query:
-            self.provider_clubs.append(values)
-            return [{"id": self._id("club")}]
+            inserted = []
+            for offset in range(0, len(values), 7):
+                club = values[offset:offset + 7]
+                self.provider_clubs.append(club)
+                club_key = str(club[1])
+                if club_key not in self.club_ids:
+                    self.club_ids[club_key] = self._id("club")
+                    inserted.append({"external_key": club_key})
+            return inserted
+        if "SELECT id, external_key FROM core.provider_club" in query:
+            return [
+                {"id": self.club_ids[str(club_key)], "external_key": club_key}
+                for club_key in values[1]
+            ]
         if "INSERT INTO core.regatta_entry" in query:
-            self.entries.append(values)
-            return [{"id": self._id("entry")}]
+            rows = []
+            for offset in range(0, len(values), 8):
+                entry = values[offset:offset + 8]
+                self.entries.append(entry)
+                rows.append({"id": self._id("entry"), "event_id": entry[0], "external_key": entry[1]})
+            return rows
         if "INSERT INTO core.result_person" in query:
-            self.people.append(values)
+            for offset in range(0, len(values), 3):
+                self.people.append(values[offset:offset + 3])
         if "INSERT INTO core.regatta_result" in query:
-            self.results.append(values)
+            for offset in range(0, len(values), 10):
+                self.results.append(values[offset:offset + 10])
         if "INSERT INTO ops.quarantine" in query:
             self.quarantines.append(values)
         if "SET status = %s" in query:
@@ -203,13 +227,31 @@ def test_load_maps_results_clubs_people_splits_and_revision() -> None:
     assert db.final_stats["statuses_unknown"] == 0
 
     # Exact canonical payload is a no-op; changing a race payload creates the
-    # insert-only second tree/revision.
+    # insert-only revision. A parser bump uses that same reparse path.
     timeteam_load(db, slug="usrowing-youth-national", year=2026)
     assert len(db.regattas) == 1
+    assert db.core is not None
+    db.core["parser_version"] = "timeteam-old"
+    timeteam_load(db, slug="usrowing-youth-national", year=2026)
+    assert len(db.regattas) == 2
     db.race = copy.deepcopy(db.race)
     db.race["round_crew"][CREW_ID]["adjusted_result"] = "07:03.36"
     timeteam_load(db, slug="usrowing-youth-national", year=2026)
-    assert [params[2] for params in db.regattas] == [1, 2]
+    assert [params[2] for params in db.regattas] == [1, 2, 3]
+
+
+def test_load_batches_each_regatta_tree_into_bounded_statement_count() -> None:
+    db = LoadDb(_one_race_schedule(), json.loads((FIXTURES / "race-real.json").read_text()))
+
+    timeteam_load(db, slug="usrowing-youth-national", year=2026)
+
+    statements = [query for query, _ in db.calls]
+    regatta_statements = statements[statements.index("BEGIN"):statements.index("COMMIT") + 1]
+    assert len(regatta_statements) <= 12
+    assert sum(query.lstrip().startswith("INSERT INTO core.regatta_event") for query in regatta_statements) == 1
+    assert sum(query.lstrip().startswith("INSERT INTO core.regatta_entry") for query in regatta_statements) == 1
+    assert sum(query.lstrip().startswith("INSERT INTO core.regatta_result") for query in regatta_statements) == 1
+    assert sum(query.lstrip().startswith("INSERT INTO core.result_person") for query in regatta_statements) == 1
 
 
 def test_race_404_is_quarantined_without_stopping_sync() -> None:
