@@ -472,3 +472,17 @@ def test_backfill_selection_excludes_current_parser_core_rows_after_pruning() ->
     assert "LEFT JOIN core.regatta r" in db.query
     assert "WHERE r.id IS NULL" in db.query
     assert db.params[:2] == ("herenow", PARSER_VERSION)
+
+
+def test_short_club_labels_never_become_persons() -> None:
+    """Prod publish-invariant catch (2026-07-25): 1x entries with no published
+    athlete show 'River City (River City Rowing Club)' — the short club label
+    before the paren must not become a person; real names still do."""
+    from crewgraphs.jobs.herenow import _is_club_like
+
+    assert _is_club_like("River City", "River City Rowing Club")
+    assert _is_club_like("River City A", "River City Rowing Club")
+    assert _is_club_like("River City Rowing Club", "River City")
+    assert _is_club_like("Dallas United Crew", None)  # club vocabulary suffix
+    assert not _is_club_like("L. Kallweit", "River City Rowing Club")
+    assert not _is_club_like("Rivera, J.", "River City Rowing Club")

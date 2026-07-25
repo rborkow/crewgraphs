@@ -120,8 +120,9 @@ def test_mid_confidence_match_opens_non_auto_review() -> None:
 
     resolve_clubs(db)
 
-    assert db.review_tasks[0]["details"]["auto"] is False
-    assert db.review_tasks[0]["details"]["candidates"][0]["score"] == 0.7429
+    # token_set_ratio considers the shared distinctive token a complete match.
+    assert db.review_tasks[0]["details"]["auto"] is True
+    assert db.review_tasks[0]["details"]["score"] == 1.0
 
 
 def test_any_two_high_confidence_organizations_are_never_auto() -> None:
@@ -195,7 +196,12 @@ def test_ein_boost_opens_inclusion_task_for_unlinked_bmf_legal_name() -> None:
             "entity_id": "00000000-0000-0000-0000-000000000001",
             "task_type": "inclusion",
             "status": "open",
-            "details": {"candidate_eins": ["237397498"], "display_name": "Vesper Boat Club", "source": "time_team"},
+            "details": {
+                "candidate_eins": ["237397498"],
+                "display_name": "Vesper Boat Club",
+                "source": "time_team",
+                "scorer_version": 2,
+            },
         }
     ]
 
@@ -276,6 +282,18 @@ class CuratorDb:
         if "INSERT INTO core.organization_alias" in query:
             self.aliases.append({"organization_id": values[0], "alias": values[1]})
             return []
+        if "COALESCE(details->>'scorer_version'" in query:
+            changed = []
+            for task in self.tasks:
+                if (
+                    task["entity_id"]
+                    and task["task_type"] in {"club_link", "inclusion"}
+                    and task["status"] == "open"
+                    and str(task["details"].get("scorer_version", "")) != values[0]
+                ):
+                    task["status"] = "dismissed"
+                    changed.append({"id": task.get("id"), "entity_id": task["entity_id"]})
+            return changed
         if "UPDATE core.review_task" in query:
             changed = []
             for task in self.tasks:
@@ -287,6 +305,16 @@ class CuratorDb:
                         task["details"]["rejected_organization_id"] = values[1]
                     changed.append({"id": task.get("id", f"task-{len(changed) + 1}")})
             return changed
+        if "club_tasks_superseded_dismissed" in query:
+            self.audit_events.append(
+                {
+                    "actor": values[0],
+                    "action": "club_tasks_superseded_dismissed",
+                    "entity_id": values[1],
+                    "after": json.loads(values[2]),
+                }
+            )
+            return []
         if "INSERT INTO core.audit_event" in query:
             self.audit_events.append({"actor": values[0], "action": values[1], "entity_id": values[2], "after": json.loads(values[3])})
             return []
@@ -328,3 +356,112 @@ def test_club_curation_reject_dismisses_and_persists_the_rejected_organization(t
     assert db.audit_events[0]["action"] == "club_link_rejected"
     assert "unchanged=1" in club_curation(db, csv_path=csv_path)
     assert len(db.audit_events) == 1
+
+
+def test_distinctive_tokens_reject_generic_ashland_austin_collision() -> None:
+    db = ResolveClubsDb(
+        clubs=[_club(name="Ashland Rowing Club")],
+        organizations=[_org("Austin Rowing Club")],
+    )
+
+    resolve_clubs(db)
+
+    assert db.review_tasks == []
+    assert db.final_stats["clubs_below_threshold"] == 1
+
+
+def test_distinctive_tokens_match_saugatuck_and_gms_after_suffix_filtering() -> None:
+    saugatuck = _club(name="Saugatuck Rowing Club, LLC A", key="saugatuck")
+    gms = _club(name="GMS Rowing Center", key="gms")
+    db = ResolveClubsDb(
+        clubs=[saugatuck, gms],
+        organizations=[
+            _org("Saugatuck Rowing Club", ident="00000000-0000-0000-0000-000000000101"),
+            _org("GMS Rowing Center, Inc.", ident="00000000-0000-0000-0000-000000000102"),
+        ],
+    )
+
+    resolve_clubs(db)
+
+    assert [task["details"]["organization_slug"] for task in db.review_tasks if task["task_type"] == "club_link"] == [
+        "saugatuck-rowing-club",
+        "gms-rowing-center,-inc.",
+    ]
+    assert all(task["details"]["score"] == 1.0 for task in db.review_tasks if task["task_type"] == "club_link")
+
+
+def test_repetition_demotion_opens_candidate_less_generic_collision_reviews() -> None:
+    org = _org("Waco Ridge Rowing Club")
+    clubs = [
+        {
+            **_club(name=f"Waco River {number}", key=f"waco-{number}"),
+            "id": f"00000000-0000-0000-0000-0000000000{number}",
+        }
+        for number in range(1, 5)
+    ]
+    db = ResolveClubsDb(clubs=clubs, organizations=[org])
+
+    resolve_clubs(db)
+
+    links = [task for task in db.review_tasks if task["task_type"] == "club_link"]
+    assert len(links) == 4
+    assert all(task["details"] == {
+        "source": "time_team",
+        "external_key": f"waco-{number}",
+        "display_name": f"Waco River {number}",
+        "auto": False,
+        "reason": "generic_collision",
+        "scorer_version": 2,
+    } for number, task in enumerate(links, start=1))
+
+
+def test_generic_only_names_require_near_exact_full_name_similarity() -> None:
+    no_match = ResolveClubsDb(
+        clubs=[_club(name="The Rowing Club", key="generic-no")],
+        organizations=[_org("Rowing Club")],
+    )
+    resolve_clubs(no_match)
+    assert no_match.review_tasks == []
+
+    exact_match = ResolveClubsDb(
+        clubs=[_club(name="The Rowing Club", key="generic-yes")],
+        organizations=[_org("The Rowing Club", ident="00000000-0000-0000-0000-000000000103")],
+    )
+
+    resolve_clubs(exact_match)
+
+    assert exact_match.review_tasks[0]["details"]["organization_slug"] == "the-rowing-club"
+
+
+def test_all_new_tasks_stamp_scorer_version() -> None:
+    db = ResolveClubsDb(
+        clubs=[_club()],
+        organizations=[_org()],
+        bmf=[{"ein": "237397498", "legal_name": "Vesper Boat Club, Inc."}],
+    )
+
+    resolve_clubs(db)
+
+    assert {task["details"]["scorer_version"] for task in db.review_tasks} == {2}
+
+
+def test_club_curation_dismiss_superseded_keeps_v2_tasks(tmp_path: Path) -> None:
+    csv_path = tmp_path / "club-links.csv"
+    csv_path.write_text("source,external_key,org_slug,decision,note\n", encoding="utf-8")
+    db = CuratorDb()
+    db.tasks = [
+        {"id": "task-v1", "entity_id": "club-tt", "task_type": "club_link", "details": {}, "status": "open"},
+        {"id": "task-v1-explicit", "entity_id": "club-hn", "task_type": "inclusion", "details": {"scorer_version": 1}, "status": "open"},
+        {"id": "task-v2", "entity_id": "club-tt", "task_type": "club_link", "details": {"scorer_version": 2}, "status": "open"},
+    ]
+
+    assert "superseded=2" in club_curation(db, csv_path=csv_path, dismiss_superseded=True)
+    assert [task["status"] for task in db.tasks] == ["dismissed", "dismissed", "open"]
+    assert db.audit_events == [
+        {
+            "actor": "owner",
+            "action": "club_tasks_superseded_dismissed",
+            "entity_id": "club-tt",
+            "after": {"scorer_version": 2, "dismissed_count": 2},
+        }
+    ]

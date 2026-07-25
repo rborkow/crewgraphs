@@ -52,7 +52,7 @@ if TYPE_CHECKING:
 
 
 SOURCE = "herenow"
-PARSER_VERSION = "herenow-2026.07.3"
+PARSER_VERSION = "herenow-2026.07.4"
 _INSERT_BATCH_SIZE = 5_000
 
 
@@ -613,8 +613,23 @@ def _people(entry: dict[str, Any], flight: dict[str, Any]) -> list[dict[str, Any
     return [{"name": name, "role": "competitor" if _SINGLE_RE.search(_text(_get(flight, "Name"), "")) else "stroke", "seat": None, "raw": json.dumps({"derived_from": "Entry.Name display"})}]
 
 
+_CLUB_VOCAB_RE = re.compile(
+    r"(?:rowing|club|crew|center|centre|association|juniors?|racing|sculling)\s*$", re.I
+)
+
+
 def _is_club_like(candidate: str, affiliation: str | None) -> bool:
-    """True when a display-derived name is the club (or club + crew letter)."""
+    """True when a display-derived name is the club rather than a person.
+
+    Covers both directions seen in production: the candidate extending the
+    club with a crew designator ("Community B" vs "Community"), and the
+    candidate being a truncated club label ("River City" vs "River City
+    Rowing Club" — 1x entries with no published athlete put the short club
+    form before the paren). A candidate ending in club vocabulary is never
+    a person either.
+    """
+    if _CLUB_VOCAB_RE.search(candidate.strip()):
+        return True
     if not affiliation:
         return False
     norm = lambda value: re.sub(r"[^a-z0-9]+", "", value.casefold())  # noqa: E731
@@ -624,7 +639,15 @@ def _is_club_like(candidate: str, affiliation: str | None) -> bool:
     if cand == club:
         return True
     # "Community B" vs "Community": club plus a short crew designator.
-    return cand.startswith(club) and len(cand) - len(club) <= 2
+    if cand.startswith(club) and len(cand) - len(club) <= 2:
+        return True
+    # "River City" / "River City A" vs "River City Rowing Club": short club
+    # label, optionally with a trailing crew designator (>=4 chars so
+    # initials-style person names never qualify).
+    for form in (cand, cand[:-1]):
+        if len(form) >= 4 and club.startswith(form):
+            return True
+    return False
 
 
 def _crew_label(entry: dict[str, Any], flight: dict[str, Any], club_name: str) -> str:

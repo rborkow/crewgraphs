@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from copy import deepcopy
+from datetime import date, datetime
 from pathlib import Path
 from typing import Any
 
@@ -13,6 +14,7 @@ from crewgraphs.jobs.publish import (
     PublishInvariantError,
     _assemble,
     _coverage_state,
+    _insert_build,
     _invariant_failures,
     _is_u13_event,
     _suppression_matches,
@@ -27,21 +29,52 @@ ORG_AMENDED = "10000000-0000-4000-8000-000000000002"
 ORG_POSTCARD = "10000000-0000-4000-8000-000000000003"
 
 
+def _db_params(query: str, params: object = None) -> tuple[Any, ...]:
+    """Reject values psycopg cannot adapt in the test database boundary."""
+    prefix = " ".join(query.split())[:120]
+    assert not isinstance(params, dict), (
+        f"unsupported DB parameter {params!r}; query: {prefix}"
+    )
+    values = tuple(params or ())
+    scalar_types = (str, int, float, bool, date, datetime)
+    for value in values:
+        valid = value is None or isinstance(value, scalar_types)
+        if isinstance(value, list):
+            valid = all(
+                item is None or isinstance(item, scalar_types) for item in value
+            )
+        assert valid, f"unsupported DB parameter {value!r}; query: {prefix}"
+    return values
+
+
 class PublishFake:
+    READ_ROW_WIDTHS = {
+        "read.org_directory": 9,
+        "read.org_financial_series": 11,
+        "read.org_filing_coverage": 5,
+        "read.org_profile": 5,
+        "read.org_peer_cohort": 5,
+        "read.metric_catalog": 5,
+        "read.source_registry_public": 4,
+        "read.org_regatta_result": 22,
+        "read.org_slug_history": 4,
+    }
+
     def __init__(self, source: dict[str, list[dict[str, Any]]] | None = None) -> None:
         self.source = deepcopy(source or source_rows())
-        self.calls: list[tuple[str, object]] = []
+        self.calls: list[tuple[str, tuple[Any, ...]]] = []
         self.writes: list[tuple[str, tuple[Any, ...]]] = []
         self.snapshot_ids = ["old-1", "old-2", "old-3"]
         self.read_snapshot_ids = {"old-1", "old-2", "old-3"}
 
     def execute(self, query: str, params: object = None) -> list[dict[str, Any]]:
+        values = _db_params(query, params)
         compact = " ".join(query.split())
-        self.calls.append((compact, params))
+        self.calls.append((compact, values))
         if compact.startswith("INSERT INTO ops.ingest_run"):
             return [{"id": "run-publish"}]
         if compact.startswith("UPDATE ops.ingest_run"):
-            self.writes.append(("ingest_run_update", tuple(params or ())))
+            self.writes.append(("ingest_run_update", values))
             return []
         if "FROM core.organization AS o" in compact:
             return deepcopy(self.source["organizations"])
@@ -78,14 +111,14 @@ class PublishFake:
         if "FROM core.metric_definition" in compact:
             return deepcopy(self.source["metric_definitions"])
         if compact.startswith("INSERT INTO core.review_task"):
-            self.writes.append(("core.review_task", tuple(params or ())))
+            self.writes.append(("core.review_task", values))
             return []
         if compact.startswith("INSERT INTO ops.publish_snapshot"):
             snapshot_id = "new-4"
             self.snapshot_ids.append(snapshot_id)
             return [{"id": snapshot_id}]
         if compact.startswith("WITH target AS MATERIALIZED"):
-            self.writes.append(("atomic_flip", tuple(params or ())))
+            self.writes.append(("atomic_flip", values))
             return [{"id": "new-4"}]
         if compact.startswith("WITH stale AS MATERIALIZED"):
             stale = self.snapshot_ids[:-3]
@@ -95,10 +128,13 @@ class PublishFake:
             return [{"deleted_count": len(stale)}]
         if compact.startswith("INSERT INTO read."):
             table = compact.split()[2]
-            values = tuple(params or ())
-            self.writes.append((table, values))
-            if values and table != "read.org_slug_history":
-                self.read_snapshot_ids.add(str(values[0]))
+            width = self.READ_ROW_WIDTHS[table]
+            assert len(values) % width == 0
+            for offset in range(0, len(values), width):
+                row = values[offset : offset + width]
+                self.writes.append((table, row))
+                if table != "read.org_slug_history":
+                    self.read_snapshot_ids.add(str(row[0]))
             return []
         raise AssertionError(f"unexpected SQL: {compact}")
 
@@ -1123,6 +1159,123 @@ def test_publish_flip_is_one_atomic_cte_statement_and_stats_are_collected() -> N
         "regatta_clubs_ambiguous": 0,
         "gc_snapshots_deleted": 1,
     }
+
+
+def test_snapshot_build_batches_each_read_table_at_five_thousand_rows() -> None:
+    organization_count = 5_001
+    organization_ids = [f"org-{index}" for index in range(organization_count)]
+    build = {
+        "directories": [
+            {
+                "organization_id": organization_id,
+                "slug": f"club-{index}",
+                "display_name": f"Club {index}",
+                "coverage_state": "990",
+                "aliases": [f"Club {index}"],
+                "search_document": f"Club {index}",
+                "fye_month": 6,
+            }
+            for index, organization_id in enumerate(organization_ids)
+        ],
+        "series": [
+            {
+                "organization_id": organization_id,
+                "series_key": "total_revenue",
+                "series_version": 1,
+                "tax_year": 2024,
+                "fiscal_year_end": "2025-06-30",
+                "value": index,
+                "quality_state": "verified",
+                "is_amended": False,
+                "source_ref": {"organization_id": organization_id},
+            }
+            for index, organization_id in enumerate(organization_ids)
+        ],
+        "coverage": [
+            {
+                "organization_id": organization_id,
+                "tax_year": 2024,
+                "status": "990",
+            }
+            for organization_id in organization_ids
+        ],
+        "profiles": [
+            {
+                "organization_id": organization_id,
+                "payload": {"org_id": organization_id},
+            }
+            for organization_id in organization_ids
+        ],
+        "peers": [
+            {
+                "organization_id": organization_id,
+                "cohort_key": "all",
+                "reason_labels": ["All organizations"],
+            }
+            for organization_id in organization_ids
+        ],
+        "metric_catalog": [
+            {
+                "metric_key": f"metric-{index}",
+                "metric_version": 1,
+                "payload": {"key": f"metric-{index}"},
+            }
+            for index in range(organization_count)
+        ],
+        "source_registry": [
+            {
+                "source_key": f"source-{index}",
+                "payload": {"key": f"source-{index}"},
+            }
+            for index in range(organization_count)
+        ],
+        "regatta_rows": [
+            {
+                "organization_id": organization_id,
+                "season": 2025,
+                "regatta_key": f"regatta-{index}",
+                "regatta_name": f"Regatta {index}",
+                "regatta_date": "2025-06-01",
+                "venue": None,
+                "source_key": "herenow",
+                "event_key": f"event-{index}",
+                "entry_external_key": f"entry-{index}",
+                "event_name": f"Event {index}",
+                "boat_class": None,
+                "round": None,
+                "crew_label": None,
+                "crew": [],
+                "metric_key": "place",
+                "value": 1,
+                "unit": "count",
+                "status": "Finished",
+                "quality_state": "verified",
+                "source_ref": {"organization_id": organization_id},
+            }
+            for index, organization_id in enumerate(organization_ids)
+        ],
+        "slugs": [
+            {
+                "slug": f"club-{index}",
+                "org_id": organization_id,
+            }
+            for index, organization_id in enumerate(organization_ids)
+        ],
+    }
+    db = PublishFake()
+
+    _insert_build(db, snapshot_id="snapshot-1", generated=GENERATED, build=build)
+
+    for table in PublishFake.READ_ROW_WIDTHS:
+        statements = [
+            params
+            for query, params in db.calls
+            if query.startswith(f"INSERT INTO {table} ")
+        ]
+        assert [len(params) for params in statements] == [
+            5_000 * PublishFake.READ_ROW_WIDTHS[table],
+            PublishFake.READ_ROW_WIDTHS[table],
+        ]
 
 
 def test_gc_retains_exactly_three_snapshots_and_preserves_slug_history() -> None:

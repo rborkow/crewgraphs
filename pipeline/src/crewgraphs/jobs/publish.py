@@ -20,6 +20,7 @@ from .efile_fetch import GT_LAKE_XML_URL
 
 PROFILE_SCHEMA_VERSION = 1
 RESULTS_SCHEMA_VERSION = 1
+_INSERT_BATCH_SIZE = 5_000
 SNAPSHOT_FACTS = {
     "total_revenue": ("total_revenue", "Total revenue"),
     "total_expenses": ("total_expenses", "Total expenses"),
@@ -1557,15 +1558,15 @@ def _insert_build(
     generated: str,
     build: Mapping[str, list[dict[str, Any]]],
 ) -> None:
-    for row in build["directories"]:
-        db.execute(
-            """
-            INSERT INTO read.org_directory
-                (snapshot_id, organization_id, slug, display_name,
-                 coverage_state, aliases, search_text, fye_month, created_at)
-            VALUES (%s, %s, %s, %s, %s, %s::jsonb,
-                    to_tsvector('simple', %s), %s, %s::timestamptz)
-            """,
+    _insert_many(
+        db,
+        """
+        INSERT INTO read.org_directory
+            (snapshot_id, organization_id, slug, display_name,
+             coverage_state, aliases, search_text, fye_month, created_at)
+        VALUES {values}
+        """,
+        [
             (
                 snapshot_id,
                 row["organization_id"],
@@ -1576,18 +1577,31 @@ def _insert_build(
                 row["search_document"],
                 row["fye_month"],
                 generated,
-            ),
-        )
-    for row in build["series"]:
-        db.execute(
-            """
-            INSERT INTO read.org_financial_series
-                (snapshot_id, organization_id, series_key, series_version,
-                 tax_year, fiscal_year_end, value, quality_state,
-                 is_amended, source_ref, created_at)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s,
-                    %s::jsonb, %s::timestamptz)
-            """,
+            )
+            for row in build["directories"]
+        ],
+        (
+            "%s",
+            "%s",
+            "%s",
+            "%s",
+            "%s",
+            "%s::jsonb",
+            "to_tsvector('simple', %s)",
+            "%s",
+            "%s::timestamptz",
+        ),
+    )
+    _insert_many(
+        db,
+        """
+        INSERT INTO read.org_financial_series
+            (snapshot_id, organization_id, series_key, series_version,
+             tax_year, fiscal_year_end, value, quality_state,
+             is_amended, source_ref, created_at)
+        VALUES {values}
+        """,
+        [
             (
                 snapshot_id,
                 row["organization_id"],
@@ -1600,97 +1614,131 @@ def _insert_build(
                 row["is_amended"],
                 json.dumps(row["source_ref"]),
                 generated,
-            ),
-        )
-    for row in build["coverage"]:
-        db.execute(
-            """
-            INSERT INTO read.org_filing_coverage
-                (snapshot_id, organization_id, tax_year, status, created_at)
-            VALUES (%s, %s, %s, %s, %s::timestamptz)
-            """,
+            )
+            for row in build["series"]
+        ],
+        (
+            "%s",
+            "%s",
+            "%s",
+            "%s",
+            "%s",
+            "%s",
+            "%s",
+            "%s",
+            "%s",
+            "%s::jsonb",
+            "%s::timestamptz",
+        ),
+    )
+    _insert_many(
+        db,
+        """
+        INSERT INTO read.org_filing_coverage
+            (snapshot_id, organization_id, tax_year, status, created_at)
+        VALUES {values}
+        """,
+        [
             (
                 snapshot_id,
                 row["organization_id"],
                 row["tax_year"],
                 row["status"],
                 generated,
-            ),
-        )
-    for row in build["profiles"]:
-        db.execute(
-            """
-            INSERT INTO read.org_profile
-                (snapshot_id, organization_id, payload,
-                 payload_schema_version, created_at)
-            VALUES (%s, %s, %s::jsonb, %s, %s::timestamptz)
-            """,
+            )
+            for row in build["coverage"]
+        ],
+        ("%s", "%s", "%s", "%s", "%s::timestamptz"),
+    )
+    _insert_many(
+        db,
+        """
+        INSERT INTO read.org_profile
+            (snapshot_id, organization_id, payload,
+             payload_schema_version, created_at)
+        VALUES {values}
+        """,
+        [
             (
                 snapshot_id,
                 row["organization_id"],
                 json.dumps(row["payload"]),
                 PROFILE_SCHEMA_VERSION,
                 generated,
-            ),
-        )
-    for row in build["peers"]:
-        db.execute(
-            """
-            INSERT INTO read.org_peer_cohort
-                (snapshot_id, organization_id, cohort_key,
-                 reason_labels, created_at)
-            VALUES (%s, %s, %s, %s::jsonb, %s::timestamptz)
-            """,
+            )
+            for row in build["profiles"]
+        ],
+        ("%s", "%s", "%s::jsonb", "%s", "%s::timestamptz"),
+    )
+    _insert_many(
+        db,
+        """
+        INSERT INTO read.org_peer_cohort
+            (snapshot_id, organization_id, cohort_key,
+             reason_labels, created_at)
+        VALUES {values}
+        """,
+        [
             (
                 snapshot_id,
                 row["organization_id"],
                 row["cohort_key"],
                 json.dumps(row["reason_labels"]),
                 generated,
-            ),
-        )
-    for row in build["metric_catalog"]:
-        db.execute(
-            """
-            INSERT INTO read.metric_catalog
-                (snapshot_id, metric_key, metric_version, payload, created_at)
-            VALUES (%s, %s, %s, %s::jsonb, %s::timestamptz)
-            """,
+            )
+            for row in build["peers"]
+        ],
+        ("%s", "%s", "%s", "%s::jsonb", "%s::timestamptz"),
+    )
+    _insert_many(
+        db,
+        """
+        INSERT INTO read.metric_catalog
+            (snapshot_id, metric_key, metric_version, payload, created_at)
+        VALUES {values}
+        """,
+        [
             (
                 snapshot_id,
                 row["metric_key"],
                 row["metric_version"],
                 json.dumps(row["payload"]),
                 generated,
-            ),
-        )
-    for row in build["source_registry"]:
-        db.execute(
-            """
-            INSERT INTO read.source_registry_public
-                (snapshot_id, source_key, payload, created_at)
-            VALUES (%s, %s, %s::jsonb, %s::timestamptz)
-            """,
+            )
+            for row in build["metric_catalog"]
+        ],
+        ("%s", "%s", "%s", "%s::jsonb", "%s::timestamptz"),
+    )
+    _insert_many(
+        db,
+        """
+        INSERT INTO read.source_registry_public
+            (snapshot_id, source_key, payload, created_at)
+        VALUES {values}
+        """,
+        [
             (
                 snapshot_id,
                 row["source_key"],
                 json.dumps(row["payload"]),
                 generated,
-            ),
-        )
-    for row in build["regatta_rows"]:
-        db.execute(
-            """
-            INSERT INTO read.org_regatta_result
-                (snapshot_id, organization_id, season, regatta_key,
-                 regatta_name, regatta_date, venue, source_key,
-                 event_key, entry_external_key, event_name, boat_class, round,
-                 crew_label, crew, metric_key, value, unit, status,
-                 quality_state, source_ref, created_at)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                    %s, %s, %s, %s, %s::jsonb, %s, %s, %s, %s, %s,
-                    %s::jsonb, %s::timestamptz)
-            """,
+            )
+            for row in build["source_registry"]
+        ],
+        ("%s", "%s", "%s::jsonb", "%s::timestamptz"),
+    )
+    _insert_many(
+        db,
+        """
+        INSERT INTO read.org_regatta_result
+            (snapshot_id, organization_id, season, regatta_key,
+             regatta_name, regatta_date, venue, source_key,
+             event_key, entry_external_key, event_name, boat_class, round,
+             crew_label, crew, metric_key, value, unit, status,
+             quality_state, source_ref, created_at)
+        VALUES {values}
+        """,
+        [
             (
                 snapshot_id,
                 row["organization_id"],
@@ -1714,17 +1762,62 @@ def _insert_build(
                 row["quality_state"],
                 json.dumps(row["source_ref"]),
                 generated,
-            ),
-        )
-    for row in build["slugs"]:
+            )
+            for row in build["regatta_rows"]
+        ],
+        (
+            "%s",
+            "%s",
+            "%s",
+            "%s",
+            "%s",
+            "%s",
+            "%s",
+            "%s",
+            "%s",
+            "%s",
+            "%s",
+            "%s",
+            "%s",
+            "%s",
+            "%s::jsonb",
+            "%s",
+            "%s",
+            "%s",
+            "%s",
+            "%s",
+            "%s::jsonb",
+            "%s::timestamptz",
+        ),
+    )
+    _insert_many(
+        db,
+        """
+        INSERT INTO read.org_slug_history
+            (slug, snapshot_id, org_id, is_current, created_at)
+        VALUES {values}
+        ON CONFLICT (slug) DO NOTHING
+        """,
+        [
+            (row["slug"], snapshot_id, row["org_id"], generated)
+            for row in build["slugs"]
+        ],
+        ("%s", "%s", "%s", "true", "%s::timestamptz"),
+    )
+
+
+def _insert_many(
+    db: DatabaseGateway,
+    template: str,
+    rows: list[tuple[Any, ...]],
+    placeholders: tuple[str, ...],
+) -> None:
+    for start in range(0, len(rows), _INSERT_BATCH_SIZE):
+        chunk = rows[start : start + _INSERT_BATCH_SIZE]
+        values = ", ".join(["(" + ", ".join(placeholders) + ")"] * len(chunk))
         db.execute(
-            """
-            INSERT INTO read.org_slug_history
-                (slug, snapshot_id, org_id, is_current, created_at)
-            VALUES (%s, %s, %s, true, %s::timestamptz)
-            ON CONFLICT (slug) DO NOTHING
-            """,
-            (row["slug"], snapshot_id, row["org_id"], generated),
+            template.format(values=values),
+            tuple(value for row in chunk for value in row),
         )
 
 
@@ -1828,12 +1921,16 @@ def _metric_series(
         is_amended=bool(metric["amended_return"]),
         retrieved_at=metric["retrieved_at"],
         parser_version=parser_version,
-        metric={"key": str(metric["metric_key"]), "version": int(metric["metric_version"])},
+        metric={
+            "key": str(metric["metric_key"]),
+            "version": int(metric["metric_version"]),
+        },
         source_metadata=metric.get("source_metadata"),
         source_external_key=metric.get("source_external_key"),
         single_authoritative_filing=len(
             {str(filing_id) for filing_id in _sequence(metric.get("input_filing_ids"))}
-        ) == 1,
+        )
+        == 1,
     )
     return {
         "organization_id": str(metric["organization_id"]),
