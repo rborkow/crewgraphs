@@ -399,3 +399,17 @@ def test_load_failure_rolls_back_race_and_quarantines() -> None:
     statements = [q for q, _ in db.calls]
     assert "BEGIN" in statements and "ROLLBACK" in statements
     assert any("INSERT INTO ops.quarantine" in q for q in statements)
+
+
+def test_short_club_labels_never_become_persons() -> None:
+    """Prod publish-invariant catch (2026-07-25): 1x entries with no published
+    athlete show 'River City (River City Rowing Club)' — the short club label
+    before the paren must not become a person; real names still do."""
+    from crewgraphs.jobs.herenow import _is_club_like
+
+    assert _is_club_like("River City", "River City Rowing Club")
+    assert _is_club_like("River City A", "River City Rowing Club")
+    assert _is_club_like("River City Rowing Club", "River City")
+    assert _is_club_like("Dallas United Crew", None)  # club vocabulary suffix
+    assert not _is_club_like("L. Kallweit", "River City Rowing Club")
+    assert not _is_club_like("Rivera, J.", "River City Rowing Club")
