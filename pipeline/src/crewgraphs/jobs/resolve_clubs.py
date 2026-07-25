@@ -17,12 +17,12 @@ from pathlib import Path
 from typing import Any
 
 import typer
+from rapidfuzz import fuzz
 
 from ..config import Settings
 from ..db import DatabaseGateway, PostgresGateway
 from ..runlog import IngestRun
 from ..summary import emit_summary, render_summary
-from .resolve import name_similarity
 
 
 TIME_TEAM = "time_team"
@@ -30,6 +30,15 @@ NAME_ONLY_SOURCES = frozenset({"herenow", "regattatiming", "row2k"})
 AUTO_THRESHOLD = 0.85
 REVIEW_THRESHOLD = 0.60
 FREQUENCY_THRESHOLD = 3
+SCORER_VERSION = 2
+GENERIC_STOP_TOKENS = frozenset(
+    {
+        "rowing", "row", "club", "boat", "boating", "crew", "center", "centre",
+        "community", "association", "foundation", "junior", "juniors", "masters",
+        "sculling", "regatta", "team", "program", "the", "of", "and", "inc", "llc",
+        "ltd", "corp", "co", "usa", "us",
+    }
+)
 
 
 def resolve_clubs(db: DatabaseGateway) -> str:
@@ -55,6 +64,7 @@ def resolve_clubs(db: DatabaseGateway) -> str:
         source_auto: dict[str, int] = defaultdict(int)
         source_review: dict[str, int] = defaultdict(int)
 
+        pending: list[dict[str, Any]] = []
         for club in clubs:
             source = str(club["source"])
             source_totals[source] += 1
@@ -65,36 +75,62 @@ def resolve_clubs(db: DatabaseGateway) -> str:
                 continue
 
             if source == TIME_TEAM:
-                outcome = _resolve_time_team_club(db, club, organizations, bmf_candidates)
-                if outcome.auto_candidate:
-                    run.add_stat("clubs_auto_candidates")
-                    source_auto[source] += 1
-                if outcome.candidate:
-                    source_matched[source] += 1
-                    if not outcome.auto_candidate:
-                        source_review[source] += 1
-                if outcome.review_opened:
-                    run.add_stat("clubs_review_opened")
-                if outcome.inclusion_opened:
-                    run.add_stat("clubs_inclusion_opened")
-                if outcome.below_threshold:
-                    run.add_stat("clubs_below_threshold")
-                if outcome.rejected_skipped:
-                    run.add_stat("clubs_rejected_skipped")
+                pending.append(
+                    {
+                        "club": club,
+                        "candidates": _scored_organizations(club["display_name"], organizations, include_legal=True),
+                        "auto_allowed": True,
+                        "bmf_candidates": bmf_candidates,
+                    }
+                )
             elif source in NAME_ONLY_SOURCES:
                 if int(club["regatta_count"]) < FREQUENCY_THRESHOLD:
                     run.add_stat("clubs_frequency_gated")
                     continue
-                outcome = _resolve_name_only_club(db, club, organizations)
-                if outcome.review_opened:
-                    run.add_stat("clubs_review_opened")
-                if outcome.candidate:
-                    source_matched[source] += 1
+                pending.append(
+                    {
+                        "club": club,
+                        "candidates": _scored_organizations(club["display_name"], organizations, include_legal=False),
+                        "auto_allowed": False,
+                        "bmf_candidates": None,
+                    }
+                )
+
+        generic_collision_clubs = _generic_collision_club_ids(pending)
+        for item in pending:
+            club = item["club"]
+            source = str(club["source"])
+            if str(club["id"]) in generic_collision_clubs:
+                outcome = _open_generic_collision_task(db, club)
+            else:
+                outcome = _open_link_candidate(db, club, item["candidates"], auto_allowed=bool(item["auto_allowed"]))
+            if item["bmf_candidates"] is not None:
+                eins = _candidate_eins(club["display_name"], item["bmf_candidates"])
+                if eins:
+                    details = {
+                        "candidate_eins": eins,
+                        "display_name": club["display_name"],
+                        "source": club["source"],
+                        "scorer_version": SCORER_VERSION,
+                    }
+                    if not _open_task(db, str(club["id"]), "inclusion", details):
+                        _review_task(db, "provider_club", str(club["id"]), "inclusion", details)
+                        outcome.inclusion_opened = True
+            if outcome.auto_candidate:
+                run.add_stat("clubs_auto_candidates")
+                source_auto[source] += 1
+            if outcome.candidate:
+                source_matched[source] += 1
+                if not outcome.auto_candidate:
                     source_review[source] += 1
-                if outcome.below_threshold:
-                    run.add_stat("clubs_below_threshold")
-                if outcome.rejected_skipped:
-                    run.add_stat("clubs_rejected_skipped")
+            if outcome.review_opened:
+                run.add_stat("clubs_review_opened")
+            if outcome.inclusion_opened:
+                run.add_stat("clubs_inclusion_opened")
+            if outcome.below_threshold:
+                run.add_stat("clubs_below_threshold")
+            if outcome.rejected_skipped:
+                run.add_stat("clubs_rejected_skipped")
 
         # Store the source denominators and numerator consistently so the
         # summary has an explicit, machine-readable match-rate surface.
@@ -207,28 +243,6 @@ def _is_exactly_linked(db: DatabaseGateway, club: Mapping[str, Any]) -> bool:
     return bool(rows)
 
 
-def _resolve_time_team_club(
-    db: DatabaseGateway,
-    club: Mapping[str, Any],
-    organizations: Iterable[Mapping[str, Any]],
-    bmf_candidates: Iterable[Mapping[str, Any]],
-) -> _Outcome:
-    candidates = _scored_organizations(club["display_name"], organizations, include_legal=True)
-    outcome = _open_link_candidate(db, club, candidates, auto_allowed=True)
-    eins = _candidate_eins(club["display_name"], bmf_candidates)
-    if eins:
-        details = {"candidate_eins": eins, "display_name": club["display_name"], "source": club["source"]}
-        if not _open_task(db, str(club["id"]), "inclusion", details):
-            _review_task(db, "provider_club", str(club["id"]), "inclusion", details)
-            outcome.inclusion_opened = True
-    return outcome
-
-
-def _resolve_name_only_club(db: DatabaseGateway, club: Mapping[str, Any], organizations: Iterable[Mapping[str, Any]]) -> _Outcome:
-    candidates = _scored_organizations(club["display_name"], organizations, include_legal=False)
-    return _open_link_candidate(db, club, candidates, auto_allowed=False)
-
-
 def _scored_organizations(display_name: object, organizations: Iterable[Mapping[str, Any]], *, include_legal: bool) -> list[dict[str, Any]]:
     provider_name = _match_name(display_name)
     scored: list[dict[str, Any]] = []
@@ -236,9 +250,25 @@ def _scored_organizations(display_name: object, organizations: Iterable[Mapping[
         names = [org.get("display_name"), *org.get("aliases", [])]
         if include_legal:
             names.append(org.get("legal_name"))
-        score = name_similarity(provider_name, (_match_name(name) for name in names if name))
-        scored.append({"organization_id": str(org["id"]), "organization_slug": str(org["slug"]), "score": round(score, 4)})
-    return sorted(scored, key=lambda item: (-float(item["score"]), item["organization_slug"], item["organization_id"]))
+        scored_names = [_distinctive_name_score(provider_name, _match_name(name)) for name in names if name]
+        score, full_score = max(scored_names, default=(0.0, 0.0), key=lambda item: (item[0], item[1]))
+        scored.append(
+            {
+                "organization_id": str(org["id"]),
+                "organization_slug": str(org["slug"]),
+                "score": round(score, 4),
+                "_full_score": full_score,
+            }
+        )
+    # Full-name similarity is deliberately only a deterministic tie-break: it
+    # cannot lift a generic-token candidate into a review or auto tier.
+    ordered = sorted(
+        scored,
+        key=lambda item: (-float(item["score"]), -float(item["_full_score"]), item["organization_slug"], item["organization_id"]),
+    )
+    for item in ordered:
+        item.pop("_full_score")
+    return ordered
 
 
 def _open_link_candidate(db: DatabaseGateway, club: Mapping[str, Any], candidates: list[dict[str, Any]], *, auto_allowed: bool) -> _Outcome:
@@ -264,6 +294,7 @@ def _open_link_candidate(db: DatabaseGateway, club: Mapping[str, Any], candidate
             "organization_slug": best["organization_slug"],
             "score": top_score,
             "auto": True,
+            "scorer_version": SCORER_VERSION,
         }
         opened = False
         if not _open_task(db, str(club["id"]), "club_link", details):
@@ -280,6 +311,7 @@ def _open_link_candidate(db: DatabaseGateway, club: Mapping[str, Any], candidate
             "display_name": club["display_name"],
             "auto": False,
             "candidates": [item for item in candidates if float(item["score"]) >= REVIEW_THRESHOLD],
+            "scorer_version": SCORER_VERSION,
         }
         if not _open_task(db, str(club["id"]), "club_link", details):
             _review_task(db, "provider_club", str(club["id"]), "club_link", details)
@@ -288,9 +320,57 @@ def _open_link_candidate(db: DatabaseGateway, club: Mapping[str, Any], candidate
     return _Outcome(below_threshold=True)
 
 
+def _generic_collision_club_ids(pending: Iterable[Mapping[str, Any]]) -> set[str]:
+    """Find clubs whose sub-exact candidates recur implausibly often in one run."""
+    proposed_by_org: dict[str, set[str]] = defaultdict(set)
+    candidate_clubs: dict[str, set[str]] = defaultdict(set)
+    for item in pending:
+        club_id = str(item["club"]["id"])
+        for candidate in _proposal_candidates(item["candidates"], auto_allowed=bool(item["auto_allowed"])):
+            score = float(candidate["score"])
+            if REVIEW_THRESHOLD <= score < 1.0:
+                organization_id = str(candidate["organization_id"])
+                proposed_by_org[organization_id].add(club_id)
+                candidate_clubs[organization_id].add(club_id)
+    repeated_orgs = {
+        organization_id
+        for organization_id, club_ids in proposed_by_org.items()
+        if len(club_ids) > FREQUENCY_THRESHOLD
+    }
+    return set().union(*(candidate_clubs[organization_id] for organization_id in repeated_orgs)) if repeated_orgs else set()
+
+
+def _proposal_candidates(candidates: Iterable[Mapping[str, Any]], *, auto_allowed: bool) -> list[Mapping[str, Any]]:
+    """Return the candidates that the normal tiering path would put in a task."""
+    candidate_list = list(candidates)
+    best = candidate_list[0] if candidate_list else None
+    if best is None or float(best["score"]) < REVIEW_THRESHOLD:
+        return []
+    ambiguous = sum(float(candidate["score"]) >= AUTO_THRESHOLD for candidate in candidate_list) >= 2
+    if auto_allowed and float(best["score"]) >= AUTO_THRESHOLD and not ambiguous:
+        return [best]
+    return [candidate for candidate in candidate_list if float(candidate["score"]) >= REVIEW_THRESHOLD]
+
+
+def _open_generic_collision_task(db: DatabaseGateway, club: Mapping[str, Any]) -> _Outcome:
+    """Leave a curator-visible task without propagating a generic candidate."""
+    details = {
+        "source": club["source"],
+        "external_key": club["external_key"],
+        "display_name": club["display_name"],
+        "auto": False,
+        "reason": "generic_collision",
+        "scorer_version": SCORER_VERSION,
+    }
+    if _open_task(db, str(club["id"]), "club_link", details):
+        return _Outcome()
+    _review_task(db, "provider_club", str(club["id"]), "club_link", details)
+    return _Outcome(review_opened=True)
+
+
 def _candidate_eins(display_name: object, bmf_candidates: Iterable[Mapping[str, Any]]) -> list[str]:
     scored = [
-        (name_similarity(_match_name(display_name), [_match_name(item["legal_name"])]), str(item["ein"]))
+        (_distinctive_name_score(_match_name(display_name), _match_name(item["legal_name"]))[0], str(item["ein"]))
         for item in bmf_candidates
         if item.get("ein") and item.get("legal_name")
     ]
@@ -300,11 +380,32 @@ def _candidate_eins(display_name: object, bmf_candidates: Iterable[Mapping[str, 
 
 
 def _match_name(value: object) -> str:
-    """Drop provider legal/crew suffixes before resolve.py's token-set scorer."""
+    """Drop provider legal/crew suffixes before distinctive-token scoring."""
     name = str(value or "").strip()
     name = re.sub(r"\s+(?:[A-Za-z]|[0-9]+[A-Za-z]?)$", "", name)
     name = re.sub(r",?\s+(?:L\.?L\.?C\.?|LLC|INC\.?|INCORPORATED)$", "", name, flags=re.IGNORECASE)
     return name.strip()
+
+
+def _normalized_name(value: object) -> str:
+    """Use the resolver's suffix-normalized name with stable alphanumeric tokens."""
+    return " ".join(re.findall(r"[a-z0-9]+", _match_name(value).lower()))
+
+
+def _distinctive_name_score(left: object, right: object) -> tuple[float, float]:
+    """Return (distinctive score, full-name tie-break score), both on 0--1."""
+    normalized_left = _normalized_name(left)
+    normalized_right = _normalized_name(right)
+    full_score = fuzz.ratio(normalized_left, normalized_right) / 100 if normalized_left and normalized_right else 0.0
+    left_tokens = set(normalized_left.split()) - GENERIC_STOP_TOKENS
+    right_tokens = set(normalized_right.split()) - GENERIC_STOP_TOKENS
+    if not left_tokens or not right_tokens:
+        # Generic-only names are allowed only when their complete normalized
+        # forms are near-identical; no generic word can create a candidate.
+        return (full_score if not left_tokens and not right_tokens and full_score >= 0.95 else 0.0, full_score)
+    if not left_tokens.intersection(right_tokens):
+        return 0.0, full_score
+    return fuzz.token_set_ratio(" ".join(sorted(left_tokens)), " ".join(sorted(right_tokens))) / 100, full_score
 
 
 def _prior_candidate(db: DatabaseGateway, organization_id: str, details: Mapping[str, Any]) -> bool:
@@ -368,8 +469,15 @@ def _review_task(db: DatabaseGateway, entity_type: str, entity_id: str, task_typ
     )
 
 
-def club_curation(curator_db: DatabaseGateway, *, csv_path: str | Path, actor: str = "owner") -> str:
+def club_curation(
+    curator_db: DatabaseGateway,
+    *,
+    csv_path: str | Path,
+    actor: str = "owner",
+    dismiss_superseded: bool = False,
+) -> str:
     """Promote hand-reviewed CSV decisions through the curator connection."""
+    superseded = _dismiss_superseded_tasks(curator_db, actor) if dismiss_superseded else 0
     promoted = rejected = unchanged = 0
     for row in _csv_rows(csv_path):
         source, external_key, decision = (row[key].strip() for key in ("source", "external_key", "decision"))
@@ -417,9 +525,39 @@ def club_curation(curator_db: DatabaseGateway, *, csv_path: str | Path, actor: s
             promoted += 1
         else:
             unchanged += 1
-    summary = f"club_curation: promoted={promoted} rejected={rejected} unchanged={unchanged}"
+    summary = f"club_curation: promoted={promoted} rejected={rejected} unchanged={unchanged} superseded={superseded}"
     print(summary)
     return summary
+
+
+def _dismiss_superseded_tasks(db: DatabaseGateway, actor: str) -> int:
+    """Dismiss old pipeline suggestions; only the curator connection may update tasks."""
+    rows = db.execute(
+        """
+        UPDATE core.review_task
+        SET status = 'dismissed'
+        WHERE entity_type = 'provider_club'
+          AND task_type IN ('club_link', 'inclusion')
+          AND status = 'open'
+          AND COALESCE(details->>'scorer_version', '') <> %s
+        RETURNING id, entity_id
+        """,
+        (str(SCORER_VERSION),),
+    )
+    if not rows:
+        return 0
+    db.execute(
+        """
+        INSERT INTO core.audit_event (actor, action, entity_type, entity_id, before, after)
+        VALUES (%s, 'club_tasks_superseded_dismissed', 'provider_club', %s, NULL, %s::jsonb)
+        """,
+        (
+            actor,
+            rows[0]["entity_id"],
+            json.dumps({"scorer_version": SCORER_VERSION, "dismissed_count": len(rows)}),
+        ),
+    )
+    return len(rows)
 
 
 def _csv_rows(csv_path: str | Path) -> Iterable[dict[str, str]]:
@@ -555,6 +693,11 @@ def register(app: typer.Typer) -> None:
     def club_curation_cmd(
         csv_path: str = typer.Option("seed/club_links.csv", "--csv", help="Reviewed club-link decisions CSV"),
         actor: str = typer.Option("owner", help="Audit-event actor"),
+        dismiss_superseded: bool = typer.Option(
+            False,
+            "--dismiss-superseded",
+            help="Dismiss open club suggestions produced by an older scorer version",
+        ),
     ) -> None:
         curator_url = os.environ.get("CURATOR_DATABASE_URL")
         if not curator_url:
@@ -562,7 +705,14 @@ def register(app: typer.Typer) -> None:
             raise typer.Exit(code=1)
         gateway = PostgresGateway(curator_url)
         try:
-            typer.echo(club_curation(gateway, csv_path=csv_path, actor=actor))
+            typer.echo(
+                club_curation(
+                    gateway,
+                    csv_path=csv_path,
+                    actor=actor,
+                    dismiss_superseded=dismiss_superseded,
+                )
+            )
         finally:
             gateway.close()
 
