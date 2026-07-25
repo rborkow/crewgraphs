@@ -152,10 +152,20 @@ def herenow_race_backfill(
     return run.id or ""
 
 
-def herenow_load(db: DatabaseGateway, *, race_ids: Iterable[str | int] | None = None) -> str:
+def herenow_load(
+    db: DatabaseGateway,
+    *,
+    race_ids: Iterable[str | int] | None = None,
+    keep_staged: bool = False,
+) -> str:
     """Load changed staged captures using the insert-only regatta supersede model."""
     wanted = _race_id_set(race_ids)
-    with IngestRun(db, job_name="herenow_load", source=SOURCE, params={"race_ids": sorted(wanted)}) as run:
+    with IngestRun(
+        db,
+        job_name="herenow_load",
+        source=SOURCE,
+        params={"race_ids": sorted(wanted), "keep_staged": keep_staged},
+    ) as run:
         for stat in ("races_selected", "races_unchanged", "events_loaded", "entries_loaded", "entries_deduped", "results_loaded", "persons_loaded", "clubs_observed", "quarantines"):
             run.add_stat(stat, 0)
         for row in _load_rows(db, wanted):
@@ -176,6 +186,11 @@ def herenow_load(db: DatabaseGateway, *, race_ids: Iterable[str | int] | None = 
                 if not isinstance(exc, (ValueError, TypeError, KeyError, QuarantineableError)) and not _is_db_error(exc):
                     raise
                 _quarantine(db, run, str(race_id), exc, None, None, {"phase": "load"})
+                continue
+            # R2 is the immutable capture archive; staging is only the load
+            # workspace.  A checksum no-op is also a successful load.
+            if not keep_staged:
+                _prune_race_payloads(db, race_id)
     return run.id or ""
 
 
@@ -454,9 +469,14 @@ def _select_races(db: DatabaseGateway, requested: set[int], window: int, today: 
         SELECT c.race_id, c.raw_row
         FROM staging.herenow_catalog_row c
         LEFT JOIN staging.herenow_race_payload p ON p.race_id = c.race_id AND p.kind = 'flights'
-        WHERE p.race_id IS NULL OR NULLIF(c.raw_row ->> 'StartDate', '')::date >= %s::date
+        LEFT JOIN core.regatta r ON r.source = %s AND r.external_key = c.race_id::text
+          AND r.parser_version = %s
+        -- Pruned captures must not be re-acquired after their current parser
+        -- revision is in core.  Explicit --race-ids remains a manual override.
+        WHERE r.id IS NULL
+          AND (p.race_id IS NULL OR NULLIF(c.raw_row ->> 'StartDate', '')::date >= %s::date)
         ORDER BY c.race_id
-        """, ((today - timedelta(days=window)).isoformat(),))
+        """, (SOURCE, PARSER_VERSION, (today - timedelta(days=window)).isoformat()))
 
 
 def _load_rows(db: DatabaseGateway, wanted: set[int]) -> list[dict[str, Any]]:
@@ -468,6 +488,11 @@ def _load_rows(db: DatabaseGateway, wanted: set[int]) -> list[dict[str, Any]]:
         JOIN staging.herenow_race_payload f ON f.race_id = b.race_id AND f.kind = 'flights'
         WHERE {predicate} ORDER BY b.race_id
         """, params)
+
+
+def _prune_race_payloads(db: DatabaseGateway, race_id: int) -> None:
+    """Discard both HereNow working payloads after their tree commits."""
+    db.execute("DELETE FROM staging.herenow_race_payload WHERE race_id = %s", (race_id,))
 
 
 def _upsert_catalog_row(db: DatabaseGateway, run_id: str, source_record_id: str, race_id: int, row: dict[str, Any]) -> None:
@@ -621,10 +646,14 @@ def _event_raw(flight: dict[str, Any]) -> dict[str, Any]:
 
 
 def _entry_raw(entry: dict[str, Any], result: dict[str, Any]) -> dict[str, Any]:
-    entry_allowed = {"Id", "ID", "EventId", "AffiliationName", "AffiliationOrganizationId", "HandicapAge", "Sex", "ExternalEntryId", "ExternalIdType", "Seed", "SeedInfo", "Status", "SortGroup", "IsComposite", "Gender"}
-    result_allowed = {"ID", "Id", "EntryId", "FlightId", "EntryNumber", "Status", "TimingSystem", "HandicapTimespan", "StartTime1", "StartTime2", "StartTime3", "StartTime4", "Split1Time", "Split2Time", "Split3Time", "FinishTime1", "FinishTime2", "FinishTime3", "FinishTime4", "FinishOrderOverride", "FinishPlaceOverride", "Distance", "Points", "DistanceSplit1", "DistanceSplit2", "DistanceSplit3", "DistanceSplit4"}
-    safe_entry = {key: value for key, value in entry.items() if key in entry_allowed}
-    safe_result = {key: value for key, value in result.items() if key in result_allowed}
+    # Raw retention is storage policy, not value interpretation, so it does
+    # not warrant a PARSER_VERSION bump.  Older revisions retain their raw
+    # payloads until a separate revision-GC is deliberately run.
+    entry_allowed = {"Id", "Sex", "HandicapAge", "SeedInfo", "IsComposite", "AffiliationOrganizationId"}
+    result_allowed = {"Status", "EntryNumber", "HandicapTimespan"}
+    scalar = (str, int, float, bool)
+    safe_entry = {key: value for key, value in entry.items() if key in entry_allowed and value is not None and isinstance(value, scalar)}
+    safe_result = {key: value for key, value in result.items() if key in result_allowed and value is not None and isinstance(value, scalar)}
     return _strip_contacts({"entry": safe_entry, "result": safe_result})
 
 
@@ -816,9 +845,12 @@ def register(app: typer.Typer) -> None:
             typer.echo(herenow_race_backfill(db, store, http, race_ids=split_csv(race_ids), limit=limit, refetch_window_days=refetch_window_days, sleep_ms=sleep_ms))
 
     @app.command(name="herenow-load")
-    def load_cmd(race_ids: str = typer.Option("", help="Comma-separated race ids")) -> None:
+    def load_cmd(
+        race_ids: str = typer.Option("", help="Comma-separated race ids"),
+        keep_staged: bool = typer.Option(False, "--keep-staged", help="Retain staged payloads for debugging"),
+    ) -> None:
         with job_context() as (db, _store, _http):
-            typer.echo(herenow_load(db, race_ids=split_csv(race_ids)))
+            typer.echo(herenow_load(db, race_ids=split_csv(race_ids), keep_staged=keep_staged))
 
 
 __all__ = ["SOURCE", "herenow_catalog_sync", "herenow_race_backfill", "herenow_load", "parse_results_time", "register"]

@@ -11,9 +11,12 @@ import pytest
 
 from crewgraphs.config import Settings
 from crewgraphs.jobs.herenow import (
+    PARSER_VERSION,
+    _entry_raw,
     _elapsed_ms,
     _payload_checksum,
     _people,
+    _select_races,
     herenow_catalog_sync,
     herenow_load,
     herenow_race_backfill,
@@ -194,6 +197,28 @@ def test_identical_payload_is_noop_and_changed_payload_bumps_revision() -> None:
     assert inserted[-1][1][2] == 2
 
 
+def test_load_prunes_both_payload_kinds_after_commit_including_a_noop() -> None:
+    base, flights = _payloads()
+    db = FakeDb(staged=[{"race_id": 21464, "base_payload": base, "flights_payload": flights, "source_record_id": "source-1"}])
+
+    herenow_load(db)
+    herenow_load(db)  # The current revision checksum is a successful no-op.
+
+    statements = [query for query, _ in db.calls]
+    deletes = [index for index, query in enumerate(statements) if "DELETE FROM staging.herenow_race_payload" in query]
+    assert len(deletes) == 2
+    assert all(statements[index - 1] == "COMMIT" for index in deletes)
+
+
+def test_load_keep_staged_skips_payload_pruning() -> None:
+    base, flights = _payloads()
+    db = FakeDb(staged=[{"race_id": 21464, "base_payload": base, "flights_payload": flights, "source_record_id": "source-1"}])
+
+    herenow_load(db, keep_staged=True)
+
+    assert not any("DELETE FROM staging.herenow_race_payload" in query for query, _ in db.calls)
+
+
 def test_breeze_id_renumbering_has_stable_checksum_and_is_a_noop() -> None:
     base, flights = _payloads()
     renumbered_base, renumbered_flights = copy.deepcopy(base), copy.deepcopy(flights)
@@ -293,6 +318,34 @@ def test_competitor_raw_is_allowlisted_and_unspaced_singles_are_detected() -> No
     )
     assert people == [{"name": "Ava Rower", "role": "bow", "seat": 1, "raw": '{"Role": "bow", "Seat": 1}'}]
     assert _people({"Name": "Ava Rower (Riverside)"}, {"Name": "LM1x Final"})[0]["name"] == "Ava Rower"
+
+
+def test_entry_raw_is_scalar_allowlist_without_timestamp_quartets_or_nulls() -> None:
+    raw = _entry_raw(
+        {
+            "Id": 12,
+            "Sex": "F",
+            "HandicapAge": None,
+            "SeedInfo": "seed 3",
+            "IsComposite": False,
+            "AffiliationOrganizationId": 99,
+            "AffiliationName": "Bulky club name",
+            "Competitors": [{"Name": "Not retained"}],
+        },
+        {
+            "Status": "Official",
+            "EntryNumber": "4",
+            "HandicapTimespan": None,
+            "StartTime1": "2026-07-19T11:00:00Z",
+            "FinishTime1": "2026-07-19T11:03:25Z",
+            "Split1Time": "1:40.0",
+        },
+    )
+
+    assert raw == {
+        "entry": {"Id": 12, "Sex": "F", "SeedInfo": "seed 3", "IsComposite": False, "AffiliationOrganizationId": 99},
+        "result": {"Status": "Official", "EntryNumber": "4"},
+    }
 
 
 def test_backfill_quarantines_500_and_skip_set_never_hits_http() -> None:
@@ -399,3 +452,23 @@ def test_load_failure_rolls_back_race_and_quarantines() -> None:
     statements = [q for q, _ in db.calls]
     assert "BEGIN" in statements and "ROLLBACK" in statements
     assert any("INSERT INTO ops.quarantine" in q for q in statements)
+    assert not any("DELETE FROM staging.herenow_race_payload" in query for query in statements)
+
+
+def test_backfill_selection_excludes_current_parser_core_rows_after_pruning() -> None:
+    class SelectionDb:
+        def __init__(self) -> None:
+            self.query = ""
+            self.params: tuple[Any, ...] = ()
+
+        def execute(self, query: str, params: object = None) -> list[dict[str, Any]]:
+            self.query, self.params = query, _db_params(query, params)
+            # Fake database result: one catalog row is already core-loaded and
+            # is excluded by the SQL join; only this un-loaded row remains.
+            return [{"race_id": 22, "raw_row": {"Id": 22}}]
+
+    db = SelectionDb()
+    assert _select_races(db, set(), 14, date(2026, 7, 25)) == [{"race_id": 22, "raw_row": {"Id": 22}}]
+    assert "LEFT JOIN core.regatta r" in db.query
+    assert "WHERE r.id IS NULL" in db.query
+    assert db.params[:2] == ("herenow", PARSER_VERSION)

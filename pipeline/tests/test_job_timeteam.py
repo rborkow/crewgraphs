@@ -11,7 +11,9 @@ import httpx
 
 from crewgraphs.config import Settings
 from crewgraphs.jobs.timeteam import (
+    PARSER_VERSION,
     _regatta_pairs_from_html,
+    _sync_targets,
     parse_time_ms,
     timeteam_load,
     timeteam_regatta_index,
@@ -252,6 +254,8 @@ def test_load_maps_results_clubs_people_splits_and_revision() -> None:
     assert entry_raw["has_tracking_data"] is False
     assert entry_raw["progression"]["target_round_id"] == "b9c1ffe0-b108-4817-8561-a0ea2217d79d"
     assert entry_raw["event_adjusted_pos"] == []
+    assert set(entry_raw) == {"is_ooc", "has_tracking_data", "event_adjusted_pos", "progression"}
+    assert "entry" not in entry_raw and "times" not in entry_raw
     assert db.results[0][1:7] == ("4", 8, 8, 423350, 423350, 13370)
     # ``handicap_ms`` is a literal SQL NULL, so it is absent from the bind
     # parameters between adjusted time and delta.
@@ -274,6 +278,26 @@ def test_load_maps_results_clubs_people_splits_and_revision() -> None:
     db.race["round_crew"][CREW_ID]["adjusted_result"] = "07:03.36"
     timeteam_load(db, slug="usrowing-youth-national", year=2026)
     assert [params[2] for params in db.regattas] == [1, 2, 3]
+
+
+def test_load_prunes_race_docs_after_commit_including_a_noop() -> None:
+    db = LoadDb(_one_race_schedule(), json.loads((FIXTURES / "race-real.json").read_text()))
+
+    timeteam_load(db, slug="usrowing-youth-national", year=2026)
+    timeteam_load(db, slug="usrowing-youth-national", year=2026)
+
+    statements = [query for query, _ in db.calls]
+    deletes = [index for index, query in enumerate(statements) if "DELETE FROM staging.time_team_race" in query]
+    assert len(deletes) == 2
+    assert all(statements[index - 1] == "COMMIT" for index in deletes)
+
+
+def test_load_keep_staged_skips_race_doc_pruning() -> None:
+    db = LoadDb(_one_race_schedule(), json.loads((FIXTURES / "race-real.json").read_text()))
+
+    timeteam_load(db, slug="usrowing-youth-national", year=2026, keep_staged=True)
+
+    assert not any("DELETE FROM staging.time_team_race" in query for query, _ in db.calls)
 
 
 def test_load_batches_each_regatta_tree_into_bounded_statement_count() -> None:
@@ -407,3 +431,40 @@ def test_time_parser_handles_finish_and_delta() -> None:
     assert parse_time_ms("0") is None
     assert parse_time_ms("00:00.00") is None
     assert parse_time_ms("DNS") is None
+
+
+def test_load_failure_rolls_back_without_pruning_race_docs() -> None:
+    db = LoadDb(_one_race_schedule(), json.loads((FIXTURES / "race-real.json").read_text()))
+    original = db.execute
+
+    def failing(query: str, params: object = None) -> list[dict[str, Any]]:
+        if "INSERT INTO core.regatta_entry" in query:
+            raise KeyError("boom mid-tree")
+        return original(query, params)
+
+    db.execute = failing  # type: ignore[method-assign]
+    timeteam_load(db, slug="usrowing-youth-national", year=2026)
+
+    statements = [query for query, _ in db.calls]
+    assert "ROLLBACK" in statements
+    assert any("INSERT INTO ops.quarantine" in query for query in statements)
+    assert not any("DELETE FROM staging.time_team_race" in query for query in statements)
+
+
+def test_all_staged_sync_selection_excludes_current_parser_core_rows() -> None:
+    class TargetDb:
+        def __init__(self) -> None:
+            self.query = ""
+            self.params: tuple[Any, ...] = ()
+
+        def execute(self, query: str, params: object = None) -> list[dict[str, Any]]:
+            self.query, self.params = query, _db_params(query, params)
+            # Fake database result after the core join removes the regatta
+            # whose race docs were pruned; this target still needs syncing.
+            return [{"slug": "pending-regatta", "year": 2026}]
+
+    db = TargetDb()
+    assert _sync_targets(db, slug=None, year=None, all_staged=True) == [("pending-regatta", 2026)]
+    assert "LEFT JOIN core.regatta r" in db.query
+    assert "WHERE r.id IS NULL" in db.query
+    assert db.params == ("time_team", PARSER_VERSION)
