@@ -54,6 +54,7 @@ if TYPE_CHECKING:
 SOURCE = "herenow"
 PARSER_VERSION = "herenow-2026.07.4"
 _INSERT_BATCH_SIZE = 5_000
+_MAX_BIND_PARAMS = 65_535
 
 
 def _is_db_error(exc: Exception) -> bool:
@@ -458,8 +459,13 @@ def _insert_many_returning(db: DatabaseGateway, template: str, rows: list[tuple[
 
 
 def _chunks(rows: list[tuple[Any, ...]]) -> Iterator[list[tuple[Any, ...]]]:
-    for start in range(0, len(rows), _INSERT_BATCH_SIZE):
-        yield rows[start:start + _INSERT_BATCH_SIZE]
+    if not rows:
+        return
+    # Postgres caps one statement at 65,535 bind params; width from the row
+    # tuple, since placeholders may contain non-binding literals.
+    size = max(1, min(_INSERT_BATCH_SIZE, _MAX_BIND_PARAMS // len(rows[0])))
+    for start in range(0, len(rows), size):
+        yield rows[start:start + size]
 
 
 def _select_races(db: DatabaseGateway, requested: set[int], window: int, today: date) -> list[dict[str, Any]]:

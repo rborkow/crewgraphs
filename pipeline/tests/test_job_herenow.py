@@ -33,6 +33,9 @@ def _db_params(query: str, params: object = None) -> tuple[Any, ...]:
     prefix = " ".join(query.split())[:120]
     assert not isinstance(params, dict), f"unsupported DB parameter {params!r}; query: {prefix}"
     values = tuple(params or ())
+    assert len(values) <= 65_535, (
+        f"{len(values)} bind params exceeds wire-protocol cap; query: {prefix}"
+    )
     scalar_types = (str, int, float, bool, date, datetime)
     for value in values:
         valid = value is None or isinstance(value, scalar_types)

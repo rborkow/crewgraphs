@@ -21,6 +21,7 @@ from .efile_fetch import GT_LAKE_XML_URL
 PROFILE_SCHEMA_VERSION = 1
 RESULTS_SCHEMA_VERSION = 1
 _INSERT_BATCH_SIZE = 5_000
+_MAX_BIND_PARAMS = 65_535
 SNAPSHOT_FACTS = {
     "total_revenue": ("total_revenue", "Total revenue"),
     "total_expenses": ("total_expenses", "Total expenses"),
@@ -1812,8 +1813,15 @@ def _insert_many(
     rows: list[tuple[Any, ...]],
     placeholders: tuple[str, ...],
 ) -> None:
-    for start in range(0, len(rows), _INSERT_BATCH_SIZE):
-        chunk = rows[start : start + _INSERT_BATCH_SIZE]
+    if not rows:
+        return
+    # Postgres's extended-query protocol caps one statement at 65,535 bind
+    # parameters, so wide tables must take fewer rows per statement. Row width
+    # comes from the row tuple, not placeholders — placeholders may contain
+    # literals (e.g. "true") that bind nothing.
+    rows_per_chunk = max(1, min(_INSERT_BATCH_SIZE, _MAX_BIND_PARAMS // len(rows[0])))
+    for start in range(0, len(rows), rows_per_chunk):
+        chunk = rows[start : start + rows_per_chunk]
         values = ", ".join(["(" + ", ".join(placeholders) + ")"] * len(chunk))
         db.execute(
             template.format(values=values),

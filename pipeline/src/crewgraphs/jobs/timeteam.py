@@ -38,6 +38,7 @@ if TYPE_CHECKING:
 SOURCE = "time_team"
 PARSER_VERSION = "timeteam-2026.07.2"
 _INSERT_BATCH_SIZE = 5_000
+_MAX_BIND_PARAMS = 65_535
 INDEX_URL = "https://usrowing.regatta.time-team.com/"
 API_BASE_URL = "https://api.usrowing.regatta.time-team.com/api/1"
 KNOWN_STATUS_INTS = frozenset(range(0, 13))
@@ -594,8 +595,13 @@ def _insert_many_returning(
 
 
 def _chunks(rows: list[tuple[Any, ...]]) -> Iterator[list[tuple[Any, ...]]]:
-    for start in range(0, len(rows), _INSERT_BATCH_SIZE):
-        yield rows[start:start + _INSERT_BATCH_SIZE]
+    if not rows:
+        return
+    # Postgres caps one statement at 65,535 bind params; width from the row
+    # tuple, since placeholders may contain non-binding literals.
+    size = max(1, min(_INSERT_BATCH_SIZE, _MAX_BIND_PARAMS // len(rows[0])))
+    for start in range(0, len(rows), size):
+        yield rows[start:start + size]
 
 
 def parse_time_ms(value: object) -> int | None:

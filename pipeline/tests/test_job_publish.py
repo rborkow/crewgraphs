@@ -36,6 +36,9 @@ def _db_params(query: str, params: object = None) -> tuple[Any, ...]:
         f"unsupported DB parameter {params!r}; query: {prefix}"
     )
     values = tuple(params or ())
+    assert len(values) <= 65_535, (
+        f"{len(values)} bind params exceeds wire-protocol cap; query: {prefix}"
+    )
     scalar_types = (str, int, float, bool, date, datetime)
     for value in values:
         valid = value is None or isinstance(value, scalar_types)
@@ -1161,7 +1164,7 @@ def test_publish_flip_is_one_atomic_cte_statement_and_stats_are_collected() -> N
     }
 
 
-def test_snapshot_build_batches_each_read_table_at_five_thousand_rows() -> None:
+def test_snapshot_build_batches_each_read_table_within_bind_param_cap() -> None:
     organization_count = 5_001
     organization_ids = [f"org-{index}" for index in range(organization_count)]
     build = {
@@ -1266,16 +1269,20 @@ def test_snapshot_build_batches_each_read_table_at_five_thousand_rows() -> None:
 
     _insert_build(db, snapshot_id="snapshot-1", generated=GENERATED, build=build)
 
-    for table in PublishFake.READ_ROW_WIDTHS:
+    for table, width in PublishFake.READ_ROW_WIDTHS.items():
         statements = [
             params
             for query, params in db.calls
             if query.startswith(f"INSERT INTO {table} ")
         ]
-        assert [len(params) for params in statements] == [
-            5_000 * PublishFake.READ_ROW_WIDTHS[table],
-            PublishFake.READ_ROW_WIDTHS[table],
-        ]
+        rows_per_chunk = min(5_000, 65_535 // width)
+        expected = []
+        remaining = 5_001
+        while remaining:
+            taken = min(rows_per_chunk, remaining)
+            expected.append(taken * width)
+            remaining -= taken
+        assert [len(params) for params in statements] == expected
 
 
 def test_gc_retains_exactly_three_snapshots_and_preserves_slug_history() -> None:
