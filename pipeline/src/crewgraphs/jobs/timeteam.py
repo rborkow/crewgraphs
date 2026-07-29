@@ -237,6 +237,7 @@ def timeteam_load(
     slug: str | None = None,
     year: int | None = None,
     all_staged: bool = False,
+    keep_staged: bool = False,
 ) -> str:
     """Load staged schedules/races as immutable revisions of the core tree."""
     targets = _load_targets(db, slug=slug, year=year, all_staged=all_staged)
@@ -244,7 +245,7 @@ def timeteam_load(
         db,
         job_name="timeteam_load",
         source=SOURCE,
-        params={"targets": targets},
+        params={"targets": targets, "keep_staged": keep_staged},
     ) as run:
         for stat in (
             "crews_loaded", "results_loaded", "clubs_observed", "persons_loaded",
@@ -257,7 +258,7 @@ def timeteam_load(
             # subsequently treat as a no-op.
             db.execute("BEGIN")
             try:
-                _load_one(db, run, target_slug, target_year)
+                loaded = _load_one(db, run, target_slug, target_year)
                 db.execute("COMMIT")
             except Exception as exc:
                 db.execute("ROLLBACK")
@@ -267,10 +268,15 @@ def timeteam_load(
                     run, db, None, f"{target_slug}/{target_year}", "timeteam_load_error", None,
                     {"phase": "load", "error": str(exc)},
                 )
+                continue
+            # The schedule is the small discovery record; only the large
+            # per-race working documents are discarded after a commit.
+            if loaded and not keep_staged:
+                _prune_race_payloads(db, target_slug, target_year)
     return run.id or ""
 
 
-def _load_one(db: DatabaseGateway, run: IngestRun, slug: str, year: int) -> None:
+def _load_one(db: DatabaseGateway, run: IngestRun, slug: str, year: int) -> bool:
     staged = db.execute(
         """
         SELECT source_record_id, raw_payload
@@ -281,7 +287,7 @@ def _load_one(db: DatabaseGateway, run: IngestRun, slug: str, year: int) -> None
     )
     if not staged:
         _quarantine(run, db, None, f"{slug}/{year}", "timeteam_schedule_not_staged", None, {})
-        return
+        return False
     schedule = _as_mapping(staged[0].get("raw_payload"))
     races = db.execute(
         """
@@ -298,10 +304,10 @@ def _load_one(db: DatabaseGateway, run: IngestRun, slug: str, year: int) -> None
     if missing:
         for race_uuid in missing:
             _quarantine(run, db, None, race_uuid, "timeteam_schedule_race_missing", None, {"slug": slug, "year": year})
-        return
+        return False
     if not scheduled_ids:
         _quarantine(run, db, None, f"{slug}/{year}", "timeteam_schedule_races_missing", None, {})
-        return
+        return False
     race_objects: dict[str, Mapping[str, Any]] = {}
     for race_uuid in scheduled_ids:
         race = _race_for_id(race_docs[race_uuid], race_uuid) or _race_for_id(schedule, race_uuid)
@@ -312,7 +318,7 @@ def _load_one(db: DatabaseGateway, run: IngestRun, slug: str, year: int) -> None
     # A revision must be a complete child tree.  Do not create a partial
     # regatta when one of the checksum inputs failed its identity check.
     if len(race_objects) != len(scheduled_ids):
-        return
+        return False
 
     checksum = _payload_checksum(schedule, race_docs, scheduled_ids)
     external_key = f"{slug}/{year}"
@@ -333,12 +339,12 @@ def _load_one(db: DatabaseGateway, run: IngestRun, slug: str, year: int) -> None
         and existing[0].get("payload_checksum") == checksum
         and existing[0].get("parser_version") == PARSER_VERSION
     ):
-        return
+        return True
     revision = int(existing[0]["revision"]) + 1 if existing else 1
     regatta = _first_value(schedule.get("regatta"))
     if not regatta:
         _quarantine(run, db, None, external_key, "timeteam_regatta_missing", None, {})
-        return
+        return False
     tree = _regatta_tree(
         run, db, race_docs, race_objects, scheduled_ids,
         staged[0].get("source_record_id"), _regatta_timezone(regatta),
@@ -434,6 +440,7 @@ def _load_one(db: DatabaseGateway, run: IngestRun, slug: str, year: int) -> None
     run.add_stat("results_loaded", len(result_rows))
     run.add_stat("persons_loaded", len(person_rows))
     run.add_stat("clubs_observed", len(inserted_clubs))
+    return True
 
 
 def _insert_regatta(
@@ -658,12 +665,34 @@ def _sync_targets(db: DatabaseGateway, *, slug: str | None, year: int | None, al
         return [(slug, year)]
     if not all_staged:
         raise ValueError("supply --slug/--year or --all-staged")
-    rows = db.execute("SELECT slug, year FROM staging.time_team_regatta ORDER BY year, slug")
+    rows = db.execute(
+        """
+        SELECT s.slug, s.year
+        FROM staging.time_team_regatta s
+        LEFT JOIN core.regatta r
+          ON r.source = %s
+         AND r.external_key = s.slug || '/' || s.year::text
+         AND r.parser_version = %s
+        -- Schedule rows are retained, so exclude already-loaded current
+        -- parser revisions or --all-staged would re-fetch pruned race docs.
+        WHERE r.id IS NULL
+        ORDER BY s.year, s.slug
+        """,
+        (SOURCE, PARSER_VERSION),
+    )
     return [(str(row["slug"]), int(row["year"])) for row in rows]
 
 
 def _load_targets(db: DatabaseGateway, **kwargs: Any) -> list[tuple[str, int]]:
     return _sync_targets(db, **kwargs)
+
+
+def _prune_race_payloads(db: DatabaseGateway, slug: str, year: int) -> None:
+    """Discard only the large per-race staging documents after a commit."""
+    db.execute(
+        "DELETE FROM staging.time_team_race WHERE slug = %s AND year = %s",
+        (slug, year),
+    )
 
 
 def _staged_regatta(db: DatabaseGateway, slug: str, year: int) -> Mapping[str, Any] | None:
@@ -904,17 +933,14 @@ def _crew_label(entry: Mapping[str, Any]) -> str | None:
 
 
 def _entry_raw(row: Mapping[str, Any]) -> dict[str, Any]:
-    """Return an entry audit payload without duplicating the person-name field.
+    """Return the small provider signals useful downstream.
 
     Private acquisition/staging documents retain the provider response verbatim,
-    but the core result tree stores person names in exactly one table.
+    while bulky nested entry objects are normalized into the core tree.  This
+    is raw retention policy, not interpretation, so PARSER_VERSION stays put.
     """
-    raw = json.loads(json.dumps(row))
-    entry = raw.get("entry")
-    if isinstance(entry, dict):
-        entry.pop("stroke_fullname", None)
-        entry.pop("string", None)
-    return raw
+    allowed = {"is_ooc", "has_tracking_data", "event_adjusted_pos", "progression"}
+    return {key: row[key] for key in allowed if key in row and row[key] is not None}
 
 
 def _json_document(content: bytes) -> Mapping[str, Any]:
@@ -1024,6 +1050,7 @@ def register(app: typer.Typer) -> None:
         slug: str = typer.Option("", help="One regatta slug"),
         year: int | None = typer.Option(None, help="Year paired with --slug"),
         all_staged: bool = typer.Option(False, "--all-staged", help="Load every staged regatta"),
+        keep_staged: bool = typer.Option(False, "--keep-staged", help="Retain staged race payloads for debugging"),
     ) -> None:
         with job_context() as (db, _store, _http):
-            typer.echo(timeteam_load(db, slug=slug or None, year=year, all_staged=all_staged))
+            typer.echo(timeteam_load(db, slug=slug or None, year=year, all_staged=all_staged, keep_staged=keep_staged))
