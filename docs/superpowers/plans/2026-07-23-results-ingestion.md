@@ -31,18 +31,18 @@
 
 ### Review pass R1 — done (4 × opus adversarial reviewers; cross-model vs the GPT builders)
 - [x] All four lenses per branch; 2 blockers found and fixed (checksum instability from volatile serialization artifacts in both JSON adapters; stroke-name PII leak into entry raw in W1d); ~12 should-fixes landed via Codex fix rounds; lead verified every branch with full pytest (119 total post-merge) + ephemeral-Postgres migration checks (PG16 rollback/reapply, PG18 dump parity).
-- [ ] Live smokes post-merge: 2–3 HereNow races (one masters), one Time-Team regional-champs year; `run-report` clean. `[lead]` — needs DB/R2 secrets, run via workflow dispatch or locally with .env.
+- [x] Live smokes post-merge (2026-07-24, Neon-branch dry run): 3 integration bugs found and fixed before the branch merged; `run-report` clean on real HereNow + Time-Team races.
 
 ## Wave 2 — convergence — MERGED 2026-07-23
 
 - [x] **Phase 3 identity join** (terra, 378c0ea): `resolve-clubs` (exact-link skip; Time-Team ≥0.85 auto-candidate with any-two-≥0.85 ambiguity guard + durable rejects; 0.6–0.85 review; BMF EIN-boost inclusion tasks; revision-safe ≥3-regatta frequency gate) + `club-curation` curator promotion + `seed/club_links.csv` scaffold.
-- [ ] Seed `seed/club_links.csv` from real resolve-clubs output `[lead triage, owner sign-off]` — needs a live run (secrets).
+- [x] Seed `seed/club_links.csv` from real resolve-clubs output (2026-07-27..29): scorer v1 exposed generic-token slug reuse below 1.0 → distinctive-token scorer v2 (PR #8); v2 triage sheet at `seed/club_links_triage.csv` (64 auto / 116 review / 186 inclusion / 358 generic-collision parked); first owner-curated links live.
 - [x] **Phase 4 publish** (sol, 9837584): migration 017 (`read.org_regatta_result` incl. `entry_external_key`), curated-links-only join with a single-org ambiguity guard, NFKC/token-set suppression + broadened U13 redaction (incl. `crew_label` nulling), fatal invariants (suppressed-name scan over crew/crew_label/club_display_name, person-names-in-search_text, duplicates, assembly errors), sanity downgrades, six ResultRef metrics, SOURCE_REGISTRY, GC.
 - [x] **Phase 4 web** (lead, 48a0967): `RegattaActivity` + `ResultValue` (ResultRef-required twin of ProvenancedValue) + pure mappers/formatters with tests; attribution/takedown line inline (methods page itself remains Track B).
 
 ### Review pass R2 — done
 - [x] Dual review of the publish diff: opus PII lens (3 redaction bypasses found: unguarded `crew_label`, U13 regex false negatives, unicode-asymmetric suppression) + terra technical lens (multi-org alias-join blocker, entry-key collision, `assembly_errors` KeyError) — all findings landed in one sol fix round; identity branch reviewed by opus (frequency-gate revision overcount + non-durable rejects, fixed). 159 pipeline + 88 web tests green; migrations 015–017 each verified up/rollback/reapply on ephemeral PG16 with grant probes.
-- [ ] Full chain on cohort against the live DB: curate first links, dispatch results-backfill, verify a profile renders results + rollback/GC `[lead/owner]` — needs secrets.
+- [x] Full chain on cohort against the live DB (2026-07-29, run 30481169519): first fully green end-to-end run — snapshot a9420a68 active with 14,503 `read.org_regatta_result` rows across 47 orgs / 136 regattas; org profiles verified rendering provenanced results on crewgraphs.com (deploy required `build:worker` before `deploy`; the deploy script only uploads the existing `.open-next` artifact). Production hardening en route: PRs #3–#11 (entry-key precedence, loader batching, jsonb adaptation, storage diet, scorer v2, symmetric club guard, publish batching, 65,535 bind-param cap). The publish PII fatal invariant correctly refused snapshot flips three times on real data before the guards landed.
 
 ## Wave 3 — ratings — MERGED 2026-07-23 (publication R3-gated)
 
