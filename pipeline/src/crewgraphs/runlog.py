@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import sys
 from collections.abc import Mapping
 from typing import Any, Self
 
@@ -80,15 +81,29 @@ class IngestRun:
             error = str(exc)
         # JSONB concatenation retains atomic stats (for example ``quarantines``)
         # written by helpers during the body of this context manager.
-        self.db.execute(
-            """
-            UPDATE ops.ingest_run
-            SET status = %s,
-                error = %s,
-                finished_at = NOW(),
-                stats = stats || %s::jsonb
-            WHERE id = %s
-            """,
-            (status, error, json.dumps(final_stats), self.id),
-        )
+        try:
+            self.db.execute(
+                """
+                UPDATE ops.ingest_run
+                SET status = %s,
+                    error = %s,
+                    finished_at = NOW(),
+                    stats = stats || %s::jsonb
+                WHERE id = %s
+                """,
+                (status, error, json.dumps(final_stats), self.id),
+            )
+        except Exception as close_out:
+            # An exception raised in __exit__ replaces the one the body raised.
+            # Letting that happen is how a Neon-terminated connection surfaced
+            # as "the connection is closed" and buried the AdminShutdown that
+            # actually killed the run. Bookkeeping never outranks the real
+            # failure; on a clean run there is nothing to bury, so it raises.
+            if exc is None:
+                raise
+            print(
+                f"ingest_run {self.id} could not be closed out ({close_out}); "
+                "it stays 'running'. The error below is the real failure.",
+                file=sys.stderr,
+            )
         return False

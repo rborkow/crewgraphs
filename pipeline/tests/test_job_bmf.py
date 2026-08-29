@@ -95,6 +95,6 @@ def test_bmf_quarantines_conflict_and_http_failure_but_continues() -> None:
 
     quarantines = [call for call in db.calls if "INSERT INTO ops.quarantine" in call[0]]
     assert len(quarantines) == 2
-    finish = [params for query, params in db.calls if "UPDATE ops.ingest_run\n            SET status" in query][-1]
+    finish = [params for query, params in db.calls if "SET status =" in query][-1]
     assert finish[0] == "succeeded"
     assert "warnings" in json.loads(finish[2])
